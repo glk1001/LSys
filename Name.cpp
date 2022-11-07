@@ -30,7 +30,7 @@
 #include <iostream>
 #include <cstring>
 #include "Name.h"
-#include "Debug.h"
+#include "debug.h"
 
 using std::cerr;
 using std::endl;
@@ -88,4 +88,4 @@ namespace LSys {
   }
 
 
-};  
+};

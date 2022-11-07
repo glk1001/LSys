@@ -28,8 +28,7 @@
 //static char RCSid[]= "$Id: Production.c,v 1.2 90/10/12 18:48:11 leech Exp Locker: leech $";
 
 #include <cstdlib>
-#include <assert.h>
-#include "Debug.h"
+#include "debug.h"
 #include "Rand.h"
 #include "Value.h"
 #include "SymbolTable.h"

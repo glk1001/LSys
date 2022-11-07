@@ -1,25 +1,10 @@
-#include <stdhdr.h>
-#pragma hdrstop
-
-#include "Utilities/CVSFileInfo.h"
-namespace {
-  Utilities::CVSFileInfo moduleCVSFileInfo(
-    "$RCSfile: CommandLineOptions.cpp,v $",
-    "$Revision: 1.2 $",
-    "$Date: 2002/04/11 14:37:39 $",
-    "$Name: CLIB_1_0 $",
-    __FILE__,
-    __DATE__,
-    __TIME__
-  );
-};
+#include "CommandLineOptions.h"
 
 #include <string>
 #include <vector>
 #include <iostream>
 #include <string.h>
 #include "Options.h"
-#include "CommandLineOptions.h"
 
 using std::string;
 using std::vector;

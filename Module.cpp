@@ -20,7 +20,7 @@
  * $Log:	Module.c,v $
  * Revision 1.3  91/03/20  10:35:38  leech
  * Bug fix in module printing.
- * 
+ *
  * Revision 1.2  90/10/12  18:48:06  leech
  * First public release.
  *
@@ -28,7 +28,7 @@
 //static char RCSid[]= "$Id: Module.c,v 1.3 91/03/20 10:35:38 leech Exp $";
 
 #include <iostream>
-#include "Debug.h"
+#include "debug.h"
 #include "Value.h"
 #include "SymbolTable.h"
 #include "Expression.h"
@@ -161,6 +161,6 @@ namespace LSys {
     return o;
   }
 
-  
+
 };
 

@@ -1,31 +1,10 @@
-#include <stdhdr.h>
-#pragma hdrstop
-
-#include "Utilities/CVSFileInfo.h"
-namespace {
-  Utilities::CVSFileInfo moduleCVSFileInfo(
-    "$RCSfile: Consts.cpp,v $",
-    "$Revision: 1.2 $",
-    "$Date: 2002/04/04 13:53:54 $",
-    "$Name: RenderSource_1_01 $",
-    __FILE__,
-    __DATE__,
-    __TIME__
-  );
-};
+#include "Consts.h"
 
 #include <cmath>
 #include <assert.h>
-#include "Maths/Consts.h"
 
 
 namespace Maths {
-
-  const double pi= 3.14159265358979323846;
-
-  const float tinyFloat= 1.0e-5;
-  const double tinyDouble= 1.0e-14;
-
 
   double Round(double val, int numDecimalPlaces)
   {
@@ -37,7 +16,7 @@ namespace Maths {
 
     if (numDecimalPlaces != lastNumDecimalPlaces) {
       lastNumDecimalPlaces= numDecimalPlaces;
-      lastPowerOfTen= PowerOfTen(numDecimalPlaces);
+      lastPowerOfTen= std::pow(10.0F, numDecimalPlaces);
 //      oneOnLastPowerOfTen= 1.0/lastPowerOfTen;
     }
 

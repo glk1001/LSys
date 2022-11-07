@@ -27,7 +27,7 @@
  */
 //static char RCSid[] = "$Id: PlantModel.c,v 1.1 91/10/10 19:53:58 leech Exp $";
 
-#include "Debug.h"
+#include "debug.h"
 #include "Value.h"
 #include "SymbolTable.h"
 #include "Expression.h"
@@ -98,4 +98,4 @@ namespace LSys {
   }
 
 
-};  
+};

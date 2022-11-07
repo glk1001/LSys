@@ -35,7 +35,6 @@
   #define _Turtle_h
 
   #include <iostream>
-  #include <Maths/Consts.h>
   #include "Vector.h"
 
   namespace LSys {
@@ -91,7 +90,7 @@
         float DefaultDistance() const { return defaultDist; }
         void SetDefaultDistance(float d=1);
 
-        float DefaultTurnAngle() const { return Maths::RadiansToDegrees(defaultTurn); }
+        float DefaultTurnAngle() const { return Maths::ToDegrees(defaultTurn); }
         void SetDefaultTurnAngle(float a=90);
 
         Matrix CurrentFrame() const { return frame; }

@@ -20,7 +20,7 @@
  * $Log:	Turtle.c,v $
  * Revision 1.5  93/05/12  22:06:47  leech
  * Reduce warnings from cfront 3.0.1.
- * 
+ *
  * Revision 1.4  92/06/22  00:22:33  leech
  * *** empty log message ***
  *
@@ -194,7 +194,7 @@ namespace LSys {
   void Turtle::GetDefaults(float* wscale, float* delta)
   {
     *wscale= widthScale;
-    *delta= Maths::RadiansToDegrees(defaultTurn);
+    *delta= Maths::ToDegrees(defaultTurn);
   }
 
 
@@ -202,7 +202,7 @@ namespace LSys {
   void Turtle::SetDefaults(float wscale, float delta)
   {
     widthScale= wscale;
-    defaultTurn= Maths::DegreesToRadians(delta);
+    defaultTurn= Maths::ToRadians(delta);
   }
 
 
@@ -214,7 +214,7 @@ namespace LSys {
 
   void Turtle::SetDefaultTurnAngle(float a)
   {
-    defaultTurn= Maths::DegreesToRadians(a);
+    defaultTurn= Maths::ToRadians(a);
   }
 
 
@@ -483,4 +483,4 @@ namespace LSys {
   }
 
 
-};  
+};

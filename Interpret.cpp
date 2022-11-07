@@ -28,7 +28,7 @@
  */
 //static char RCSid[] = "$Id: interpret.c,v 1.3 91/03/20 10:36:40 leech Exp $";
 
-#include "Debug.h"
+#include "debug.h"
 #include "Value.h"
 #include "Module.h"
 #include "Expression.h"

@@ -20,7 +20,7 @@
  * $Log:	vector.c,v $
  * Revision 1.6  93/05/12  22:06:49  leech
  * Reduce warnings from cfront 3.0.1.
- * 
+ *
  * Revision 1.5  92/06/22  00:22:40  leech
  * Add const specifiers where possible.
  *
@@ -291,7 +291,7 @@ namespace LSys {
   {
     Matrix res;
 
-    for (register int i = X ; i <= Z; i++) {
+    for (int i = X ; i <= Z; i++) {
       res[i][X] =
         m[i][X] * b[X][X] + m[i][Y] * b[Y][X] + m[i][Z] * b[Z][X];
       res[i][Y] =
@@ -350,6 +350,6 @@ namespace LSys {
     return s;
   }
 
-  
+
 };
 

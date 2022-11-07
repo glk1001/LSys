@@ -57,7 +57,7 @@
 #include <cstdlib>
 #include <ctype.h>
 #include <malloc.h>
-#include "Debug.h"
+#include "debug.h"
 #include "Parser.h"
 
 using LSys::LSysModel;
@@ -225,15 +225,15 @@ static const short yyrline[] =
 /* YYTNAME[TOKEN_NUM] -- String name of the token TOKEN_NUM. */
 static const char *const yytname[] =
 {
-  "$", "error", "$undefined.", "ERROR", "VALUE", "INTEGER", "REAL", 
-  "FUNCTION", "IGNORE", "INCLUDE", "DEFINE", "YIELDS", "NAME", "START", 
-  "OR", "AND", "'|'", "'&'", "EQ", "NE", "'<'", "LE", "GE", "'>'", "'+'", 
-  "'-'", "'*'", "'/'", "'%'", "'^'", "UMINUS", "'!'", "'~'", "'\\n'", 
-  "':'", "'('", "')'", "','", "lsystem", "@1", "lines", "line", "@2", 
-  "@3", "@4", "@5", "@6", "names", "single_name", "successors", 
-  "optional_successors", "successor", "probability", "predecessor", "@7", 
-  "center_list", "right_list", "modules", "module", "arguments", "@8", 
-  "exprlist", "optional_conditional", "@9", "conditional", "expression", 
+  "$", "error", "$undefined.", "ERROR", "VALUE", "INTEGER", "REAL",
+  "FUNCTION", "IGNORE", "INCLUDE", "DEFINE", "YIELDS", "NAME", "START",
+  "OR", "AND", "'|'", "'&'", "EQ", "NE", "'<'", "LE", "GE", "'>'", "'+'",
+  "'-'", "'*'", "'/'", "'%'", "'^'", "UMINUS", "'!'", "'~'", "'\\n'",
+  "':'", "'('", "')'", "','", "lsystem", "@1", "lines", "line", "@2",
+  "@3", "@4", "@5", "@6", "names", "single_name", "successors",
+  "optional_successors", "successor", "probability", "predecessor", "@7",
+  "center_list", "right_list", "modules", "module", "arguments", "@8",
+  "exprlist", "optional_conditional", "@9", "conditional", "expression",
   "value", "name", 0
 };
 #endif

@@ -20,7 +20,7 @@
  * $Log:	Expression.c,v $
  * Revision 1.5  95/05/24  17:12:51  leech
  * Fix for const-correctness.
- * 
+ *
  * Revision 1.4  1993/05/12  22:06:24  leech
  * Reduce warnings from cfront 3.0.1.
  *
@@ -33,18 +33,17 @@
  */
 //static char RCSid[]= "$Id: Expression.c,v 1.5 95/05/24 17:12:51 leech Exp $";
 
-#include "Token.h"
-
 #include <cmath>
 #include <ctime>
-#include <Maths/Consts.h>
-#include "Debug.h"
+#include "debug.h"
 #include "Rand.h"
 #include "Vector.h"
 #include "Value.h"
-#include "Module.h"
+#include "Production.h"
 #include "SymbolTable.h"
 #include "Expression.h"
+
+#include "token.h"
 
 using std::cerr;
 using std::endl;
@@ -61,7 +60,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(std::sin(Maths::DegreesToRadians(x)));
+      return Value(std::sin(Maths::ToRadians(x)));
     else
       return Value();
   }
@@ -71,7 +70,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(std::cos(Maths::DegreesToRadians(x)));
+      return Value(std::cos(Maths::ToRadians(x)));
     else
       return Value();
   }
@@ -81,7 +80,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(std::tan(Maths::DegreesToRadians(x)));
+      return Value(std::tan(Maths::ToRadians(x)));
     else
       return Value();
   }
@@ -91,7 +90,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(Maths::RadiansToDegrees(std::asin(x)));
+      return Value(Maths::ToDegrees(std::asin(x)));
     else
       return Value();
   }
@@ -101,7 +100,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(Maths::RadiansToDegrees(std::acos(x)));
+      return Value(Maths::ToDegrees(std::acos(x)));
     else
       return Value();
   }
@@ -111,7 +110,7 @@ namespace LSys {
   {
     float x;
     if (getfloat(st, args, x))
-      return Value(Maths::RadiansToDegrees(std::atan(x)));
+      return Value(Maths::ToDegrees(std::atan(x)));
     else
       return Value();
   }
@@ -121,7 +120,7 @@ namespace LSys {
   {
     float x, y;
     if (getfloat(st, args, y) && getfloat(st, args,x,1))
-      return Value(Maths::RadiansToDegrees(std::atan2(y,x)));
+      return Value(Maths::ToDegrees(std::atan2(y,x)));
     else
       return Value();
   }
@@ -248,7 +247,7 @@ namespace LSys {
   }
 
 
-  char* opname(int op)
+  const char* opname(int op)
   {
     static char s[]= " ";
 
@@ -593,5 +592,5 @@ namespace LSys {
   }
 
 
-};  
+};
 

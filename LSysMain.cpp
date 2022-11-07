@@ -20,7 +20,7 @@
  * $Log:	main.c,v $
  * Revision 1.7  94/08/26  16:37:44  leech
  * Move yyparse() declaration to parser.h.
- * 
+ *
  * Revision 1.6  92/06/22  01:46:17  leech
  * Added trace option for collecting memory use statistics.
  *
@@ -43,9 +43,7 @@
 #include <fstream>
 #include <iomanip>
 
-//#include "Debug_InitialiseFinalise.h"
-#include "Standard_InitialiseFinalise.h"
-#include "Utilities/CommandLineOptions.h"
+#include "CommandLineOptions.h"
 
 #include "Value.h"
 #include "Rand.h"
@@ -53,7 +51,7 @@
 #include "Interpret.h"
 #include "LSysModel.h"
 #include "GenericGenerator.h"
-#include "Debug.h"
+#include "debug.h"
 
 using std::string;
 using std::vector;
@@ -241,9 +239,6 @@ namespace {
 
 int main(int argc, const char* argv[])
 {
-  Standard_InitialiseFinalise initialiseFinalise;
-//  Debug_InitialiseFinalise initialiseFinalise;
-
   try {
     #if YYDEBUG != 0
       yydebug= 1;
@@ -401,7 +396,6 @@ int main(int argc, const char* argv[])
 
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << "\n";
-    initialiseFinalise.CaughtException();
   }
 }
 

@@ -29,8 +29,8 @@
 //static char RCSid[]= "$Id: actions.c,v 1.3 91/03/20 10:36:16 leech Exp Locker: leech $";
 
 #include <cstring>
-#include <Maths/Consts.h>
-#include "Debug.h"
+#include "Consts.h"
+#include "debug.h"
 #include "Value.h"
 #include "Expression.h"
 #include "Module.h"
@@ -149,7 +149,7 @@ namespace LSys {
     if (nargs == 0)
       t.Turn(Turtle::negative);
     else
-      t.Turn(-Maths::DegreesToRadians(args[0]));
+      t.Turn(-Maths::ToRadians(args[0]));
   }
 
 
@@ -163,7 +163,7 @@ namespace LSys {
     if (nargs == 0)
       t.Turn(Turtle::positive);
     else
-      t.Turn(Maths::DegreesToRadians(args[0]));
+      t.Turn(Maths::ToRadians(args[0]));
   }
 
 
@@ -177,7 +177,7 @@ namespace LSys {
     if (nargs == 0)
       t.Pitch(Turtle::negative);
     else
-      t.Pitch(-Maths::DegreesToRadians(args[0]));
+      t.Pitch(-Maths::ToRadians(args[0]));
   }
 
 
@@ -191,7 +191,7 @@ namespace LSys {
     if (nargs == 0)
       t.Pitch(Turtle::positive);
     else
-      t.Pitch(Maths::DegreesToRadians(args[0]));
+      t.Pitch(Maths::ToRadians(args[0]));
   }
 
 
@@ -205,7 +205,7 @@ namespace LSys {
     if (nargs == 0)
       t.Roll(Turtle::positive);
     else
-      t.Roll(Maths::DegreesToRadians(args[0]));
+      t.Roll(Maths::ToRadians(args[0]));
   }
 
 
@@ -219,7 +219,7 @@ namespace LSys {
     if (nargs == 0)
       t.Roll(Turtle::negative);
     else
-      t.Roll(-Maths::DegreesToRadians(args[0]));
+      t.Roll(-Maths::ToRadians(args[0]));
   }
 
 
@@ -668,4 +668,4 @@ namespace LSys {
   };
 
 
-};  
+};

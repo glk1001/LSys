@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iomanip>
-#include <Maths/Consts.h>
 #include "Vector.h"
 #include "Turtle.h"
 #include "Module.h"
@@ -9,7 +8,6 @@
 using std::setw;
 using std::setprecision;
 using std::fixed;
-using Maths::Round;
 
 
 namespace LSys {
@@ -64,9 +62,9 @@ namespace LSys {
   {
     //  f << v[0] << " " << v[1] << " " << v[2];
     // Revert to right handed coord system
-    f << std::setw(10) << -Round(v[2], precision) << " "
-      << std::setw(10) <<  Round(v[1], precision) << " "
-      << std::setw(10) << -Round(v[0], precision);
+    f << std::setw(10) << -Maths::Round(v[2], precision) << " "
+      << std::setw(10) <<  Maths::Round(v[1], precision) << " "
+      << std::setw(10) << -Maths::Round(v[0], precision);
   }
 
 
@@ -83,12 +81,12 @@ namespace LSys {
 
     // Output bounds
     *boundsOutput << "bounds" << '\n';
-    *boundsOutput << "  min: " << setw(12) << Round(bndsMin[0], precision) << " "
-                               << setw(12) << Round(bndsMin[1], precision) << " "
-                               << setw(12) << Round(bndsMin[2], precision) << '\n';
-    *boundsOutput << "  max: " << setw(12) << Round(bndsMax[0], precision) << " "
-                               << setw(12) << Round(bndsMax[1], precision) << " "
-                               << setw(12) << Round(bndsMax[2], precision) << '\n';
+    *boundsOutput << "  min: " << setw(12) << Maths::Round(bndsMin[0], precision) << " "
+                               << setw(12) << Maths::Round(bndsMin[1], precision) << " "
+                               << setw(12) << Maths::Round(bndsMin[2], precision) << '\n';
+    *boundsOutput << "  max: " << setw(12) << Maths::Round(bndsMax[0], precision) << " "
+                               << setw(12) << Maths::Round(bndsMax[1], precision) << " "
+                               << setw(12) << Maths::Round(bndsMax[2], precision) << '\n';
     *boundsOutput << "\n\n";
   }
 
@@ -154,13 +152,13 @@ namespace LSys {
     *out << "  " << "cone" << '\n';
     *out << "  " << "  "; OutputVec(*out, start); *out << '\n';
     *out << "  " << "  "; OutputVec(*out, end); *out << '\n';
-    *out << "  " << "  " << Round(startRadius, precision)
-                 <<  " " << Round(endRadius, precision) << '\n';
+    *out << "  " << "  " << Maths::Round(startRadius, precision)
+                 <<  " " << Maths::Round(endRadius, precision) << '\n';
     *out << '\n';
 
     *out << "  " << "sphere" << '\n';
     *out << "  " << "  "; OutputVec(*out, end); *out << '\n';
-    *out << "  " << "  " << Round(endRadius, precision) << '\n';
+    *out << "  " << "  " << Maths::Round(endRadius, precision) << '\n';
     *out << '\n';
 
     *out << "End_Object_Group " << groupNum << '\n';
@@ -192,8 +190,8 @@ namespace LSys {
 
     *out << " " <<  "object" << '\n';
     *out << " " <<  "  Name: " << objectName << '\n';
-    *out << " " <<  "  LineWidth: " << Round(width, precision) << '\n';
-    *out << " " <<  "  LineDistance: " << Round(distance, precision) << '\n';
+    *out << " " <<  "  LineWidth: " << Maths::Round(width, precision) << '\n';
+    *out << " " <<  "  LineDistance: " << Maths::Round(distance, precision) << '\n';
     *out << " " <<  "  ContactPoint: "; OutputVec(*out, contactPoint); *out << '\n';
     *out << " " <<  "  Heading: "; OutputVec(*out, t.CurrentHeading()); *out << '\n';
     *out << " " <<  "  Left: "; OutputVec(*out, t.CurrentLeft()); *out << '\n';

@@ -36,17 +36,18 @@
  *
  */
 
-#include "token.h" /* Make sure this the first include to avoid name clashes */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <string>
+#include <cstdio>
 #include "lexdefs.h"
 #include "debug.h"
+#include "token.h" /* Make sure this the first include to avoid name clashes */
 
 int lexcol= 1, lexline= 1;
 
-int yywrap(void);
+#ifdef __cplusplus
+extern "C" int yywrap YY_PROTO(( void ));
+#else
+extern int yywrap YY_PROTO(( void ));
 char *lex_token(void);
 void lex_pushstate(int type);
 void lex_popstate(void);

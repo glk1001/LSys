@@ -22,7 +22,7 @@
  * $Log:	vector.h,v $
  * Revision 1.6  93/05/12  22:26:51  leech
  * Reduce warnings from cfront 3.0.1.
- * 
+ *
  * Revision 1.5  92/06/22  00:26:29  leech
  * Add const specifiers where possible, and overload operator[] on const.
  *
@@ -37,12 +37,12 @@
  *
  */
 
-#ifndef _Vector_h
-  #define _Vector_h
+#pragma once
+
+#include "Consts.h"
 
   #include <iostream>
   #include <cmath>
-  #include <Maths/Consts.h>
 
   namespace LSys {
     // This is a Cartesian vector class.
@@ -225,5 +225,3 @@
     std::ostream& operator<<(std::ostream&, const BoundingBox&);
 
   };
-
-#endif
