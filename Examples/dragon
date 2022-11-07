@@ -1,0 +1,9 @@
+/*
+   Dragon curve
+   Figure 1.10a pg. 11
+ */
+#define maxgen 10
+
+START : Fl
+p1 : Fl -> Fl+Fr+
+p2 : Fr -> -Fl-Fr

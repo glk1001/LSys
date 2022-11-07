@@ -1,0 +1,11 @@
+/*
+   Sierpinski gasket
+   Figure 1.10b pg. 11
+ */
+#define maxgen 6
+#define delta 60
+
+START : Fr
+
+p1 : Fl : * -> Fr+(60)Fl+(60)Fr
+p2 : Fr : * -> Fl-(60)Fr-(60)Fl

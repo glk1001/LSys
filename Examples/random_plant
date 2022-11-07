@@ -1,0 +1,13 @@
+/*
+   Stochastic branching structures
+   Figure 1.27 pg. 29
+ */
+
+#define maxgen 6
+#define delta 45
+
+START : F
+
+p1 : F	-> (.33) F[+F]F[-F]F
+	-> (.33) F[+F]F
+	-> (.34) F[-F]F

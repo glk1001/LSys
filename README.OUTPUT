@@ -1,0 +1,258 @@
+    GENERATING DIFFERENT OUTPUT FORMATS
+
+    At present, lsys produces output in one of three formats:
+PostScript, a generic text format, and a text format used by the
+PHIGS-based software used locally at UNC. The PostScript format is
+provided because of the widespread availability of PostScript printers
+and previewers; however, it's more suitable for viewing 2D curves and
+fractals than 3D plant and tree databases. The generic output format
+is a simple an example of how to generate a different format, to be
+used as a template for your own format.
+
+    To add a new output format, take the following steps:
+
+    - subclass the pure virtual class DBGenerator to produce a
+	database generator (I suggest copying GenericGenerator.[ch] to
+	<format>Generator.[ch] and modifying the two new files). Add
+	the new <format>Generator.[ch] files to the Makefile.
+
+    - #include the <format>Generator.h header in main.c. Add an
+	enumerated type for the new format to the definition of 'enum
+	FileType' (ca. line 130), and a new file extension to the
+	following string array extension[]. Add a command line option
+	(ala -generic) to select this generator, which will set the
+	variable 'filetype' to the new enumeration member. In the code
+	immediately preceding interpreting the final module list (ca.
+	line 387), add a case statement for the new format which
+	creates an instance of the new output generator to be passed
+	to the interpreter.
+
+    GEOMETRY INFORMATION
+
+    The abstract class DBGenerator provides a framework for your own
+format. Many of the methods of the generator are given a reference to
+an object of class Turtle, which contains geometric and rendering
+information. Methods of class Turtle which may be used by the
+generator are:
+
+    BoundingBox bounds()
+	Returns the bounding box of all motion taken by the turtle.
+	min() and max() methods of class BoundingBox return Vectors of
+	the box limits.
+
+    Vector H(), L(), U();
+	Returns the heading, left, and up vectors defining the
+	orientation of the turtle. The turtle operates in a
+	right-handed coordinate system.
+
+    Matrix orientation()
+	Returns the orientation as a 3x4 rotation matrix [H L U 0].
+	The matrix may be used to rotate externally defined objects
+	into the proper frame before rendering them.
+
+    Vector location()
+	Returns the Turtle position.
+
+    float  linewidth()
+	Returns the current line width.
+
+    int    color()
+	Returns the current color index.
+
+    VIEWING TRANSFORMATION
+
+    DBGenerator includes a member of class Camera, initialized at
+construction time. This class encapsulates an orthogonal or
+perspective transformation, and has three public methods which may be
+used to transform geometry for viewing as specified by the user:
+
+    float field_of_view()
+	Returns the field of view, in degrees. If this is 0, then an
+	orthographic projection is being used. Otherwise, X and Y
+	coordinates are scaled by cot(fov/2) / Z (the perspective
+	divide).
+
+    Vector transform(const Vector &p)
+	Transforms the point p in object space through the viewing
+	matrix to device space. If a perspective transformation is
+	being used, the perspective divide is done, clipping between
+	x,y,z = [-1..1],[-1..1],[0,infinity] should be applied.
+	Further, output widths should be scaled by the resulting Z
+	depth (this is *not* done by the PostScript driver, and
+	perspective output looks terrible as a result).
+
+    Matrix view_matrix()
+	Returns the 3x4 translation + rotation matrix used to
+	transform points into viewing space before the perspective
+	divide.
+
+    Note that if a database is being generated for interactive viewing
+on a graphics workstation, the camera transformation should be used
+only as a starting point; for final output such as the PostScript
+generator produces, the camera transformation should be applied to
+points before drawing.
+
+    GENERATOR CLASS METHODS
+
+    Here is a description of the methods you must provide in your
+derived <format>Generator class:
+
+    <format>Generator(ofstream *o, Camera &v [optional arguments])
+	: DBGenerator(o, v) { your constructor code }
+
+	The constructor for the generator must construct the parent
+	class DBGenerator by passing it an output file stream (o) and
+	a Camera (class describing viewing parameters). You may add
+	class-specific arguments; for example, PSGenerator takes an
+	additional boolean flag in its constructor, used to control
+	autoscaling of the resulting PostScript.
+
+    void prelude(Turtle &t)
+
+	Called once before graphics output begins; responsible for
+	creating any needed header information and then calling
+	DBGenerator::prelude(t) to set the initial color and line
+	width.
+
+    void postscript(Turtle &t)
+
+	Called once after graphics output ends; responsible for
+	creating any needed trailer information and then calling
+	DBGenerator::postscript(t) to close the output file.
+
+    void start_graphics(Turtle &t)
+
+	Called before drawing a series of line segments; performs any
+	preparation needed to draw lines. For example,
+	PSGenerator::start_graphics generates a 'newpath' command. May
+	be called multiple times. Guaranteed not to be called twice
+	without an intervening flush_graphics() call.
+
+	start_graphics may need to moveto() the current turtle
+	location, depending on the output format.
+
+	This is a pure virtual function and must be defined in the
+	derived class.
+
+    void flush_graphics(Turtle &t)
+
+	Called after drawing a series of line segments; performs any
+	actions needed to render the lines. For example,
+	PSGenerator::flush_graphics generates a 'stroke' command. May
+	be called multiple times. Guaranteed not to be called twice
+	without an intervening start_graphics() call.
+
+	This is a pure virtual function and must be defined in the
+	derived class.
+
+    void moveto(Turtle &t)
+
+	Called to move the turtle to a new location without drawing a
+	line. This may be called either inside or outside a
+	start_graphics() / flush_graphics() pair.
+
+	moveto() should call the parent method DBGenerator::moveto(t)
+	as its last action before returning. This method saves the
+	current location in the class variable 'currentpos' and sets
+	the class variable 'lastmove' to true. Usually, no
+	redefinition of moveto() is needed in a derived class.
+
+    void lineto(Turtle &t)
+
+	Called to draw a line (cylinder, branch, etc.) to a new
+	location. This is guaranteed to be called only within a
+	start_graphics() / flush-graphics() pair. If the class invoked
+	DBGenerator::moveto(), the starting point of the line will be
+	in the class variable 'currentpos', and the class variable
+	'lastmove' will be true iff the last move/draw was a move. The
+	end point of the line may be obtained from the turtle method
+	t.location().
+
+	lineto() should call the parent method DBGenerator::lineto(t)
+	as its last action before returning. This method saves the
+	current location in 'currentpos' and sets 'lastmove' to false.
+
+    void polygon(Turtle &t, Polygon &p)
+
+	Called to generate a polygon. Polygon is a list of the polygon
+	vertices as defined by the L-system (see
+	GenericGenerator::polygon for an example of accessing the
+	vertices). This is guaranteed to be called *outside* a
+	start_graphics() / flush_graphics() pair. It may call these
+	routines as needed, but must to return with graphics flushed.
+
+	This is a pure virtual function and must be defined in the
+	derived class.
+
+    void flower(Turtle &t, float radius)
+    void leaf(Turtle &t, float length)
+    void apex(Turtle &t, Vector &start, float length)
+
+	These functions generate simple previewing approximations of
+	flower, leaf, and flowering apex structures respectively. They
+	are guaranteed to be called *outside* a start_graphics() /
+	flush-graphics() pair and return with graphics flushed.
+
+	The structures should be placed at the current location with
+	the current orientation and be of the specified size (radius /
+	length respectively). The PostScript generator draws filled
+	circles, filled arcs, and polygons for these objects.
+
+	These are pure virtual functions and must be defined in the
+	derived class.
+
+    void draw_object(Turtle &t, Module &m)
+
+	This is responsible for including the externally defined
+	object referred to by the bound (all parameters numeric)
+	module m. It is guaranteed to be called only *outside* a
+	start_graphics() / flush-graphics() pair and return with
+	graphics flushed.
+
+	The object should be placed at the current location with the
+	current orientation, and parameter information may be used for
+	any purpose (such as scaling, texture assignment, selection of
+	different versions of the object, etc.)
+
+	Since there is no defined format for external objects at
+	present, this routine is not defined to do anything in the
+	PostScript generator.
+
+	This is a pure virtual function and must be defined in the
+	derived class.
+
+    void set_color(Turtle &t)
+    void set_width(Turtle &t)
+
+	These functions set the current color and width respectively.
+	They are guaranteed to be called only *outside* a
+	start_graphics() / flush-graphics() pair and must return with
+	graphics flushed.
+
+	The interpretation of the output color (an integer) is
+	class-dependent; the PostScript generator uses it to select
+	gray levels, but other generators might want to use it as an
+	index into a color map or as a texture index. This has
+	unfortunate implications for portability of L-systems between
+	different output formats, and some work on the color model is
+	needed.
+
+	The line width should be used as the diameter of the
+	twig/stalk/branchlike structures generated by
+	moveto()/lineto().
+
+	These are pure virtual functions and must be defined in the
+	derived class.
+
+    DATABASE NAME
+
+    The member "object_name" is a string describing the name of the
+object to be generated. This is ignored by most types of output
+generators, but is useful for some types of display-list oriented code
+(PHIGS) which want to identify each component of the structure. Unless
+otherwise specified, the object name is taken to be the basename of
+the output file name.
+
+    The name may be set by the method DBGenerator::set_name(char
+*name). It should be set before calling the prelude() method.
+

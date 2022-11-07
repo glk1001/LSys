@@ -1,0 +1,16 @@
+/*
+   Compound leaf.
+   Figure 5.11c pg. 129
+ */
+
+#define maxgen 17   /* not 21 as in text */
+#define delta  45
+
+#define D 2	/* apical delay */
+#define R 1.36	/* internode elongation rate */
+
+START : A(0)
+
+p1 : A(d) : d > 0 -> A(d-1)
+p2 : A(d) : d = 0 -> F(1)[+A(D)][-A(D)]F(1)A(0)
+p3 : F(a)	  -> F(a*R)

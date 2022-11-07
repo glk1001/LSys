@@ -1,0 +1,660 @@
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+NAME
+     lsys - Plant generation program
+
+
+SYNOPSIS
+     lsys [options]
+
+
+DESCRIPTION
+     lsys is a tool for manipulating production systems known  as
+     _L-_s_y_s_t_e_m_s.  In addition to specifying the systems and apply-
+     ing production rules, lsys interprets  the  results  graphi-
+     cally, producing PostScript output.
+
+     lsys is modeled after the description in the book  _T_h_e  _V_i_r_-
+     _t_u_a_l  _L_a_b_o_r_a_t_o_r_y:  _T_h_e  _A_l_g_o_r_i_t_h_m_i_c  _B_e_a_u_t_y  _o_f _P_l_a_n_t_s by P.
+     Prusinkiewicz and A.  Lindenmayer,  hereafter  called  ``the
+     book''.  This document assumes familiarity with the book and
+     with basic concepts of 3-D computer graphics; you  will  not
+     be  able to use lsys effectively without the book at hand as
+     a reference.  The following sections describe the input for-
+     mat  accepted  by  lsys,  how  to run it, and notes on bugs,
+     extensions, and future enhancements.
+
+
+INPUT FORMAT
+     lsys accepts a grammar describing OL-systems (section 1.2 of
+     the   book,  DOL-systems)  augmented  by  brackets  (section
+     1.6.3), stochastically applied  productions  (section  1.7),
+     context-sensitivity  (section  1.8), and parameters (section
+     1.10).  All these features may be freely combined.
+
+     lsys does not accept timed DOL-systems (chapter  6)  or  map
+     L-systems  (chapter 7) at present, although these extensions
+     are planned.
+
+     In general, the format used in the book is accepted by lsys.
+     Differences result from the limitations of ASCII input (many
+     of the L-systems in the book use  subscripts  and  non-ASCII
+     letters)  and  a desire to minimize parsing conflicts in the
+     yacc-based input parser. Legal input  is  broken  down  into
+     several classes: _c_o_m_m_e_n_t_s, _a_s_s_e_r_t_i_o_n_s, _d_e_f_i_n_i_t_i_o_n_s, the ini-
+     tial string, and _p_r_o_d_u_c_t_i_o_n_s. Syntactic structures common to
+     all  classes  of input are described first, then each class.
+     Unless escaped with \ or  as  otherwise  specified,  newline
+     terminates  all  classes  of input. Blank lines and comments
+     are allowed.
+
+
+NAMES
+     Two types of names are accepted: _m_o_d_u_l_e names, and  _v_a_r_i_a_b_l_e
+     names. Module names are restricted to one of the two strings
+
+
+
+                   Last change: March 21, 1991                  1
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+     ``Fl'' and ``Fr'', a single letter or digit, or one  of  the
+     following special characters:
+
+           + - ^ & \ / | $ [ ] { . } ~ ! ' %.
+
+     Expression names follow the rules for C  identifiers:  arbi-
+     trarily  long  strings  chosen from the character set [A-Za-
+     z_0-9], with digits disallowed as the leading character.
+
+     Module and expression names appear in different contexts  as
+     described  below.   Expression  names  must  be separated by
+     other tokens or whitespace, while the restrictions on module
+     names allow then to appear with no separating tokens.
+
+
+EXPRESSIONS
+     _E_x_p_r_e_s_s_i_o_n_s generally follow the  rules  of  C  expressions.
+     Variable  names  and  numeric  constants  (either integer or
+     real) are operands, and operators are treated as in C,  with
+     the following exceptions:
+
+          o+  ^ is the exponentiation operator, not bitwise XOR.
+
+          o+  the  operators  (),  [],  ->,  .,  ++,  --,  (_t_y_p_e),
+               dereference  (*),  address-of (&), sizeof, <<, >>,
+               ?:, and _o_p= are not allowed.
+
+          o+  = and == are both equality operators;  there  is  no
+               assignment operator
+
+          o+  commas always serve to seperate expressions,  rather
+               than  being part of an expression as is allowed in
+               C.
+
+          o+  functions, e.g. _f_u_n_c(expression,expression,...), are
+               allowed.   The  following  functions  from  the  C
+               library are accepted:
+
+                    sin cos tan asin acos atan atan2
+                    abs ceil floor exp log log10 rand srand
+
+               rand() returns a uniformly distributed  number  on
+               [0,1);  rand(n)  returns  a  uniformly distributed
+               number on [0,n). srand() reseeds the random number
+               generator  to  the  current time; srand(n) reseeds
+               with the specified (integer) seed.   The  seed  is
+               returned.
+
+     Integers and reals  combine  under  the  usual  C  promotion
+     rules,  except  that  integer  / integer is done in floating
+     point, for compatibility with the book. Since variables  are
+     not statically typed, promotion is done at evaluation time.
+
+
+
+                   Last change: March 21, 1991                  2
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+MODULES
+     _M_o_d_u_l_e_s (section 1.10.1) consist of a module  name  followed
+     by optional parameters enclosed in parenthesis and separated
+     by comma. Depending on context, the parameters of  a  module
+     may  either  be  arbitrary  expressions  or be restricted to
+     either numeric constants or variable names. Thus
+
+          F
+
+     is a module with no parameters,
+
+          +(90)
+
+     is a module with a numeric parameter,
+
+          Fr(l)
+
+     is a module with an variable name parameter, and
+
+          f(l*step,n-1)
+
+     is a module with 2 expression parameters.
+
+     The interpretation of specific module names is specified  on
+     page  209  of  the  book  and  in  the discussion of tropism
+     towards the end of this document.
+
+
+MODULE LISTS
+     _M_o_d_u_l_e _l_i_s_t_s are simply  strings  of  modules  of  arbitrary
+     length.   No  white  space is required between modules (thus
+     the restriction on module names). Therefore, the list
+
+          F0f1
+
+     is interpreted as the four modules `F', `0',  `f',  and  `1'
+     rather  than  the single module ``F0f1''. The only ambiguity
+     arises with the module names ``Fr'' and ``Fl'', which may be
+     separated from other modules by white space if needed.
+
+
+COMMENTS
+     C-style comments (delimited by /* and */)  are  accepted  at
+     any  point  in the input and may extend over multiple lines.
+     Note that comments are treated as white space during lexical
+     analysis, so that de/*comment*/lta is two tokens, ``de'' and
+     ``lta''.
+
+
+ASSERTIONS
+     Assertions affect the matching and interpretation of produc-
+     tions.  At present, there are only two assertions. A line of
+
+
+
+                   Last change: March 21, 1991                  3
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+     the form
+
+          #ignore name name ...
+
+     tags the specified module names such that they  are  skipped
+     while  searching  for  context  in context-sensitive produc-
+     tions. A line of the form
+
+          #include module module ...
+
+     causes modules matching those specified to be looked  up  in
+     an  external  library of shapes during graphical interpreta-
+     tion (NOTE: this feature is not yet implemented; #include is
+     accepted, but has no effect).
+
+
+DEFINITIONS
+     Definitions bind values to variables at a global level.  The
+     format is
+
+          #define variable expression
+
+     where _v_a_r_i_a_b_l_e is a variable name  whose  value  is  set  by
+     evaluating _e_x_p_r_e_s_s_i_o_n. Note that unlike the C #define state-
+     ment, the expression must evaluate to a numeric value  based
+     only on prior #defines; arbitrary textual replacement is not
+     allowed.
+
+
+STARTING MODULE LIST
+     The initial  list  of  modules,  to  which  productions  are
+     applied, is specified by a line of the form
+
+          START : list
+
+     Arguments of modules in _l_i_s_t may be arbitrary expressions in
+     terms  of  global  variables  already  defined,  and will be
+     evaluated before applying the first set of productions.
+
+
+PRODUCTIONS
+     Productions (section 1.10.1) define  replacement  rules  for
+     modules.  Productions are in the following format:
+
+          prodname : predecessor condition successors
+
+     _p_r_o_d_n_a_m_e is a variable name and is unused at present,  aside
+     from error reporting. No restrictions on the choice of names
+     applies.
+
+     _p_r_e_d_e_c_e_s_s_o_r has three parts: an  optional  _l_e_f_t  _c_o_n_t_e_x_t,  a
+     _s_t_r_i_c_t _p_r_e_d_e_c_e_s_s_o_r, and an optional _r_i_g_h_t _c_o_n_t_e_x_t.  The left
+
+
+
+                   Last change: March 21, 1991                  4
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+     context, if present, must be a list of modules  followed  by
+     the  character  `<'. The strict predecessor must be a single
+     module. The right context, if present, must be the character
+     `>'  followed by a list of modules. Modules appearing in the
+     predecessor may have an arbitrary number of parameters,  but
+     all  parameters  must  be variable names, which are bound to
+     the values in the  matching  module  when  a  production  is
+     applied.   The  variable  names in the predecessor share the
+     same name space as the global variables set with #define, so
+     collisions should be avoided.
+
+     _c_o_n_d_i_t_i_o_n is optional; if present, it consists of the  char-
+     acter  `:' followed by an arbitrary expression which may use
+     globally defined variables and variables bound in the prede-
+     cessor.  The  condition is evaluated when applying a produc-
+     tion; if it returns  a  nonzero  value,  the  production  is
+     applied.
+
+     _s_u_c_c_e_s_s_o_r_s has the format
+
+          `->' probability list `\n'
+
+     repeated one or more times. The probability is optional  and
+     defaults to 1 if not specified; if present, it must have the
+     format `(' number `)'.  The list itself may be empty.
+
+     Stochastic productions are specified by giving more than one
+     successor  to  a  predecessor and assigning each successor a
+     nonzero probability.  When applying the production,  a  suc-
+     cessor  is  chosen  at  random with the specified probabili-
+     tiess. If no successor is chosen, which may happen if proba-
+     bilities  sum to less than 1, the predecessor is replaced by
+     the empty string.
+
+
+PRODUCTION EXAMPLES
+     A production in a determinisic OL-system with brackets:
+
+               p1 : F -> F[+F][-F]
+
+     A production with left context sensitivity, parameters,  and
+     a condition:
+
+               p2 : + < F(l) : l < 2 -> F(l+1)
+
+     A stochastic production with parameters:
+
+               p3 : F(l) -> (.33)F(l)[+F(l/3)]
+                         -> (.33)F(l)[-F(l/2)]
+                         -> (.34)F(l)[+F(l/2)][-F(l/3)]
+
+
+
+
+
+                   Last change: March 21, 1991                  5
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+RUNNING THE PROGRAM
+     lsys accepts a single file in the format described above  on
+     the  standard  input and applies the appropriate productions
+     for a specified number of generations. The final module list
+     is  interpreted  and an output file created (see OUTPUT FOR-
+     MATS  below).   Various  options  affecting  generation  and
+     interpretation may be set by definitions within the input or
+     by command-line arguments.  The definitions which apply are:
+
+          #define maxgen n
+
+     _n is the number of generations to run the  production  rules
+     for;  each  generation applies the first matching production
+     rule in parallel to all modules in the current module  list.
+     n  defaults to 0, which causes interpretation of the initial
+     module list.
+
+          #define delta angle
+
+     _d_e_l_t_a is the default amount to turn, in degrees (90  degrees
+     if not specified).
+
+          #define width w
+
+     _w scales the relative width of line  segments.  Normally,  a
+     unit  line is 1/100 units wide; setting w to 10 makes a unit
+     line 1/10 unit wide. Setting w  to  0  produces  a  line  of
+     minimum  device  width (this only applies to PostScript out-
+     put).
+
+          #define plant value
+
+     Any definition of the  variable  ``plant''  enables  special
+     interpretation  of  the modules A, I, K, and L in the output
+     routines as a flowering apex, internode,  flower,  and  leaf
+     respectively.  This  definition is needed to produce most of
+     the images in chapter 3 of the text.  If  not  defined,  the
+     usual  interpretation  (e.g.  none) of these four modules is
+     taken.
+
+
+COMMAND LINE OPTIONS
+     -_d_e_l_t_a _a_n_g_l_e sets the default turn angle.
+
+     -_d_i_s_p_l_a_y causes the module list produced at each  generation
+     to  be printed on standard output. A separate interpretation
+     program will soon be able to accept  this  output  for  more
+     flexible viewing.
+
+     -_m_a_x_g_e_n _n sets the number of generations.
+
+     -_w_i_d_t_h _w sets the relative line width.
+
+
+
+                   Last change: March 21, 1991                  6
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+VIEWING OPTIONS
+     These options affect the virtual camera from which the final
+     graphical output is generated. They are:
+
+     -_e_y_e _x _y _z specifies the eye position, default (0 0 1).
+
+     -_f_o_v _t_h_e_t_a specifies the field of view of a perspective pro-
+     jection; if unspecified, an orthographic projection is used.
+
+     -_l_o_o_k_a_t _x _y _z specifies the look-at position, default  (0  0
+     0).
+
+     -_u_p _x _y _z specifies the up vector, default (0 1 0).
+
+     -_n_o_s_c_a_l_e suppresses the normal automatic scaling applied  to
+     the  output  to make it fit within a page. In this case, the
+     canonical viewing window x = -1..1, y = -1..1 is  scaled  to
+     the  page size; output outside this range is lost. Automatic
+     scaling should usually be suppressed when a perspective pro-
+     jection is used.
+
+     See BUGS for why you may not want to use perspective viewing
+     at present.
+
+
+OUTPUT FORMATS
+     The default behavior is to generate a PostScript file  named
+     `output.ps'.  This may be printed on a PostScript printer or
+     viewed with previewers such as dxpsview (DEC).
+
+     -_g_e_n_e_r_i_c generates a file (default  `output.generic')  in  a
+     text  format.   This  is  not  usable by any other rendering
+     software; it is intended as an example  of  how  to  develop
+     database  generators  for  other  output  formats  (see  the
+     README.OUTPUT file for more on this).
+
+     -_p_p_h_i_g_s generates a file (default `output.pphigs') in a text
+     format  accepted  by the PHIGS-like rendering system at UNC.
+     This is not expected to be useful at other sites.
+
+     -_b_l_f generates a file (default `output.blf') in a text  for-
+     mat accepted by some local database modification tools.  The
+     format is easily human and machine readable, something  like
+     NFF.
+
+     -_o file generates an  output  file  of  the  specified  name
+     instead  of  the  default.  Output to standard output is not
+     possible as the output generators may need to perform  seeks
+     on the output stream.
+
+
+
+
+
+
+                   Last change: March 21, 1991                  7
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+DEBUGGING
+     -_s_t_a_t_s enables printing of memory and time statistics.
+
+     -_D _a_r_g controls diagnostic output useful in debugging  lsys.
+     The argument following the option enable diagnostics for the
+     following parts of the program, depending on  which  charac-
+     ters are contained:
+
+          Char      Enables
+          A         All diagnostics
+          E         Expressions
+          G         Parsing
+          I         Interpretation
+          L         Lexical analysis
+          M         Modules
+          N         Names from lexical analysis
+          P         Productions
+          S         Symbols (variables)
+          l         Memory allocation
+          m         Main program
+
+     These options should not be needed in normal use.
+
+
+NOTABLE DIFFERENCES FROM THE BOOK
+     The method of implementing tropism used in the book  is  not
+     described.  lsys binds the module _t to control tropism. _t(e)
+     sets the tropism ``suspectibility parameter'' e, and enables
+     tropism.  _t(0) disables tropism. _t(x,y,z,e) sets the tropism
+     direction (x,y,z) and parameter e, and enables tropism.
+
+     Initially tropism is  disabled,  the  tropism  direction  is
+     (0,-1,0)  (down),  and  the suspectibility parameter is 0.2.
+     Since my implementation of tropism does not produce  results
+     exactly  comparable  to  the  book (see BUGS), these details
+     will change in the near future.
+
+
+BUGS
+     Perspective viewing does not rescale line widths  by  the  Z
+     depth; the resulting PostScript usually looks horrible (high
+     priority).
+
+     The discussion of tropism in the book is not complete enough
+     to reproduce the images using it; the algorithm used in lsys
+     needs to capture some additional details.   This  will  take
+     some effort to figure out.
+
+     There is a ``#consider'' assertion used in a few  places  in
+     the book, but no indication of what it is supposed to do.
+
+     There should be a way to specify values of variables on  the
+
+
+
+                   Last change: March 21, 1991                  8
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+     command line, overriding #defines.
+
+     The distinction between the 'G'  and  'f'  commands  is  not
+     properly implemented.
+
+     There should be a clean  and  flexible  way  to  modify  the
+     interpretation  bindings  without  recompiling;  the  method
+     (#define plant value) used to enable the  A,  I,  K,  and  L
+     bindings  is  a temporary kludge.  These bindings are imple-
+     mented in the PostScript generator, but need some  work.  In
+     particular,  no  correction  for  perspective or rotation is
+     made.
+
+
+UPCOMING FEATURES
+     Database drivers for other renderers.
+
+     lsys will be made faster and less of a memory hog.
+
+     Error checking needs to be improved; any input errors simply
+     produce a syntax error message specifying the offending line
+     and column, usually followed by fatal errors  when  applying
+     productions.
+
+
+AUTHOR
+     Jon Leech (leech@cs.unc.edu)
+
+
+COPYRIGHT NOTICE
+     Copyright (C) 1990, 1991, Jonathan P. Leech.
+
+     This software may be freely copied, modified, and  redistri-
+     buted,  provided  that this copyright notice is preserved on
+     all copies.
+
+     There is no warranty or other guarantee of fitness for  this
+     software,  it  is  provided  solely  "as is". Bug reports or
+     fixes may be sent to the author, who may or may not  act  on
+     them as he desires.
+
+     You may not include this software  in  a  program  or  other
+     software  product  without  supplying the source, or without
+     informing the end-user that the source is available  for  no
+     extra charge.
+
+     If you modify this software, you  should  include  a  notice
+     giving  the  name of the person performing the modification,
+     the date of modification, and the reason for such  modifica-
+     tion.
+
+
+
+
+
+                   Last change: March 21, 1991                  9
+
+
+
+
+
+
+LSYS(1L)          MISC. REFERENCE MANUAL PAGES           LSYS(1L)
+
+
+
+OTHER COMMENTS
+     Please send bugs (accompanied by  L-systems  causing  them),
+     interesting L-systems for inclusion in the release, enhance-
+     ments, and suggestions to the author via email.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   Last change: March 21, 1991                 10
+
+
+

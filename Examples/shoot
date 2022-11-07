@@ -1,0 +1,22 @@
+/*
+   Development controlled by a signal - example from pp. 67-68
+ */
+#define maxgen 10
+
+#define plant 1
+
+#define d 4
+#define m 2
+#define u 1
+
+START : D(1)a(1)
+/* CS production must precede CF production */
+p8 : S(i) < a(j)	 -> I[L]A
+p1 :	    a(i) : i < m -> a(i+1)
+p2 :	    a(i) : i = m -> I[L]a(1)
+p3 :	    D(i) : i < d -> D(i+1)
+p4 :	    D(i) : i = d -> S(1)
+p5 :	    S(i) : i < u -> S(i+1)
+p6 :	    S(i) : i = u ->
+p7 : S(i) < I	 : i = u -> IS(1)
+p9 :	    A		 -> K

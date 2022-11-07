@@ -1,0 +1,18 @@
+/*
+   A simple leaf
+   Figure 5.6e pg. 124
+ */
+
+#define maxgen 20
+#define delta  60
+
+#define LA 5	/* initial length - main segment */
+#define RA 1.2	/* growth rate - main segment */
+#define LB 4	/* initial length - lateral segment */
+#define RB 1.1	/* growth rate - lateral segment */
+#define PD 0.25 /* growth potential decrement */
+
+START : F'(50){.A(0)}	/* ' added */
+p1 : A(t)	-> G(LA,RA)[-B(t).][A(t+1)][+B(t).]
+p2 : B(t) : t>0 -> G(LB,RB)B(t-PD)
+p3 : G(s,r)	-> G(s*r,r)

@@ -1,0 +1,7 @@
+#define maxgen 3
+/* This is a comment */
+START : B(2)A(4,4)	/* Starting junk */
+p1 : A(x,y) : y <  3 -> A(x*2,x+y)
+p2 : A(x,y) : y >=3  -> B(x) A(x/y,0)
+p3 : B(x)   : x < 1  -> C
+p4 : B(x)   : x >= 1 -> B(x-1)

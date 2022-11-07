@@ -1,0 +1,15 @@
+/*
+   Phyllotactic patterns on a disk
+   Figure 4.2b pg. 101
+ */
+
+#define maxgen 300
+
+/* Use the 'flower' icon to represent a disk */
+#define plant 1
+
+#define a 137.5 /* divergence angle */
+
+START : B(0)
+
+p1 : B(n) -> +(a)[f(n^0.5)K(2)]B(n+1)

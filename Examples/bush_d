@@ -1,0 +1,9 @@
+/*
+   Plant-like structure, figure 1.24d pg. 25
+ */
+#define maxgen 7
+#define delta 20
+
+START : X
+p1 : X -> F[+X]F[-X]+X
+p2 : F -> FF

@@ -1,0 +1,7 @@
+@ECHO ON
+
+SetLocal
+
+for %f in (Examples\*.*) do call CompTest %f
+
+

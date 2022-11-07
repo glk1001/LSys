@@ -1,0 +1,16 @@
+/*
+   Koch curve looking like a row of trees
+   Figure 1.37a pg. 48 (L-system on page 47)
+ */
+
+#define maxgen 6
+#define width 0
+
+#define delta  86
+#define c      1
+#define p      0.3
+#define q      c - p
+#define h      (p * q) ^ 0.5
+
+START : F(1)
+p1 : F(x) -> F(x*p)+F(x*h)--F(x*h)+F(x*q)

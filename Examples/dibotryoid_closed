@@ -1,0 +1,40 @@
+/*
+   Closed dibotryoid model
+   Figure 3.8a pg. 77, with geometry added
+ */
+
+#define maxgen 27
+
+#define plant 1 /* enable interpretation of AIKL */
+
+#define d 10	/* delay for sending florigen */
+#define e 3	/* delay for creating branches */
+#define m 2	/* plastochron - main axis */
+#define n 3	/* plastochron - lateral axis */
+#define u 1	/* signal delay - main axis */
+#define v 1	/* signal delay - lateral axis */
+#define b 5	/* delay before closing branch */
+
+/* NB: to produce branching pattern, rotate 180 degrees around heading
+ *  after each internode generates a leaf, and rotate 45 degrees
+ *  around up vector when each first-order branch is created.
+ * To separate flowers from the branch, a +(45)F(.45) is nested before
+ *  each flower.
+ * The florigen delay is reduced to 10.
+ */
+#ignore /\+-&^
+
+START : S(0)a(1,0)
+p1 :	      a(t,c) : t < m		 -> a(t+1,c)
+p2 :	      a(t,c) : (t = m) & (c < e) -> I(0,u)/(180)[L]a(1,c+1)
+p3 :	      a(t,c) : (t = m) & (c = e) -> I(0,u)/(180)[L][+(45)b(1)]a(1,c)
+p4 :	      b(t)   : t < n		 -> b(t+1)
+p5 :	      b(t)   : t = n		 -> I(0,v)/(180)[L]b(1)
+p6 :	      S(t)			 -> S(t+1)
+p7 :   S(t) < I(i,j) : t = d		 -> I(1,j)
+p8 :	      I(i,j) : (0 < i) & (i < j) -> I(i+1,j)
+p9 : I(i,j) < I(k,l) : (i = j) & (k = 0) -> I(1,l)
+p10: I(i,j) < a(k,l) : i > 0		 -> I/(180)[L][+(45)b(1)]B(0)
+p11: I(i,j) < b(k)   : i > 0		 -> I/(180)[L]B(0)
+p12:	      B(t)   : t < b		 -> I/(180)[-(45)L(.4)F(.45)K]B(t+1)
+p13:	      B(t)   : t = b		 -> IK

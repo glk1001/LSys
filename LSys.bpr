@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="LSys.exe"/>
+    <OBJFILES value="Obj\LSysMain.obj Obj\LSysModel.obj Obj\Generator.obj 
+      Obj\GenericGenerator.obj Obj\Interpret.obj Obj\Expression.obj 
+      Obj\Production.obj Obj\Module.obj Obj\Name.obj Obj\Actions.obj 
+      Obj\Value.obj Obj\SymbolTable.obj Obj\List.obj Obj\Turtle.obj 
+      Obj\Polygon.obj Obj\Vector.obj Obj\Lexer.obj Obj\Parser.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="..\..\..\CLib\Lib\libMaths.lib ..\..\..\CLib\Lib\libUtilities.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value=""/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL"/>
+    <MAINSOURCE value="LSys.bpf"/>
+    <INCLUDEPATH value="..\..\..\CLib\Srce\Utilities;$(SysIncPath)"/>
+    <LIBPATH value="..\..\..\CLib\Srce\Utilities;$(SysLibPath);$(BCB)\lib\obj"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-src_suffix cpp -D_DEBUG -DPDEBUG_ENABLED -DYYSTYPE=int -DYY_NO_UNPUT 
+      -DYY_SKIP_YYWRAP -DYY_NEVER_INTERACTIVE=1 -I..\..\..\CLib\Srce\Utilities 
+      -I$(SysIncPath) -boa"/>
+    <CFLAG1 value="-Od -w -Vx -Ve -xp -X- -a8 -6 -b- -k -y -v -vi- -tWC -tWM- -c"/>
+    <PFLAGS value="-N2Obj -N0Obj -$YD -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-IObj -D&quot;&quot; -ap -Tpe -x -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) vcl.lib rtl.lib import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="LSys.bpf" FORMNAME="" UNITNAME="LSys" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="LSysMain.cpp" FORMNAME="" UNITNAME="LSysMain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="LSysModel.cpp" FORMNAME="" UNITNAME="LSysModel" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Generator.cpp" FORMNAME="" UNITNAME="Generator" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GenericGenerator.cpp" FORMNAME="" UNITNAME="GenericGenerator" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Interpret.cpp" FORMNAME="" UNITNAME="Interpret" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Expression.cpp" FORMNAME="" UNITNAME="Expression" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Production.cpp" FORMNAME="" UNITNAME="Production" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Module.cpp" FORMNAME="" UNITNAME="Module" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Name.cpp" FORMNAME="" UNITNAME="Name" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Actions.cpp" FORMNAME="" UNITNAME="Actions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Value.cpp" FORMNAME="" UNITNAME="Value" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SymbolTable.cpp" FORMNAME="" UNITNAME="SymbolTable" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="List.cpp" FORMNAME="" UNITNAME="List" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Turtle.cpp" FORMNAME="" UNITNAME="Turtle" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Polygon.cpp" FORMNAME="" UNITNAME="Polygon" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Vector.cpp" FORMNAME="" UNITNAME="Vector" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Lexer.cpp" FORMNAME="" UNITNAME="Lexer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Parser.cpp" FORMNAME="" UNITNAME="Parser" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\CLib\Lib\libMaths.lib" FORMNAME="" UNITNAME="libMaths.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\CLib\Lib\libUtilities.lib" FORMNAME="" UNITNAME="libUtilities.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=3081
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+f:\program files\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+f:\program files\borland\cbuilder6\Projects\Bpl\GLKImages.bpl=GLKImages
+f:\program files\borland\cbuilder6\Bin\dclindy60.bpl=Internet Direct (Indy) for D6 Property and Component Editors
+
+[HistoryLists\hlIncludePath]
+Count=3
+Item0=$(SysIncPath)
+Item1=..\Options;$(SysIncPath)
+Item2=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=3
+Item0=$(SysLibPath);$(BCB)\lib\obj
+Item1=..\Options;$(SysLibPath);$(BCB)\lib\obj
+Item2=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=10
+Item0=_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1
+Item1=_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE
+Item2=_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP
+Item3=_DEBUG;PDEBUG_ENABLED;YYSTYPE;YY_NO_UNPUT;YY_SKIP_YYWRAP
+Item4=_DEBUG;PDEBUG_ENABLED;YY_NO_UNPUT;YY_SKIP_YYWRAP
+Item5=_DEBUG;PDEBUG_ENABLED;YY_NO_UNPUT
+Item6=_DEBUG;PDEBUG_ENABLED
+Item7=_DEBUG;YYDEBUG=1
+Item8=_DEBUG;YYDEBUG
+Item9=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=Obj
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=-?
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=1
+LinkDebugVcl=1
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

@@ -1,0 +1,10 @@
+/*
+    Combination of islands and lakes
+    Figure 1.8 pg. 9
+ */
+#define maxgen 2
+
+START : F+F+F+F+
+
+p1 : F -> F+f-FF+F+FF+F f+FF-f+FF-F-FF-Ff-FFF
+p2 : f -> ffffff

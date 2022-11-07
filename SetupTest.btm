@@ -1,0 +1,15 @@
+@ECHO OFF
+
+SetLocal
+
+SET Input=%1
+SET InputName=%@NAME[%Input]
+SET OutputDir=D:\junk\lsys
+iff not ISDIR %OutputDir% then
+  MD /s %OutputDir%
+endiff
+SET Output=%OutputDir\%inputName.generic
+SET Bounds=%OutputDir\%inputName.bnd
+
+REM LSys -s 1 -b %Bounds% -o %Output% %Input
+LSysGCC -s 1 -b %Bounds% -o %Output% %Input

@@ -1,0 +1,19 @@
+/*
+   Figure 3.14 pg. 84
+ */
+
+#define maxgen 18   /* not 20 as in text */
+#define delta  45
+#define width 100
+
+#define D 1	/* apical delay */
+#define R 1.36	/* internode elongation rate */
+
+START : A(7)
+
+/*p1 : A(t) : t = 7 -> FI(20)[&(60)~Leaf(0)]/(90)[&(45)A(0)]/(90)[&(60)~Leaf(0)]/(90)[&(45)A(4)]FI(10)~K(0)*/
+p1 : A(t) : t = 7 -> FI(20)[&(60)~Leaf(0)]/(90)[&(45)A(0)]/(90)[&(60)~Leaf(0)]/(90)[&(45)A(4)]FI(10)~Leaf(0)
+p2 : A(t) : t < 7 -> A(t+1)
+p3 : I(t) : t > 0 -> FFI(t-1)
+p4 : L(t) : *     -> L(t+1)
+p5 : K(t) : *     -> K(t+1)

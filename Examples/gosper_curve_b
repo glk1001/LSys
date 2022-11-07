@@ -1,0 +1,13 @@
+/*
+   Quadratic Gosper curve
+   Figure 1.11b pg. 12
+ */
+#define maxgen 2
+
+START : -Fr
+p1 : Fl -> FlFl-Fr-Fr+Fl+Fl-Fr-FrFl+\
+	   Fr+FlFlFr-Fl+Fr+FlFl+\
+	   Fr-FlFr-Fr-Fl+Fl+FrFr-
+p2 : Fr -> +FlFl-Fr-Fr+Fl+FlFr+Fl-\
+	   FrFr-Fl-Fr+FlFrFr-Fl-\
+	   FrFl+Fl+Fr-Fr-Fl+Fl+FrFr

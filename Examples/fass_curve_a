@@ -1,0 +1,9 @@
+/*
+   FASS curve (3x3 tiles form macrotile)
+   Figure 1.16a pg. 17
+ */
+#define maxgen 3
+
+START : -L
+p1 : L -> LF+RFR+FL-F-LFLFL-FRFR+
+p2 : R -> -LFLF+RFRFR+F+RF-LFL-FR

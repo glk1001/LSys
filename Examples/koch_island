@@ -1,0 +1,9 @@
+/*
+    Quadratic Koch island
+    Figure 1.7a pg. 9
+ */
+#define maxgen 2
+
+START : F-F-F-F-
+
+p1 : F -> F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F

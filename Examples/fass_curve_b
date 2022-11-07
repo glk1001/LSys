@@ -1,0 +1,11 @@
+/*
+   FASS curve (4x4 tiles form macrotile)
+   Figure 1.16b pg. 17
+ */
+#define maxgen 2
+
+START : -L
+p1 : L -> LFLF+RFR+FLFL-FRF-LFL-\
+	  FR+F+RF-LFL-FRFRFR+
+p2 : R -> -LFLFLF+RFR+FL-F-LF+RFR+\
+	  FLF+RFRF-LFL-FRFR

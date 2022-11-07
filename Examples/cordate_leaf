@@ -1,0 +1,18 @@
+/*
+   A cordate leaf
+   Figure 5.5 pg. 123
+ */
+
+#define maxgen 10
+/* additions */
+#define delta  10
+#define scale  1.05
+
+START : F(1)-(5)F(1)-(5)F(1)-(5)[A][B]
+p1 : A -> [+A{.].C.'(0)}   /* added ' */
+p2 : B -> [-B{.].C.'(0)}   /* added ' */
+p3 : C -> GC
+/* additions */
+p4 : F(l) -> F(l*scale)
+p5 : '(c) : c < 100 -> '(c+5)
+p6 : '(c)	    -> '(0)

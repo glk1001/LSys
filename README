@@ -1,0 +1,85 @@
+	    RELEASE NOTES FOR LSYS - March 21, 1991
+
+    INTRODUCTION
+
+    Lsys is a program to generate complex models using string
+production systems called L-Systems. The program was inspired by the
+Springer-Verlag text _The Virtual Laboratory: The Algorithmic Beauty
+of Plants_, by P. Prusinkiewicz and A. Lindenmayer, and maintains as
+much compatibility with their input format as I could manage.
+
+    Documentation for the program is found in lsys.l in [nt]roff form
+(process with the -man macros), and in lsys.cat in lineprinter form.
+The book will be needed to make use of the program, as many semantic
+issues are not documented in the (rather terse) man page.
+
+    PORTING
+
+    The code has been compiled and tested using AT&T C++ 2.0 on
+DECstation 3100s, Sun C++ 2.0 on Sun-4s, and G++ 1.39.0 beta on both
+DECstations and Sun-4s. It should port easily to other Unix platforms
+using one of these compilers. The AT&T compiler is preferred as G++
+has some bugs and does not have an iostream library; a 1.2 compatible
+stream library lacking in features is used instead.
+
+    The choice of compilers and tools (yacc/lex vs. bison/flex) is
+made by editing the Makefile (comment out only one of the sections
+beginning '# Unix tools' and '# GNU tools'). To override the Makefile
+definitions and use CC with Unix tools, use the shell script
+'make.att'. To override the definitions and use g++ with GNU tools,
+use 'make.gnu'. By default, the Makefile is set up for G++ running on
+a Sun-4 under SunOS 4.1.
+
+    Some versions of malloc() allow more efficient allocation of small
+blocks by the call mallopt(M_MXFAST, maxblocksize). If M_MXFAST is
+defined by the <malloc.h> header file, lsys will attempt to use it. It
+may be necessary to link an additional library to obtain this version
+of malloc; for example, on DECstations running Ultrix, the -lmalloc
+library must be used. The make variable MEMLIB may be set to specify
+this library by editing the Makefile. The 'make.att' and 'make.gnu'
+frontends attempt to automatically detect if they're being run on an
+Ultrix system and use this library.
+
+    There is a serious bug in g++ 1.39.0 beta in which a member
+operator delete(void *) is incorrectly passed a NULL pointer instead
+of a pointer to the memory to free. This causes enormous memory losses
+and will constrain which models may be run. A fix posted on the net
+is:
+
+diff cplus-decl.c.~1~	 cplus-decl.c
+7956c7956
+<   build_tree_list (NULL_TREE, integer_zero_node),
+---
+>   build_tree_list (NULL_TREE, current_class_decl),
+
+    This fix has not been applied or tested locally, so I can't vouch
+for its correctness. To test if this bug exists in your g++, create a
+test program 'bug' by 'make.gnu bug' and run it; it should print a
+message indicating if the operator delete() bug exists.
+
+    NEW OUTPUT FORMATS
+
+    Currently, PostScript, a 'generic' output format, and two ASCII
+formats used locally may be generated. It should be straightforward to
+add new output formats for ray-tracers and such by subclassing class
+DBGenerator, an abstract output class. See README.OUTPUT,
+DBGenerator.[ch], and GenericGenerator.[ch]. Please send any output
+generators for widely-used formats (e.g. NFF) to me for inclusion in
+the distribution.
+
+    EXAMPLES
+
+    Examples drawn from the text are provided in the subdirectory
+'Examples' (see README.EXAMPLES), and may be examined to gain
+familiarity with the input format. With few exceptions (see BUGS in
+the man page), these produce images and databases very close to those
+in the book.
+
+    BUGS
+
+    Please contact me via email with bug reports (accompanied by
+L-systems causing them), interesting L-systems for inclusion in the
+release, enhancements, and suggestions.
+
+    Jon Leech (leech@cs.unc.edu)
+    __@/

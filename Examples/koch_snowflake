@@ -1,0 +1,10 @@
+/*
+    Quadratic modification of the snowflake curve
+    Figure 1.7b pg. 9
+ */
+#define maxgen 4
+#define delta 90
+
+START : -F
+
+p1 : F -> F+F-F-F+F

@@ -1,0 +1,13 @@
+/*
+   3D Hilbert curve
+   Figure 1.19 pg. 20
+ */
+
+#define maxgen 2
+
+START : D
+
+p1 : A -> B-F+CFC+F-D&F^D-F+&&CFC+F+B//
+p2 : B -> A&F^CFB^F^D^^-F-D^|F^B|FC^F^A//
+p3 : C -> |D^|F^B-F+C^F^A&&FA&F^C+F+B^F^D//
+p4 : D -> |CFB-F+B|FA&F^A&&FB-F+B|FC//

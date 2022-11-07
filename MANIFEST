@@ -1,0 +1,62 @@
+		SHIPPING MANIFEST FOR LSYS
+
+MANIFEST		- this file
+README			- general notes, introduction & porting
+README.EXAMPLES		- notes on supplied examples
+README.OUTPUT		- notes on making a new database generator
+lsys.cat		- documentation in lineprinter format
+lsys.l			- documentation in nroff -man format
+make.att		- shell frontend for compiling with CC
+make.gnu		- shell frontend for compiling with g++
+
+Examples/*		- sample L-systems
+
+Makefile
+
+bug.c			- test driver for gcc 1.39.0 beta bug
+sizes.c			- test driver to determine object sizes
+
+BLFGenerator.c		- Blinn-Like Format database generator
+BLFGenerator.h
+DBGenerator.c		- abstract database generator
+DBGenerator.h
+Expression.c		- expressions
+Expression.h
+GenericGenerator.c	- generic database generator
+GenericGenerator.h
+List.c			- generic lists
+List.h
+Module.c		- modules
+Module.h
+Name.c			- hashed names for space efficiency
+Name.h
+PPHIGSGenerator.c	- UNC PHIGS database generator
+PPHIGSGenerator.h
+PSGenerator.c		- PostScript database generator
+PSGenerator.h
+Polygon.c		- polygon creation
+Polygon.h
+Production.c		- productions
+Production.h
+Symtab.c		- generic symbol tables
+Symtab.h
+Turtle.c		- the turtle which performs L-system interpretation
+Turtle.h
+Value.c			- numeric values & arithmetic on same
+Value.h
+actions.c		- driver functions for interpretation of modules
+actions.h
+boolean.h		- boolean type
+debug.c			- efficient memory allocation and tracing routines
+debug.h
+global_headers.h	- headers used by almost everything
+interpret.c		- interprets a string of modules using a turtle
+interpret.h
+lex.l			- lexical analysis
+lexdefs.h
+lsys.y			- parser
+main.c			- main program, reads and applied productions
+parser.h		- headers used by parser and main program
+streamio.h		- iostream compatibility for g++ stream library
+vector.c		- vectors, matrices, bounding boxes, and
+vector.h		    viewing transformations

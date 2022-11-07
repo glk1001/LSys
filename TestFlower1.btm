@@ -1,0 +1,1 @@
+LSys --seed 1 --maxgen 4 --delta 10 --width 99 --bounds junk.bnd -o junk.txt Flower1.ls

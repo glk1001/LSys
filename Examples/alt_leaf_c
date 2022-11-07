@@ -1,0 +1,18 @@
+/*
+   Compound leaf with alternating branches.
+   Figure 5.12c pg. 130
+ */
+
+#define maxgen 40   /* not 46 as in text */
+#define delta  45
+
+#define D 7	/* apical delay */
+#define R 1.13	/* internode elongation rate */
+
+START : A(0)
+
+p1 : A(d) : d > 0 -> A(d-1)
+p2 : A(d) : d = 0 -> F(1)[+A(D)]F(1)B(0)
+p3 : B(d) : d > 0 -> B(d-1)
+p4 : B(d) : d = 0 -> F(1)[-B(D)]F(1)A(0)
+p5 : F(a)	  -> F(a*R)

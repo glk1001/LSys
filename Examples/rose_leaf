@@ -1,0 +1,27 @@
+/*
+   A rose leaf
+   Figure 5.8 pg. 126
+ */
+
+#define maxgen 25
+#define delta  60
+
+#define LA 5	/* initial length - main segment */
+#define RA 1.15 /* growth rate - main segment */
+#define LB 1.3	/* initial length - lateral segment */
+#define RB 1.25 /* growth rate - lateral segment */
+#define LC 3	/* initial length - marginal notch */
+#define RC 1.19 /* growth rate - marginal notch */
+
+/* -(45), F, and ' terms added */
+START : -(45)[{A(0,0).'(0)}][{A(0,1).'(0)}]
+p1 : A(t,d)    : d = 0 -> .G(LA,RA).[+B(t)G(LC,RC,t).'(0,1)}][+B(t){.]A(t+1,d)
+p2 : A(t,d)    : d = 1 -> .G(LA,RA).[-B(t)G(LC,RC,t).'(0,1)}][-B(t){.]A(t+1,d)
+p3 : B(t)      : t > 0 -> G(LB,RB)B(t-1)
+p4 : G(s,r)	       -> G(s*r,r)
+p5 : G(s,r,t)  : t > 1 -> G(s*r,r,t-1)
+/* added: produce a smooth color gradation along the leaf */
+p6 : '(c,d)    : d = 1 && c < 70  -> '(c+3,d)
+p7 : '(c,d)    : d = 1		  -> '(67,-1)
+p8 : '(c,d)    : d = -1 && c > 0  -> '(c-3,d)
+p9 : '(c,d)    : d = -1		  -> '(3,1)

@@ -1,0 +1,5 @@
+@ECHO ON
+
+SetLocal
+
+for %f in (Examples\*.*) do call SetupTest %f

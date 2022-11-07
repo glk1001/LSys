@@ -1,0 +1,14 @@
+/*
+   A space-filling branching pattern.
+   Figure 1.39 pg. 49
+   Augmented to adjust branch widths.
+ */
+
+#define maxgen 11
+#define delta 85
+
+#define R 1.456
+
+START : !(3)A(1,3)
+
+p1 : A(s,w) -> !(w)F(s)[+A(s/R,w/R)][-A(s/R,w/R)]

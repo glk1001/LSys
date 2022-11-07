@@ -1,0 +1,10 @@
+/*
+   Hexagonal Gosper curve
+   Figure 1.11a pg. 12
+ */
+#define maxgen 4
+#define delta 60
+
+START : Fl
+p1 : Fl -> Fl+Fr++Fr-Fl--FlFl-Fr+
+p2 : Fr -> -Fl+FrFr++Fr+Fl--Fl-Fr
