@@ -36,21 +36,22 @@
  *
  */
 
+#include "token.h" /* Make sure this the first include to avoid name clashes */
 #include <string>
 #include <cstdio>
 #include "lexdefs.h"
 #include "debug.h"
-#include "token.h" /* Make sure this the first include to avoid name clashes */
 
 int lexcol= 1, lexline= 1;
 
 #ifdef __cplusplus
-extern "C" int yywrap YY_PROTO(( void ));
+extern "C" int yywrap();
 #else
-extern int yywrap YY_PROTO(( void ));
-char *lex_token(void);
+extern int yywrap());
+#endif
+char *lex_token();
 void lex_pushstate(int type);
-void lex_popstate(void);
+void lex_popstate();
 /**void lex_in_expr(int flag); **/
 
 /* user-defined functions */
@@ -72,45 +73,45 @@ E	[Ee][-+]?{D}+
                 lexcol += strlen(yytext);
                 lexline += countnewlines(yytext, &lexcol);
               }
-#ignore			  { lexcol += 7; return LSYS_IGNORE; }
-#include		  { lexcol += 8; return LSYS_INCLUDE; }
-#define			  { lexcol += 7; return LSYS_DEFINE; }
-START			    { lexcol += 5; return LSYS_START; }
-->			      { lexcol += 2; return LSYS_YIELDS; }
+#ignore			  { lexcol += 7; return LSys::LSYS_IGNORE; }
+#include		  { lexcol += 8; return LSys::LSYS_INCLUDE; }
+#define			  { lexcol += 7; return LSys::LSYS_DEFINE; }
+START		      { lexcol += 5; return LSys::LSYS_START; }
+->			      { lexcol += 2; return LSys::LSYS_YIELDS; }
 <MODULE>{A}{D}*|Fl|Fr	  {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 <MODULE>@{A}*|~{A}* {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 <MODULE>{D}   { lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 <MODULE>[+^/&|%~!-]  {
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 <EXPRESSION>{A}({A}|{D})*   {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: expression name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 <EXPRESSION>{D}+  {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: integer -> %s\n", yytext));
-                return LSYS_INTEGER;
+                return LSys::LSYS_INTEGER;
               }
 <EXPRESSION>{D}+"."{D}*({E})? |
 {D}*"."{D}+({E})? |
@@ -118,27 +119,27 @@ START			    { lexcol += 5; return LSYS_START; }
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: real -> %s\n", yytext));
-                return LSYS_REAL;
+                return LSys::LSYS_REAL;
               }
-<EXPRESSION>\<=	  { lexcol += 2; return LSYS_LE; }
-<EXPRESSION>==	  { lexcol += 2; return LSYS_EQ; }
-<EXPRESSION>=		  { lexcol++; return LSYS_EQ; }
-<EXPRESSION>>=	  { lexcol += 2; return LSYS_GE; }
-<EXPRESSION>!=	  { lexcol += 2; return LSYS_NE; }
-<EXPRESSION>&&	  { lexcol += 2; return LSYS_AND; }
-<EXPRESSION>\|\|  { lexcol += 2; return LSYS_OR; }
+<EXPRESSION>\<=	  { lexcol += 2; return LSys::LSYS_LE; }
+<EXPRESSION>==	  { lexcol += 2; return LSys::LSYS_EQ; }
+<EXPRESSION>=		  { lexcol++; return LSys::LSYS_EQ; }
+<EXPRESSION>>=	  { lexcol += 2; return LSys::LSYS_GE; }
+<EXPRESSION>!=	  { lexcol += 2; return LSys::LSYS_NE; }
+<EXPRESSION>&&	  { lexcol += 2; return LSys::LSYS_AND; }
+<EXPRESSION>\|\|  { lexcol += 2; return LSys::LSYS_OR; }
 <EXPRESSION>[+^/&|~%!-]  { lexcol++; return yytext[0]; }
 [*:(),<>]		             { lexcol++; return yytext[0]; }
 [[\]{}\\$\.']	{
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: name -> %s\n", yytext));
-                return LSYS_NAME;
+                return LSys::LSYS_NAME;
               }
 [ \t]+			  { lexcol= spaceadd(lexcol, yytext); }
 \\\n			    { lexcol= 1; lexline++; }
 \n			      { lexcol= 1; lexline++; return '\n'; }
-.			        { lexcol++; return LSYS_ERROR; }
+.			        { lexcol++; return LSys::LSYS_ERROR; }
 %%
 
 

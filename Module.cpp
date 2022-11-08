@@ -124,7 +124,7 @@ namespace LSys {
   Module* Module::instantiate(SymbolTable<Value>& st) const
   {
     List<Expression> *el= LSys::instantiate(param, st);
-    Module* new_m= new Module(tag, el, ignoreflag ? true : false);
+    Module* new_m= new Module(Name(tag), el, ignoreflag ? true : false);
 
     PDebug(PD_MODULE,
       cerr << "Module::instantiate: " << *this << " @ " << (void *)this

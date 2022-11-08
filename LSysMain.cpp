@@ -61,6 +61,9 @@ using std::endl;
 using std::ofstream;
 using std::ostringstream;
 using Utilities::CommandLineOptions;
+using LSys::Expression;
+using LSys::Predecessor;
+using LSys::Successor;
 using LSys::LSysModel;
 using LSys::Value;
 using LSys::Module;
@@ -68,6 +71,9 @@ using LSys::SymbolTable;
 using LSys::Generator;
 using LSys::GenericGenerator;
 using LSys::srand48;
+
+#include "Parser.h"
+#include "lsys.tab.h"
 
 #define noArgs CommandLineOptions::noArgs
 #define optionalArg CommandLineOptions::optionalArg
@@ -320,6 +326,7 @@ int main(int argc, const char* argv[])
     ofstream* outputF= SetOutputFilename(outputFilename);
     ofstream* outputBnds= OpenOutputFile(boundsFilename);
 
+      yydebug = 1;
     yyparse(); // Parse input file
 
     if (model->start) {

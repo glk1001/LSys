@@ -44,8 +44,8 @@
 
     class Name {
       public:
-        Name(const char*);
-        Name(int id);
+        explicit Name(const char*);
+        explicit Name(int id);
         operator int() const { return index; }
         operator const char*() const { return reverse_map[index]; }
         const char* str() const { return reverse_map[index]; }

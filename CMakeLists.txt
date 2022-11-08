@@ -12,6 +12,7 @@ add_executable(lsys
         LSysModel.cpp
         Module.cpp
         Name.cpp
+        Lexer.cpp
         Parser.cpp
         Production.cpp
         SymbolTable.cpp
@@ -19,13 +20,17 @@ add_executable(lsys
         Value.cpp
         Vector.cpp
         Actions.cpp
-#        Lexer.cpp
         Polygon.cpp
         Generator.cpp
         Options.cpp
         CommandLineOptions.cpp
         Consts.cpp
         token.h
+        )
+
+target_include_directories(lsys
+        SYSTEM PRIVATE
+        /usr/include
         )
 
 target_link_libraries(lsys

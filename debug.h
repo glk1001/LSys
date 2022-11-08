@@ -42,8 +42,9 @@
   #define PD_INTERPRET  0x80
   #define PD_NAME      0x200
 
+#define PDEBUG_ENABLED
   #ifdef	PDEBUG_ENABLED
-    #define PDebug(level, code) if (ParseDebug & (level)) { code ; }
+    #define PDebug(level, code) if (ParseDebug) { code ; }
   #else
     #define PDebug(level, code)
   #endif

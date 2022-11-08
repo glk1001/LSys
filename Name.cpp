@@ -28,6 +28,7 @@
 //static char RCSid[]= "$Id: Name.c,v 1.3 91/03/20 10:38:10 leech Exp $";
 
 #include <iostream>
+#include <cassert>
 #include <cstring>
 #include "Name.h"
 #include "debug.h"
@@ -50,6 +51,9 @@ namespace LSys {
 
   Name::Name(const char* tag)
   {
+    if (tag == nullptr)
+        tag = "";
+
     if (map == 0)
       map= new SymbolTable<int>;
 
