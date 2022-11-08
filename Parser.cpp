@@ -67,7 +67,6 @@
 
 
 /* First part of user prologue.  */
-#line 1 "lsys.y"
 
 /* lsys.y - parser for L-systems.
  *
@@ -147,7 +146,6 @@ static LSys::List<Production> Context_free_rules;
 static bool BindExpression = false;
 
 
-#line 151 "lsys.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -1229,7 +1227,6 @@ yybackup:
   else
     {
       yytoken = YYTRANSLATE (yychar);
-      YYDPRINTF ((stderr, "yychar = '%c'.\n", yychar));
       YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
     }
 
@@ -1296,88 +1293,67 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* $@1: %empty  */
-#line 126 "lsys.y"
         {
 		      // Get lex into correct start condition
 		      lex_pushstate(LEX_EXPRESSION);
 		    }
-#line 1304 "lsys.tab.c"
     break;
 
   case 3: /* lsystem: $@1 lines  */
-#line 131 "lsys.y"
                     { // This ensures that CF productions are applied last,
 		      //  since they are at the end of the list of productions.
 		      parserRules.append(&Context_free_rules);
 		      lex_popstate();
 		    }
-#line 1314 "lsys.tab.c"
     break;
 
   case 7: /* $@2: %empty  */
-#line 146 "lsys.y"
                     { lex_pushstate(LEX_MODULE); }
-#line 1320 "lsys.tab.c"
     break;
 
   case 8: /* line: IGNORE $@2 names '\n'  */
-#line 148 "lsys.y"
                     { lex_popstate(); }
-#line 1326 "lsys.tab.c"
     break;
 
   case 9: /* $@3: %empty  */
-#line 152 "lsys.y"
                     { Value v;
                       if (!parserSymbolTable.lookup(Name((yyvsp[-1].name)), v))
                         parserSymbolTable.enter(Name((yyvsp[-1].name)), (yyvsp[0].expression)->evaluate(parserSymbolTable));
 		      delete (yyvsp[0].expression);
 		    }
-#line 1336 "lsys.tab.c"
     break;
 
   case 11: /* $@4: %empty  */
-#line 161 "lsys.y"
                     { lex_pushstate(LEX_MODULE);
 		      // Bind starting list expressions according to symtab
 		      BindExpression = true;
 		    }
-#line 1345 "lsys.tab.c"
     break;
 
   case 12: /* line: START ':' $@4 modules '\n'  */
-#line 166 "lsys.y"
                     { BindExpression = false;
 		      lex_popstate();
 		      parserStart = (yyvsp[-1].moduleList);
 		    }
-#line 1354 "lsys.tab.c"
     break;
 
   case 14: /* $@5: %empty  */
-#line 176 "lsys.y"
                     { lex_pushstate(LEX_EXPRESSION); }
-#line 1360 "lsys.tab.c"
     break;
 
   case 15: /* line: ':' $@5 expression  */
-#line 178 "lsys.y"
                     { lex_popstate();
 		      std::cerr << "Evaluating expression: " << *(yyvsp[0].expression) << std::endl;
 		      std::cerr << (yyvsp[0].expression)->evaluate(parserSymbolTable) << std::endl;
 		      delete (yyvsp[0].expression);
 		    }
-#line 1370 "lsys.tab.c"
     break;
 
   case 16: /* $@6: %empty  */
-#line 186 "lsys.y"
                     { lex_pushstate(LEX_MODULE); }
-#line 1376 "lsys.tab.c"
     break;
 
   case 17: /* line: name $@6 ':' predecessor optional_conditional successors  */
-#line 190 "lsys.y"
                     { lex_popstate();
 		      Production *p = new Production(Name((yyvsp[-5].name)), (yyvsp[-2].predecessor), (yyvsp[-1].expression), (yyvsp[0].successors));
 		      PDebug(PD_PARSER, std::cerr << "Parsed production: " << *p << std::endl);
@@ -1386,52 +1362,40 @@ yyreduce:
 		      else
 			parserRules.append(p);
 		    }
-#line 1389 "lsys.tab.c"
     break;
 
   case 20: /* single_name: name  */
-#line 208 "lsys.y"
                     {
 		      PDebug(PD_PARSER, std::cerr << "Ignoring name " << Name((yyvsp[0].name)) << std::endl);
 		      parserIgnoreTable.enter(Name((yyvsp[0].name)), Value(1));
 		    }
-#line 1398 "lsys.tab.c"
     break;
 
   case 21: /* successors: successor optional_successors  */
-#line 220 "lsys.y"
                     { (yyval.successors) = new LSys::List<Successor>;
 		      (yyval.successors)->append((yyvsp[-1].successor));
 		      (yyval.successors)->append((yyvsp[0].successors));
 		      delete (yyvsp[0].successors);
 		    }
-#line 1408 "lsys.tab.c"
     break;
 
   case 22: /* optional_successors: optional_successors successor  */
-#line 229 "lsys.y"
                     { (yyval.successors) = (yyvsp[-1].successors);
 		      (yyval.successors)->append((yyvsp[0].successor));
 		    }
-#line 1416 "lsys.tab.c"
     break;
 
   case 23: /* optional_successors: %empty  */
-#line 233 "lsys.y"
                     { (yyval.successors) = new LSys::List<Successor>; }
-#line 1422 "lsys.tab.c"
     break;
 
   case 24: /* successor: YIELDS probability modules '\n'  */
-#line 237 "lsys.y"
                     { (yyval.successor) = new Successor((yyvsp[-1].moduleList), (yyvsp[-2].probability));
 		      PDebug(PD_PARSER, std::cerr << "Parsed successor: " << *(yyval.successor) << std::endl);
 		    }
-#line 1430 "lsys.tab.c"
     break;
 
   case 25: /* probability: '(' value ')'  */
-#line 243 "lsys.y"
                     { float f;
 		      if ((yyvsp[-1].value)->value(f))
 			(yyval.probability) = f;
@@ -1439,23 +1403,17 @@ yyreduce:
 			(yyval.probability) = 0.0;
 		      delete (yyvsp[-1].value);
 		    }
-#line 1442 "lsys.tab.c"
     break;
 
   case 26: /* probability: %empty  */
-#line 251 "lsys.y"
                     { (yyval.probability) = 1.0; }
-#line 1448 "lsys.tab.c"
     break;
 
   case 27: /* $@7: %empty  */
-#line 255 "lsys.y"
                     { PDebug(PD_PARSER, std::cerr << "\ttentative LHS is " << *(yyvsp[0].moduleList) << std::endl); }
-#line 1454 "lsys.tab.c"
     break;
 
   case 28: /* predecessor: modules $@7 center_list  */
-#line 257 "lsys.y"
                     {
 		      PDebug(PD_PARSER,
 			     std::cerr << "\tcenter,right are " << *(yyvsp[0].predecessor) << std::endl);
@@ -1481,79 +1439,57 @@ yyreduce:
 			PDebug(PD_PARSER, std::cerr << "Predecessor (context) is: " << *(yyval.predecessor) << std::endl);
 		      }
 		    }
-#line 1484 "lsys.tab.c"
     break;
 
   case 29: /* center_list: '<' module right_list  */
-#line 285 "lsys.y"
                     { (yyval.predecessor) = new Predecessor(NULL, (yyvsp[-1].module), (yyvsp[0].moduleList)); }
-#line 1490 "lsys.tab.c"
     break;
 
   case 30: /* center_list: right_list  */
-#line 287 "lsys.y"
                     { (yyval.predecessor) = new Predecessor(NULL, NULL, (yyvsp[0].moduleList)); }
-#line 1496 "lsys.tab.c"
     break;
 
   case 31: /* right_list: '>' modules  */
-#line 291 "lsys.y"
                     { (yyval.moduleList) = (yyvsp[0].moduleList); }
-#line 1502 "lsys.tab.c"
     break;
 
   case 32: /* right_list: %empty  */
-#line 293 "lsys.y"
                     { (yyval.moduleList) = NULL; }
-#line 1508 "lsys.tab.c"
     break;
 
   case 33: /* modules: modules module  */
-#line 297 "lsys.y"
                     { (yyvsp[-1].moduleList)->append((yyvsp[0].module));
 		      (yyval.moduleList) = (yyvsp[-1].moduleList);
 		    }
-#line 1516 "lsys.tab.c"
     break;
 
   case 34: /* modules: %empty  */
-#line 301 "lsys.y"
                     { (yyval.moduleList) = new LSys::List<Module>; }
-#line 1522 "lsys.tab.c"
     break;
 
   case 35: /* module: name arguments  */
-#line 306 "lsys.y"
                     { Value v;
 		      bool ignore = parserIgnoreTable.lookup(Name((yyvsp[-1].name)), v);
 
 		      (yyval.module) = new Module(Name((yyvsp[-1].name)), (yyvsp[0].expressionList), ignore);
 		    }
-#line 1532 "lsys.tab.c"
     break;
 
   case 36: /* $@8: %empty  */
-#line 314 "lsys.y"
                     { lex_pushstate(LEX_EXPRESSION); }
-#line 1538 "lsys.tab.c"
     break;
 
   case 37: /* arguments: '(' $@8 exprlist ')'  */
-#line 316 "lsys.y"
                     { lex_popstate();
 		      (yyval.expressionList) = (yyvsp[-1].expressionList);
 		    }
-#line 1546 "lsys.tab.c"
     break;
 
   case 38: /* arguments: %empty  */
-#line 320 "lsys.y"
                     { (yyval.expressionList) = NULL; }
-#line 1552 "lsys.tab.c"
     break;
 
   case 39: /* exprlist: exprlist ',' expression  */
-#line 324 "lsys.y"
                     { if (BindExpression == true) {
 			Value v = (yyvsp[0].expression)->evaluate(parserSymbolTable);
 			(yyvsp[-2].expressionList)->append(new Expression(v));
@@ -1564,11 +1500,9 @@ yyreduce:
 		      PDebug(PD_PARSER, std::cerr << "Parsed additional expression: " << *(yyvsp[0].expression) << std::endl);
 		      (yyval.expressionList) = (yyvsp[-2].expressionList);
 		    }
-#line 1567 "lsys.tab.c"
     break;
 
   case 40: /* exprlist: expression  */
-#line 335 "lsys.y"
                     { (yyval.expressionList) = new LSys::List<Expression>;
 		      PDebug(PD_PARSER, std::cerr << "Parsed expression: " << *(yyvsp[0].expression) << std::endl);
 		      if (BindExpression == true) {
@@ -1579,202 +1513,138 @@ yyreduce:
 			(yyval.expressionList)->append((yyvsp[0].expression));
 		      }
 		    }
-#line 1582 "lsys.tab.c"
     break;
 
   case 41: /* exprlist: %empty  */
-#line 346 "lsys.y"
                     { (yyval.expressionList) = new LSys::List<Expression>; }
-#line 1588 "lsys.tab.c"
     break;
 
   case 42: /* $@9: %empty  */
-#line 351 "lsys.y"
                     { lex_pushstate(LEX_EXPRESSION); }
-#line 1594 "lsys.tab.c"
     break;
 
   case 43: /* optional_conditional: ':' $@9 conditional  */
-#line 353 "lsys.y"
                     { lex_popstate();
 		      (yyval.expression) = (yyvsp[0].expression);
 		    }
-#line 1602 "lsys.tab.c"
     break;
 
   case 44: /* optional_conditional: %empty  */
-#line 357 "lsys.y"
                     { (yyval.expression) = NULL; }
-#line 1608 "lsys.tab.c"
     break;
 
   case 45: /* conditional: '*'  */
-#line 361 "lsys.y"
                     { (yyval.expression) = NULL; }
-#line 1614 "lsys.tab.c"
     break;
 
   case 46: /* conditional: expression  */
-#line 363 "lsys.y"
                     { PDebug(PD_PARSER, std::cerr << "Parsed conditional expression: " << *(yyvsp[0].expression) << std::endl);
 		      (yyval.expression) = (yyvsp[0].expression); }
-#line 1621 "lsys.tab.c"
     break;
 
   case 47: /* expression: expression OR expression  */
-#line 368 "lsys.y"
                     { (yyval.expression) = new Expression(OR ,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1627 "lsys.tab.c"
     break;
 
   case 48: /* expression: expression AND expression  */
-#line 370 "lsys.y"
                     { (yyval.expression) = new Expression(AND,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1633 "lsys.tab.c"
     break;
 
   case 49: /* expression: expression '|' expression  */
-#line 372 "lsys.y"
                     { (yyval.expression) = new Expression('|',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1639 "lsys.tab.c"
     break;
 
   case 50: /* expression: expression '&' expression  */
-#line 374 "lsys.y"
                     { (yyval.expression) = new Expression('&',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1645 "lsys.tab.c"
     break;
 
   case 51: /* expression: expression EQ expression  */
-#line 376 "lsys.y"
                     { (yyval.expression) = new Expression(EQ ,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1651 "lsys.tab.c"
     break;
 
   case 52: /* expression: expression NE expression  */
-#line 378 "lsys.y"
                     { (yyval.expression) = new Expression(NE ,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1657 "lsys.tab.c"
     break;
 
   case 53: /* expression: expression '<' expression  */
-#line 380 "lsys.y"
                     { (yyval.expression) = new Expression('<',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1663 "lsys.tab.c"
     break;
 
   case 54: /* expression: expression LE expression  */
-#line 382 "lsys.y"
                     { (yyval.expression) = new Expression(LE ,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1669 "lsys.tab.c"
     break;
 
   case 55: /* expression: expression GE expression  */
-#line 384 "lsys.y"
                     { (yyval.expression) = new Expression(GE ,(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1675 "lsys.tab.c"
     break;
 
   case 56: /* expression: expression '>' expression  */
-#line 386 "lsys.y"
                     { (yyval.expression) = new Expression('>',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1681 "lsys.tab.c"
     break;
 
   case 57: /* expression: expression '+' expression  */
-#line 388 "lsys.y"
                     { (yyval.expression) = new Expression('+',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1687 "lsys.tab.c"
     break;
 
   case 58: /* expression: expression '-' expression  */
-#line 390 "lsys.y"
                     { (yyval.expression) = new Expression('-',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1693 "lsys.tab.c"
     break;
 
   case 59: /* expression: expression '*' expression  */
-#line 392 "lsys.y"
                     { (yyval.expression) = new Expression('*',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1699 "lsys.tab.c"
     break;
 
   case 60: /* expression: expression '/' expression  */
-#line 394 "lsys.y"
                     { (yyval.expression) = new Expression('/',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1705 "lsys.tab.c"
     break;
 
   case 61: /* expression: expression '%' expression  */
-#line 396 "lsys.y"
                     { (yyval.expression) = new Expression('%',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1711 "lsys.tab.c"
     break;
 
   case 62: /* expression: expression '^' expression  */
-#line 398 "lsys.y"
                     { (yyval.expression) = new Expression('^',(yyvsp[-2].expression),(yyvsp[0].expression)); }
-#line 1717 "lsys.tab.c"
     break;
 
   case 63: /* expression: '-' expression  */
-#line 400 "lsys.y"
                     { (yyval.expression) = new Expression(UMINUS,(yyvsp[0].expression),(Expression *)NULL); }
-#line 1723 "lsys.tab.c"
     break;
 
   case 64: /* expression: '!' expression  */
-#line 402 "lsys.y"
                     { (yyval.expression) = new Expression('!'	,(yyvsp[0].expression),(Expression *)NULL); }
-#line 1729 "lsys.tab.c"
     break;
 
   case 65: /* expression: '~' expression  */
-#line 404 "lsys.y"
                     { (yyval.expression) = new Expression('~'	,(yyvsp[0].expression),(Expression *)NULL); }
-#line 1735 "lsys.tab.c"
     break;
 
   case 66: /* expression: '(' expression ')'  */
-#line 406 "lsys.y"
                     { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1741 "lsys.tab.c"
     break;
 
   case 67: /* expression: name arguments  */
-#line 409 "lsys.y"
                     { (yyval.expression) = new Expression(Name((yyvsp[-1].name)), (yyvsp[0].expressionList)); }
-#line 1747 "lsys.tab.c"
     break;
 
   case 68: /* expression: value  */
-#line 411 "lsys.y"
                     { (yyval.expression) = new Expression(*(yyvsp[0].value)); delete (yyvsp[0].value); }
-#line 1753 "lsys.tab.c"
     break;
 
   case 69: /* value: INTEGER  */
-#line 415 "lsys.y"
                     { (yyval.value) = new Value(std::atoi(lex_token())); }
-#line 1759 "lsys.tab.c"
     break;
 
   case 70: /* value: REAL  */
-#line 417 "lsys.y"
                     { (yyval.value) = new Value(std::atof(lex_token())); }
-#line 1765 "lsys.tab.c"
     break;
 
   case 71: /* name: NAME  */
-#line 421 "lsys.y"
                     { PDebug(PD_NAME, std::cerr << "Calling Name::Name(token @" << ((void *)lex_token()) << " = " << lex_token() << ')' << std::endl);
 		      (yyval.name) = Name(lex_token());
 		    }
-#line 1773 "lsys.tab.c"
     break;
 
 
-#line 1777 "lsys.tab.c"
 
       default: break;
     }
@@ -1822,7 +1692,6 @@ yyerrlab:
     {
       ++yynerrs;
       yyerror (YY_("syntax error"));
-      throw std::runtime_error("Syntax error");
     }
 
   if (yyerrstatus == 3)
@@ -1968,7 +1837,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 425 "lsys.y"
 
 
 void yyerror(char *msg) {
