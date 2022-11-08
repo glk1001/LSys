@@ -1,5 +1,4 @@
-#pragma once
-  /* debug.h - debugging macros usable in C or C++.
+/* debug.h - debugging macros usable in C or C++.
    *
    * $Id: debug.h,v 1.3 91/03/20 10:40:46 leech Exp Locker: leech $
    *
@@ -29,22 +28,28 @@
    *
    */
 
-  /* Debugging macros for lsys program; includeable by either C or C++ source */
-  extern int ParseDebug;
+#pragma once
 
-  #define PD_EXPRESSION  0x1
-  #define PD_LEXER       0x2
-  #define PD_MAIN        0x4
-  #define PD_MODULE      0x8
-  #define PD_PARSER     0x10
-  #define PD_PRODUCTION 0x20
-  #define PD_SYMBOL     0x40
-  #define PD_INTERPRET  0x80
-  #define PD_NAME      0x200
+/* Debugging macros for lsys program; includeable by either C or C++ source */
+extern int ParseDebug;
+
+#define PD_EXPRESSION 0x1
+#define PD_LEXER 0x2
+#define PD_MAIN 0x4
+#define PD_MODULE 0x8
+#define PD_PARSER 0x10
+#define PD_PRODUCTION 0x20
+#define PD_SYMBOL 0x40
+#define PD_INTERPRET 0x80
+#define PD_NAME 0x200
 
 #define PDEBUG_ENABLED
-  #ifdef	PDEBUG_ENABLED
-    #define PDebug(level, code) if (ParseDebug) { code ; }
-  #else
-    #define PDebug(level, code)
-  #endif
+#ifdef PDEBUG_ENABLED
+#define PDebug(level, code) \
+  if (ParseDebug) \
+  { \
+    code; \
+  }
+#else
+#define PDebug(level, code)
+#endif

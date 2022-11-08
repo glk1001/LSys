@@ -1,6 +1,3 @@
-#ifndef _Actions_h
-  #define _Actions_h
-
 /* actions.h - external definition of actions used in interpretation
  *  of an L-system.
  *
@@ -29,71 +26,75 @@
  *
  */
 
-  namespace LSys {
+#pragma once
 
-    const int maxargs= 10;
-    extern const char drawObjectStartChar;
-    extern const char* const drawObjectStart;
+#include "Generator.h"
+#include "Module.h"
+#include "Turtle.h"
 
-    // Default interpretation functions; this header should be included
-    // after parser.h and Turtle.h
+namespace LSys
+{
 
-    #define ACTION(name) \
-      void name(ConstListIterator<Module>&, Turtle&, \
-      Generator&, int nargs, const float args[maxargs])
+inline constexpr int maxargs = 10;
+extern const char drawObjectStartChar;
+extern const char* const drawObjectStart;
 
-    // Pointer to an interpretation function
-    typedef ACTION((*Actionfunc));
+// Default interpretation functions; this header should be included
+// after parser.h and Turtle.h
 
-    // Canned interpretation functions
-    extern void Prelude(Turtle&);
-    extern void Postscript(Turtle&);
+#define ACTION(name) \
+  void name(ConstListIterator<Module>&, Turtle&, Generator&, int nargs, const float args[maxargs])
 
-    extern ACTION(Move);
-    extern ACTION(MoveHalf);
-    extern ACTION(Draw);
-    extern ACTION(DrawHalf);
+// Pointer to an interpretation function
+// TODO(glk) - How to make this a 'using'?
+typedef ACTION((*Actionfunc));
 
-    extern ACTION(DrawObject);
-    extern ACTION(GeneralisedCylinderStart);
-    extern ACTION(GeneralisedCylinderControlPoint);
-    extern ACTION(GeneralisedCylinderEnd);
-    extern ACTION(GeneralisedCylinderTangents);
-    extern ACTION(GeneralisedCylinderTangentLengths);
+// Canned interpretation functions
+extern void Prelude(Turtle&);
+extern void Postscript(Turtle&);
 
-    extern ACTION(TurnRight);
-    extern ACTION(TurnLeft);
-    extern ACTION(PitchUp);
-    extern ACTION(PitchDown);
-    extern ACTION(RollRight);
-    extern ACTION(RollLeft);
-    extern ACTION(Reverse);
-    extern ACTION(RollHorizontal);
+extern ACTION(Move);
+extern ACTION(MoveHalf);
+extern ACTION(Draw);
+extern ACTION(DrawHalf);
 
-    extern ACTION(Push);
-    extern ACTION(Pop);
-    extern ACTION(CutBranch);
+extern ACTION(DrawObject);
+extern ACTION(GeneralisedCylinderStart);
+extern ACTION(GeneralisedCylinderControlPoint);
+extern ACTION(GeneralisedCylinderEnd);
+extern ACTION(GeneralisedCylinderTangents);
+extern ACTION(GeneralisedCylinderTangentLengths);
 
-    extern ACTION(MultiplyDefaultDistance);
-    extern ACTION(MultiplyDefaultTurnAngle);
-    extern ACTION(MultiplyWidth);
-    extern ACTION(ChangeWidth);
-    extern ACTION(ChangeColor);
-    extern ACTION(ChangeTexture);
+extern ACTION(TurnRight);
+extern ACTION(TurnLeft);
+extern ACTION(PitchUp);
+extern ACTION(PitchDown);
+extern ACTION(RollRight);
+extern ACTION(RollLeft);
+extern ACTION(Reverse);
+extern ACTION(RollHorizontal);
 
-    extern ACTION(StartPolygon);
-    extern ACTION(PolygonVertex);
-    extern ACTION(PolygonMove);
-    extern ACTION(EndPolygon);
+extern ACTION(Push);
+extern ACTION(Pop);
+extern ACTION(CutBranch);
 
-    extern ACTION(Flower);
-    extern ACTION(Leaf);
-    extern ACTION(Internode);
-    extern ACTION(FloweringApex);
+extern ACTION(MultiplyDefaultDistance);
+extern ACTION(MultiplyDefaultTurnAngle);
+extern ACTION(MultiplyWidth);
+extern ACTION(ChangeWidth);
+extern ACTION(ChangeColor);
+extern ACTION(ChangeTexture);
 
-    extern ACTION(Tropism);
+extern ACTION(StartPolygon);
+extern ACTION(PolygonVertex);
+extern ACTION(PolygonMove);
+extern ACTION(EndPolygon);
 
-  };
+extern ACTION(Flower);
+extern ACTION(Leaf);
+extern ACTION(Internode);
+extern ACTION(FloweringApex);
 
-#endif
+extern ACTION(Tropism);
 
+} // namespace LSys

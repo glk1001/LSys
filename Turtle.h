@@ -31,139 +31,158 @@
  *
  */
 
-#ifndef _Turtle_h
-  #define _Turtle_h
+#pragma once
 
-  #include <iostream>
-  #include "Vector.h"
+#include "Vector.h"
 
-  namespace LSys {
+#include <iostream>
 
-    // This should be restricted to the scope of class Turtle
-    struct TropismInfo {
-      Vector t;	   // Tropism vector
-      float e;	   // Suspectibility parameter
-      bool flag;   // Whether to apply it
-    };
+namespace LSys
+{
 
-    enum ColorType { COLOR_INDEX, COLOR_RGB };
-    struct Color {
-      ColorType type;
-      union {
-        int	index;
-        char rgb[sizeof(Vector)];
-      } c;
+// This should be restricted to the scope of class Turtle
+struct TropismInfo
+{
+  Vector t; // Tropism vector
+  float e; // Suspectibility parameter
+  bool flag; // Whether to apply it
+};
 
-      Color() { }
-      Color(int i) { type = COLOR_INDEX; c.index = i; }
-      Color(const Vector &v) { type = COLOR_RGB; *(Vector*)c.rgb = v; }
+enum ColorType
+{
+  COLOR_INDEX,
+  COLOR_RGB
+};
+struct Color
+{
+  ColorType type;
+  union
+  {
+    int index;
+    char rgb[sizeof(Vector)];
+  } c;
 
-      float graylevel() const; // Force interpretation as gray scale [0..1]
-      Vector rgbcolor() const; // Force interpretation as RGB [0..1]^3
-      int operator==(const Color&) const;
-    };
+  Color() {}
+  Color(int i)
+  {
+    type    = COLOR_INDEX;
+    c.index = i;
+  }
+  Color(const Vector& v)
+  {
+    type            = COLOR_RGB;
+    *(Vector*)c.rgb = v;
+  }
 
-    std::ostream& operator<<(std::ostream&, const Color&);
+  float graylevel() const; // Force interpretation as gray scale [0..1]
+  Vector rgbcolor() const; // Force interpretation as RGB [0..1]^3
+  int operator==(const Color&) const;
+};
+
+std::ostream& operator<<(std::ostream&, const Color&);
 
 
-    class Turtle {
-      public:
-        enum direction { positive, negative };
-
-        Turtle(float turn=90, float widthScale=1);
-        ~Turtle();
-
-        void GetDefaults(float* wscale, float* delta);
-        void SetDefaults(float wscale, float delta);
-        BoundingBox Bounds() const { return bbox; }
-
-        Vector Location() const { return pos; }
-
-        // Methods to modify turtle parameters
-        Vector CurrentHeading() const;
-        void SetHeading(const Vector&);
-        Vector CurrentLeft() const;
-        void SetLeft(const Vector&);
-        Vector CurrentUp() const;
-        void SetUp(const Vector&);
-
-        float DefaultDistance() const { return defaultDist; }
-        void SetDefaultDistance(float d=1);
-
-        float DefaultTurnAngle() const { return Maths::ToDegrees(defaultTurn); }
-        void SetDefaultTurnAngle(float a=90);
-
-        Matrix CurrentFrame() const { return frame; }
-        void SetFrame(const Matrix&);
-        void SetGravity(const Vector&);
-
-        float CurrentWidth() const { return width; }
-  //      float CurrentUnscaledWidth() const;
-        void SetWidth(float w=1);
-
-        Color CurrentColor() const { return color; }
-        Color CurrentBackColor() const { return colorBack; }
-        void IncrementColor();
-        void SetColor(int c=0);
-        void SetColor(int c1, int colorBack);
-        void SetColor(const Vector&);
-
-        int CurrentTexture() const { return texture; } // Line texture
-        void SetTexture(int t=0);
-
-        // Functions for enabling/disabling application of tropism
-        // after each segment is drawn.
-        TropismInfo GetTropism() const { return tropism; }
-        void SetTropismVector(const Vector&);
-        void SetTropismVector(float e);
-        void DisableTropism();
-        void EnableTropism();
-
-        // The turtle may be instructed to rotate a default amount
-        // in the positive or negative direction, or a specified
-        // number of degrees.
-        void Turn(direction);
-        void Turn(float alpha);
-
-        void Pitch(direction);
-        void Pitch(float alpha);
-
-        void Roll(direction);
-        void Roll(float alpha);
-
-        void Reverse();     		// Spin around 180 degrees
-        void RollHorizontal();	// Align up vector with v
-
-        void Move();
-        void Move(float distance);
-
-        void Push();
-        void Pop();
-
-        friend std::ostream& operator<<(std::ostream&, Turtle&);
-
-      private:
-        Matrix frame, *f;           // Orientation frame of turtle
-        Vector pos, *p;             // Position of turtle
-        float defaultDist, *d;      // Standard distance to Move turtle
-        float defaultTurn, *defaultTurnStack;
-        float width, *w;            // Line width
-        Color color, *c;            // Color index
-        Color colorBack, *colorBackStack;
-        int texture, *textureStack; // Texture index
-        TropismInfo tropism, *t;    // Tropism
-
-        int stackptr;	           // Stack depth
-
-        BoundingBox bbox;        // Bounding box of turtle path
-
-        Vector gravity;	         // Antigravity vector
-
-        float widthScale;  // Amount to scale linewidth by
-    };
-
-    std::ostream& operator<<(std::ostream&, TropismInfo&);
-
+class Turtle
+{
+public:
+  enum direction
+  {
+    positive,
+    negative
   };
 
-#endif
+  Turtle(float turn = 90, float widthScale = 1);
+  ~Turtle();
+
+  void GetDefaults(float* wscale, float* delta);
+  void SetDefaults(float wscale, float delta);
+  BoundingBox Bounds() const { return bbox; }
+
+  Vector Location() const { return pos; }
+
+  // Methods to modify turtle parameters
+  Vector CurrentHeading() const;
+  void SetHeading(const Vector&);
+  Vector CurrentLeft() const;
+  void SetLeft(const Vector&);
+  Vector CurrentUp() const;
+  void SetUp(const Vector&);
+
+  float DefaultDistance() const { return defaultDist; }
+  void SetDefaultDistance(float d = 1);
+
+  float DefaultTurnAngle() const { return Maths::ToDegrees(defaultTurn); }
+  void SetDefaultTurnAngle(float a = 90);
+
+  Matrix CurrentFrame() const { return frame; }
+  void SetFrame(const Matrix&);
+  void SetGravity(const Vector&);
+
+  float CurrentWidth() const { return width; }
+  //      float CurrentUnscaledWidth() const;
+  void SetWidth(float w = 1);
+
+  Color CurrentColor() const { return color; }
+  Color CurrentBackColor() const { return colorBack; }
+  void IncrementColor();
+  void SetColor(int c = 0);
+  void SetColor(int c1, int colorBack);
+  void SetColor(const Vector&);
+
+  int CurrentTexture() const { return texture; } // Line texture
+  void SetTexture(int t = 0);
+
+  // Functions for enabling/disabling application of tropism
+  // after each segment is drawn.
+  TropismInfo GetTropism() const { return tropism; }
+  void SetTropismVector(const Vector&);
+  void SetTropismVector(float e);
+  void DisableTropism();
+  void EnableTropism();
+
+  // The turtle may be instructed to rotate a default amount
+  // in the positive or negative direction, or a specified
+  // number of degrees.
+  void Turn(direction);
+  void Turn(float alpha);
+
+  void Pitch(direction);
+  void Pitch(float alpha);
+
+  void Roll(direction);
+  void Roll(float alpha);
+
+  void Reverse(); // Spin around 180 degrees
+  void RollHorizontal(); // Align up vector with v
+
+  void Move();
+  void Move(float distance);
+
+  void Push();
+  void Pop();
+
+  friend std::ostream& operator<<(std::ostream&, Turtle&);
+
+private:
+  Matrix frame, *f; // Orientation frame of turtle
+  Vector pos, *p; // Position of turtle
+  float defaultDist, *d; // Standard distance to Move turtle
+  float defaultTurn, *defaultTurnStack;
+  float width, *w; // Line width
+  Color color, *c; // Color index
+  Color colorBack, *colorBackStack;
+  int texture, *textureStack; // Texture index
+  TropismInfo tropism, *t; // Tropism
+
+  int stackptr; // Stack depth
+
+  BoundingBox bbox; // Bounding box of turtle path
+
+  Vector gravity; // Antigravity vector
+
+  float widthScale; // Amount to scale linewidth by
+};
+
+std::ostream& operator<<(std::ostream&, TropismInfo&);
+
+} // namespace LSys

@@ -34,59 +34,59 @@
  *
  */
 
-#ifndef _Expression_h
-  #define _Expression_h
+#pragma once
 
-  #include "Value.h"
-  #include "Name.h"
-  #include "List.h"
+#include "List.h"
+#include "Name.h"
+#include "Value.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    class Expression {
-      public:
-        Expression(int o, Expression* lop, Expression* rop);
-        Expression(const Name&, List<Expression>* args=0);
-        Expression(const Value*);
-        Expression(const Value&);
-        ~Expression();
+class Expression
+{
+public:
+  Expression(int o, Expression* lop, Expression* rop);
+  Expression(const Name&, List<Expression>* args = 0);
+  Expression(const Value*);
+  Expression(const Value&);
+  ~Expression();
 
-        // Access methods
-        int type() const { return op; }
-        Name name() const;
+  // Access methods
+  int type() const { return op; }
+  Name name() const;
 
-        // Evaluation methods
-        Value evaluate(const SymbolTable<Value>&) const;
-        Value leval(const SymbolTable<Value>& st) const { return lchild()->evaluate(st); }
-        Value reval(const SymbolTable<Value>& st) const { return rchild()->evaluate(st); }
+  // Evaluation methods
+  Value evaluate(const SymbolTable<Value>&) const;
+  Value leval(const SymbolTable<Value>& st) const { return lchild()->evaluate(st); }
+  Value reval(const SymbolTable<Value>& st) const { return rchild()->evaluate(st); }
 
-        friend std::ostream& operator<<(std::ostream&, const Expression&);
-      private:
-        int op;
-        union {
-          struct {
-            int id;   // Name id
-            List<Expression>* args; // Function arguments
-          } name;
-          char v[sizeof(Value)]; // Ensure union is big enough for a Value
-          Expression* args[2];   // Child expressions
-        } val;
-        Name varname() const { return Name(val.name.id); }
-        Value value() const { return *(Value *)&val.v; }
-        Expression* lchild() const { return val.args[0]; }
-        Expression* rchild() const { return val.args[1]; }
-        Name funcname() const { return Name(val.name.id); }
-        List<Expression>* funcargs() const { return val.name.args; }
-    };
+  friend std::ostream& operator<<(std::ostream&, const Expression&);
 
-    bool bind(const List<Expression>* formals,
-      const List<Expression>* values, SymbolTable<Value>&);
-    bool conforms(const List<Expression>* formals, const List<Expression>* values);
-    List<Expression>* instantiate(const List<Expression>* before, const SymbolTable<Value>&);
-    bool getfloat(const SymbolTable<Value>&, const List<Expression>&, float&, unsigned int n=0);
-    bool getvalue(const SymbolTable<Value>&, const List<Expression>&, Value&, unsigned int n=0);
+private:
+  int op;
+  union
+  {
+    struct
+    {
+      int id; // Name id
+      List<Expression>* args; // Function arguments
+    } name;
+    char v[sizeof(Value)]; // Ensure union is big enough for a Value
+    Expression* args[2]; // Child expressions
+  } val;
+  Name varname() const { return Name(val.name.id); }
+  Value value() const { return *(Value*)&val.v; }
+  Expression* lchild() const { return val.args[0]; }
+  Expression* rchild() const { return val.args[1]; }
+  Name funcname() const { return Name(val.name.id); }
+  List<Expression>* funcargs() const { return val.name.args; }
+};
 
-  };
-  
-#endif
+bool bind(const List<Expression>* formals, const List<Expression>* values, SymbolTable<Value>&);
+bool conforms(const List<Expression>* formals, const List<Expression>* values);
+List<Expression>* instantiate(const List<Expression>* before, const SymbolTable<Value>&);
+bool getfloat(const SymbolTable<Value>&, const List<Expression>&, float&, unsigned int n = 0);
+bool getvalue(const SymbolTable<Value>&, const List<Expression>&, Value&, unsigned int n = 0);
 
+} // namespace LSys

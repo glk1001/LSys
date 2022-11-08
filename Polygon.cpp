@@ -24,8 +24,9 @@
  */
 //static char RCSid[] = "$Id: Polygon.c,v 1.2 90/10/12 18:48:10 leech Exp $";
 
-#include "Vector.h"
 #include "Polygon.h"
+
+#include "Vector.h"
 
 
 /**
@@ -34,4 +35,3 @@ std::ostream& operator<<(std::ostream& s, const Vector& v)
   return s << "( " << v(0) << ' ' << v(1) << ' ' << v(2) << " )";
 }
 **/
-

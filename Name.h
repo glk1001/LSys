@@ -35,45 +35,44 @@
  *
  */
 
-#ifndef _Name_h
-  #define _Name_h
+#pragma once
 
-  #include "SymbolTable.h"
+#include "SymbolTable.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    class Name {
-      public:
-        explicit Name(const char*);
-        explicit Name(int id);
-        operator int() const { return index; }
-        operator const char*() const { return reverse_map[index]; }
-        const char* str() const { return reverse_map[index]; }
-      private:
-        static SymbolTable<int>* map;
-        static char** reverse_map;
-        static int next_index;
-        static int reverse_map_size;
-        int index;
-    };
+class Name
+{
+public:
+  explicit Name(const char*);
+  explicit Name(int id);
+  operator int() const { return index; }
+  operator const char*() const { return reverse_map[index]; }
+  const char* str() const { return reverse_map[index]; }
 
-    inline Name::Name(int id)
-    : index((id < 0 || id >= reverse_map_size) ? 0 : id)
-    {
-    }
+private:
+  static SymbolTable<int>* map;
+  static char** reverse_map;
+  static int next_index;
+  static int reverse_map_size;
+  int index;
+};
 
-    inline int operator==(const Name& a, const Name& b)
-    {
-      return int(a) == int(b);
-    }
+inline Name::Name(int id) : index((id < 0 || id >= reverse_map_size) ? 0 : id)
+{
+}
 
-    inline int operator!=(const Name& a, const Name& b)
-    {
-      return int(a) != int(b);
-    }
+inline int operator==(const Name& a, const Name& b)
+{
+  return int(a) == int(b);
+}
 
-    std::ostream& operator<<(std::ostream&, const Name&);
+inline int operator!=(const Name& a, const Name& b)
+{
+  return int(a) != int(b);
+}
 
-  };
+std::ostream& operator<<(std::ostream&, const Name&);
 
-#endif
+} // namespace LSys

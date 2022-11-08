@@ -1,5 +1,4 @@
-#ifndef BISON_TOKEN_INC
-# define BISON_TOKEN_INC
+#pragma once
 
 #ifndef YYSTYPE
 typedef union {
@@ -14,9 +13,11 @@ typedef union {
   LSys::Successor* successor;	            /* a production successor */
   LSys::List<LSys::Successor>* successors;/* list of production successors with probabilities */
 } yystype;
+
 # define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
+
 # define	ERROR	257
 # define	VALUE	258
 # define	INTEGER	259
@@ -36,7 +37,4 @@ typedef union {
 # define	GE	273
 # define	UMINUS	274
 
-
 extern YYSTYPE yylval;
-
-#endif /* not BISON_TOKEN_INC */

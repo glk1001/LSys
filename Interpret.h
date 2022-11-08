@@ -22,20 +22,17 @@
  * $Log:	interpret.h,v $
  * Revision 1.2  90/10/12  18:48:20  leech
  * First public release.
- * 
+ *
  */
 
-#ifndef _Interpret_h
-  #define _Interpret_h
+#pragma once
 
-  #include "Generator.h"
+#include "Generator.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    extern void Interpret(
-      const List<Module>&, Generator&,
-      float turn=90, float width=1, float distance=1);
+extern void Interpret(
+    const List<Module>&, Generator&, float turn = 90, float width = 1, float distance = 1);
 
-  };
-
-#endif
+} // namespace LSys

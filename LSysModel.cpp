@@ -27,75 +27,83 @@
  */
 //static char RCSid[] = "$Id: PlantModel.c,v 1.1 91/10/10 19:53:58 leech Exp $";
 
-#include "debug.h"
-#include "Value.h"
-#include "SymbolTable.h"
+#include "LSysModel.h"
+
 #include "Expression.h"
 #include "Module.h"
 #include "Production.h"
-#include "LSysModel.h"
+#include "SymbolTable.h"
+#include "Value.h"
+#include "debug.h"
 
 using std::cerr;
 using std::endl;
 
 
-namespace LSys {
+namespace LSys
+{
 
 
-  LSysModel::LSysModel()
+LSysModel::LSysModel()
+{
+  ignoreTable = new SymbolTable<Value>;
+  symbolTable = new SymbolTable<Value>;
+
+  rules = new List<Production>;
+  start = 0;
+}
+
+
+LSysModel::~LSysModel()
+{
+  delete ignoreTable;
+  delete symbolTable;
+  delete rules;
+  delete start;
+}
+
+
+// Apply the model to the specified list for one generation, generating a new list.
+List<Module>* LSysModel::Generate(List<Module>* oldModuleList)
+{
+  ListIterator<Production> pi(rules);
+  List<Module>* newModuleList = new List<Module>;
+
+  // For each input module
+  ListIterator<Module> mi(*oldModuleList);
+  for (Module* m = mi.first(); m != 0; m = mi.next())
   {
-    ignoreTable= new SymbolTable<Value>;
-    symbolTable= new SymbolTable<Value>;
+    PDebug(PD_PRODUCTION, cerr << "Searching for matching production to " << *m << endl);
 
-    rules= new List<Production>;
-    start= 0;
-  }
-
-
-  LSysModel::~LSysModel()
-  {
-    delete ignoreTable;
-    delete symbolTable;
-    delete rules;
-    delete start;
-  }
-
-
-  // Apply the model to the specified list for one generation, generating a new list.
-  List<Module>* LSysModel::Generate(List<Module>* oldModuleList)
-  {
-    ListIterator<Production> pi(rules);
-    List<Module>* newModuleList= new List<Module>;
-
-    // For each input module
-    ListIterator<Module> mi(*oldModuleList);
-    for (Module* m= mi.first(); m != 0; m= mi.next()) {
-      PDebug(PD_PRODUCTION, cerr << "Searching for matching production to " << *m << endl);
-
-      // Find a matching production.
-      // NOTE: This could be optimized a bunch.
-      Production *p;
-      for (p= pi.first(); p != 0; p= pi.next()) {
-        if (p->matches(mi, m, *symbolTable)) {
-          PDebug(PD_PRODUCTION, cerr << "\tmatched by: " << *p << endl);
-          break;
-        }
-      }
-      // If we found one, replace the module by its successor.
-      if (p != 0) {
-        List<Module>* result= p->produce(m, *symbolTable);
-        PDebug(PD_PRODUCTION, cerr << "\tapplied production yielding: " << *result << endl);
-        newModuleList->append(result);
-        delete result;
-      } else {
-        PDebug(PD_PRODUCTION, cerr << "\tno match found, passing production unchanged\n");
-        newModuleList->append(new Module(*m));
-        m->empty();
+    // Find a matching production.
+    // NOTE: This could be optimized a bunch.
+    Production* p;
+    for (p = pi.first(); p != 0; p = pi.next())
+    {
+      if (p->matches(mi, m, *symbolTable))
+      {
+        PDebug(PD_PRODUCTION, cerr << "\tmatched by: " << *p << endl);
+        break;
       }
     }
-
-    return newModuleList;
+    // If we found one, replace the module by its successor.
+    if (p != 0)
+    {
+      List<Module>* result = p->produce(m, *symbolTable);
+      PDebug(PD_PRODUCTION, cerr << "\tapplied production yielding: " << *result << endl);
+      newModuleList->append(result);
+      delete result;
+    }
+    else
+    {
+      PDebug(PD_PRODUCTION, cerr << "\tno match found, passing production unchanged\n");
+      newModuleList->append(new Module(*m));
+      m->empty();
+    }
   }
 
+  return newModuleList;
+}
 
-};
+
+}; // namespace LSys

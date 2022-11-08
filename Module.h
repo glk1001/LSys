@@ -31,48 +31,48 @@
  *
  */
 
-#ifndef _Module_h
-  #define _Module_h
+#pragma once
 
-  #include "Expression.h"
-  #include "Name.h"
+#include "Expression.h"
+#include "Name.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    // A Module is the basic object of an L-system to which productions
-    //  are applied, and which is interpreted in terms of turtle movements
-    //  and graphical objects. Since there are so many of them allocated,
-    //  the class is tightly packed.
-    class Module {
-      public:
-        Module(const Name&, List<Expression>* elist, bool ignore=false);
-        Module(Module&);
-       ~Module();
+// A Module is the basic object of an L-system to which productions
+//  are applied, and which is interpreted in terms of turtle movements
+//  and graphical objects. Since there are so many of them allocated,
+//  the class is tightly packed.
+class Module
+{
+public:
+  Module(const Name&, List<Expression>* elist, bool ignore = false);
+  Module(Module&);
+  ~Module();
 
-        // Call empty() before deallocating a module if it
-        // has been used as the argument to a copy constructor.
-        void empty();
+  // Call empty() before deallocating a module if it
+  // has been used as the argument to a copy constructor.
+  void empty();
 
-        Name name() const { return Name(tag); }
+  Name name() const { return Name(tag); }
 
-        bool bind(const Module& values, SymbolTable<Value>&) const;
-        bool conforms(const Module&) const;
-        bool ignore() const { return ignoreflag ? true : false; }
-        Module* instantiate(SymbolTable<Value>&) const;
-        bool getfloat(float&, unsigned int n=0) const;
+  bool bind(const Module& values, SymbolTable<Value>&) const;
+  bool conforms(const Module&) const;
+  bool ignore() const { return ignoreflag ? true : false; }
+  Module* instantiate(SymbolTable<Value>&) const;
+  bool getfloat(float&, unsigned int n = 0) const;
 
-        friend std::ostream& operator<<(std::ostream&, const Module&);
-      private:
-        short tag; // Module name
-        char ignoreflag;// Should module be ignored in context?
-        char emptyflag;	// Should tag & param be deleted?
-        List<Expression>* param; // Expressions bound to module
-    };
+  friend std::ostream& operator<<(std::ostream&, const Module&);
 
-    // These Names are used in context matching to ascend/descend tree levels.
-    extern Name LBRACKET;
-    extern Name RBRACKET;
+private:
+  short tag; // Module name
+  char ignoreflag; // Should module be ignored in context?
+  char emptyflag; // Should tag & param be deleted?
+  List<Expression>* param; // Expressions bound to module
+};
 
-  };
+// These Names are used in context matching to ascend/descend tree levels.
+extern Name LBRACKET;
+extern Name RBRACKET;
 
-#endif
+} // namespace LSys

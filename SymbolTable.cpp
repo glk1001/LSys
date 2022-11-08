@@ -1,12 +1,13 @@
-#include <iostream>
 #include "SymbolTable.h"
 
-namespace LSys {
+#include <iostream>
 
-  std::ostream& operator<<(std::ostream& o, Anyptr p)
-  {
-    return o << *(void**)&p;
-  }
+namespace LSys
+{
 
-};  
+std::ostream& operator<<(std::ostream& o, Anyptr p)
+{
+  return o << *(void**)&p;
+}
 
+};

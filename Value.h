@@ -36,60 +36,72 @@
  *
  */
 
-#ifndef _Values_h
-  #define _Values_h
+#pragma once
 
-  #include <iostream>
+#include <iostream>
 
-  namespace LSys {
+namespace LSys
+{
 
-    enum ValueType { intType, floatType, undefinedType };
+enum ValueType
+{
+  intType,
+  floatType,
+  undefinedType
+};
 
-    class Value {
-      public:
-        Value();
-        Value(bool); //GLK
-        Value(int);
-        Value(float);
-        Value(double);
-        Value(const Value&);
+class Value
+{
+public:
+  Value();
+  Value(bool); //GLK
+  Value(int);
+  Value(float);
+  Value(double);
+  Value(const Value&);
 
-        Value operator-() const;
-        Value operator~() const;
-        Value operator!() const;
-        Value abs() const;
-        Value operator& (const Value&) const;
-        Value operator| (const Value&) const;
-        Value operator&&(const Value&) const;
-        Value operator||(const Value&) const;
-        Value operator==(const Value&) const;
-        Value operator!=(const Value&) const;
-        Value operator< (const Value&) const;
-        Value operator<=(const Value&) const;
-        Value operator>=(const Value&) const;
-        Value operator> (const Value&) const;
-        Value operator+ (const Value&) const;
-        Value operator- (const Value&) const;
-        Value operator* (const Value&) const;
-        Value operator/ (const Value&) const;
-        Value operator% (const Value&) const;
-        Value operator^ (const Value&) const;
+  Value operator-() const;
+  Value operator~() const;
+  Value operator!() const;
+  Value abs() const;
+  Value operator&(const Value&) const;
+  Value operator|(const Value&) const;
+  Value operator&&(const Value&) const;
+  Value operator||(const Value&) const;
+  Value operator==(const Value&) const;
+  Value operator!=(const Value&) const;
+  Value operator<(const Value&) const;
+  Value operator<=(const Value&) const;
+  Value operator>=(const Value&) const;
+  Value operator>(const Value&) const;
+  Value operator+(const Value&) const;
+  Value operator-(const Value&) const;
+  Value operator*(const Value&) const;
+  Value operator/(const Value&) const;
+  Value operator%(const Value&) const;
+  Value operator^(const Value&) const;
 
-        bool value(int&) const;
-        bool value(float&) const;
+  bool value(int&) const;
+  bool value(float&) const;
 
-        friend std::ostream& operator<<(std::ostream&, const Value&);
+  friend std::ostream& operator<<(std::ostream&, const Value&);
 
-      private:
-        ValueType type;
-        union {
-          int ival;
-          float fval;
-        } val;
-        enum Optype { II, IF, FI, FF, UNDEF };
-        Optype binary_optype(const Value&) const;
-    };
-
+private:
+  ValueType type;
+  union
+  {
+    int ival;
+    float fval;
+  } val;
+  enum Optype
+  {
+    II,
+    IF,
+    FI,
+    FF,
+    UNDEF
   };
+  Optype binary_optype(const Value&) const;
+};
 
-#endif
+} // namespace LSys

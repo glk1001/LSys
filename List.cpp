@@ -20,12 +20,11 @@
  * $Log:	List.c,v $
  * Revision 1.2  90/10/12  18:48:05  leech
  * First public release.
- * 
+ *
  */
 //static char RCSid[] = "$Id: List.c,v 1.2 90/10/12 18:48:05 leech Exp Locker: leech $";
 
 #include "List.h"
-
 
 
 /**
@@ -44,4 +43,3 @@ std::ostream& operator<<(std::ostream& o, List_& l)
   return o;
 }
 **/
-

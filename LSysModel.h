@@ -26,26 +26,25 @@
  *
  */
 
-#ifndef _LSysModel_h
-  #define _LSysModel_h
+#pragma once
 
-  #include "Value.h"
-  #include "Production.h"
-  #include "Module.h"
+#include "Module.h"
+#include "Production.h"
+#include "Value.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    struct LSysModel {
-      SymbolTable<Value>* ignoreTable; // Symbols ignored in context.
-      SymbolTable<Value>* symbolTable; // Variables and bound formal parameters.
-      List<Production>* rules;         // Production list.
-      List<Module>* start;             // Starting module list.
+struct LSysModel
+{
+  SymbolTable<Value>* ignoreTable; // Symbols ignored in context.
+  SymbolTable<Value>* symbolTable; // Variables and bound formal parameters.
+  List<Production>* rules; // Production list.
+  List<Module>* start; // Starting module list.
 
-      LSysModel();
-      ~LSysModel();
-      List<Module>* Generate(List<Module>* old);
-    };
+  LSysModel();
+  ~LSysModel();
+  List<Module>* Generate(List<Module>* old);
+};
 
-  };
-
-#endif
+} // namespace LSys

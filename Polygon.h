@@ -22,21 +22,19 @@
  * $Log:	Polygon.h,v $
  * Revision 1.2  90/10/12  18:48:10  leech
  * First public release.
- * 
+ *
  */
 
-#ifndef _Polygon_h
-  #define _Polygon_h
+#pragma once
 
-  #include "Vector.h"
-  #include "List.h"
+#include "List.h"
+#include "Vector.h"
 
-  namespace LSys {
+namespace LSys
+{
 
-    // A polygon is just a list of vertices
-    typedef List<Vector> Polygon;
-    typedef ConstListIterator<Vector> ConstPolygonIterator;
+// A polygon is just a list of vertices
+using Polygon = List<Vector>;
+using ConstPolygonIterator = ConstListIterator<Vector>;
 
-  };
-
-#endif
+} // namespace LSys

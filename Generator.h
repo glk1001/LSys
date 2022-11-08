@@ -28,72 +28,69 @@
  *
  */
 
-#ifndef _Generator_h
-  #define _Generator_h
+#pragma once
 
-  #include <string>
-  #include <iosfwd>
-  #include "Module.h"
-  #include "Polygon.h"
-  #include "Turtle.h"
+#include "Module.h"
+#include "Polygon.h"
+#include "Turtle.h"
 
-
-  namespace LSys {
-    // A class to generate a database; uses virtual methods and should be
-    // subclassed for a specific type of database, e.g. PostScript or
-    // PPHIGS databases.
-
-    class Generator {
-      public:
-        Generator(std::ofstream* output, std::ofstream* boundsOutput);
-
-        void SetName(const std::string&);
-        virtual void SetHeader(const std::string&)=0;
-        virtual void OutputFailed();
-
-        // Functions to provide bracketing information
-        virtual void Prelude(const Turtle&);
-        virtual void Postscript(const Turtle&);
-
-        // Functions to start/end a stream of graphics
-        virtual void StartGraphics(const Turtle&)=0;
-        virtual void FlushGraphics(const Turtle&)=0;
-
-        // Functions to draw objects in graphics mode
-        virtual void MoveTo(const Turtle&);
-        virtual void LineTo(const Turtle&);
-        virtual void DrawObject(
-          const Turtle&, const Module&, int nargs, const float args[])=0;
-        virtual void Polygon(const Turtle&, const LSys::Polygon&)=0;
-
-        // Functions to change rendering parameters
-        virtual void SetColor(const Turtle&)=0;
-        virtual void SetBackColor(const Turtle&)=0;
-        virtual void SetWidth(const Turtle&)=0;
-        virtual void SetTexture(const Turtle&)=0;
-      protected:
-        std::ofstream* out;
-        std::ofstream* boundsOutput;
-        const Vector& LastPosition() const { return lastPosition; }
-        float LastWidth() const { return lastWidth; }
-        bool LastMove() const { return lastMove; } // Was last move/draw a move?
-        const std::string& ObjectName() const { return objectName; } // Name of generated object
-      private:
-        Vector lastPosition;
-        float lastWidth;
-        bool lastMove; // Was last move/draw a move?
-        std::string objectName;  // Name of generated object
-    };
+#include <iosfwd>
+#include <string>
 
 
-    inline Generator::Generator(std::ofstream* o, std::ofstream* bo)
-    : out(o),
-      boundsOutput(bo),
-      objectName("null_object"),
-      lastMove(true)
-    {
-    }
+namespace LSys
+{
+// A class to generate a database; uses virtual methods and should be
+// subclassed for a specific type of database, e.g. PostScript or
+// PPHIGS databases.
 
-  };
+class Generator
+{
+public:
+  Generator(std::ofstream* output, std::ofstream* boundsOutput);
 
-#endif
+  void SetName(const std::string&);
+  virtual void SetHeader(const std::string&) = 0;
+  virtual void OutputFailed();
+
+  // Functions to provide bracketing information
+  virtual void Prelude(const Turtle&);
+  virtual void Postscript(const Turtle&);
+
+  // Functions to start/end a stream of graphics
+  virtual void StartGraphics(const Turtle&) = 0;
+  virtual void FlushGraphics(const Turtle&) = 0;
+
+  // Functions to draw objects in graphics mode
+  virtual void MoveTo(const Turtle&);
+  virtual void LineTo(const Turtle&);
+  virtual void DrawObject(const Turtle&, const Module&, int nargs, const float args[]) = 0;
+  virtual void Polygon(const Turtle&, const LSys::Polygon&)                            = 0;
+
+  // Functions to change rendering parameters
+  virtual void SetColor(const Turtle&)     = 0;
+  virtual void SetBackColor(const Turtle&) = 0;
+  virtual void SetWidth(const Turtle&)     = 0;
+  virtual void SetTexture(const Turtle&)   = 0;
+
+protected:
+  std::ofstream* out;
+  std::ofstream* boundsOutput;
+  const Vector& LastPosition() const { return lastPosition; }
+  float LastWidth() const { return lastWidth; }
+  bool LastMove() const { return lastMove; } // Was last move/draw a move?
+  const std::string& ObjectName() const { return objectName; } // Name of generated object
+private:
+  Vector lastPosition;
+  float lastWidth;
+  bool lastMove; // Was last move/draw a move?
+  std::string objectName; // Name of generated object
+};
+
+
+inline Generator::Generator(std::ofstream* o, std::ofstream* bo)
+  : out(o), boundsOutput(bo), objectName("null_object"), lastMove(true)
+{
+}
+
+} // namespace LSys

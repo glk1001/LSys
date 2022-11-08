@@ -27,65 +27,67 @@
  */
 //static char RCSid[]= "$Id: Generator.c,v 1.3 91/03/20 10:37:32 leech Exp Locker: leech $";
 
+#include "Generator.h"
+
+#include "Turtle.h"
+#include "Vector.h"
+
 #include <cstdlib>
 #include <fstream>
-#include "Vector.h"
-#include "Turtle.h"
-#include "Generator.h"
 
 using std::cerr;
 using std::endl;
 
 
-namespace LSys {
+namespace LSys
+{
 
 
-  void Generator::OutputFailed()
-  {
-    cerr << "Fatal error in output generator, aborting\n";
-    std::exit(1);
-  }
+void Generator::OutputFailed()
+{
+  cerr << "Fatal error in output generator, aborting\n";
+  std::exit(1);
+}
 
 
-  void Generator::SetName(const std::string& name)
-  {
-    objectName= name;
-  }
+void Generator::SetName(const std::string& name)
+{
+  objectName = name;
+}
 
 
-  void Generator::Prelude(const Turtle& t)
-  {
-    SetColor(t);
-    SetWidth(t);
-    if (out->bad())
-      OutputFailed();
-  }
+void Generator::Prelude(const Turtle& t)
+{
+  SetColor(t);
+  SetWidth(t);
+  if (out->bad())
+    OutputFailed();
+}
 
 
-  void Generator::Postscript(const Turtle& t)
-  {
-    (void)t;
-    if (out->bad())
-      OutputFailed();
-    out->close();
-  }
+void Generator::Postscript(const Turtle& t)
+{
+  (void)t;
+  if (out->bad())
+    OutputFailed();
+  out->close();
+}
 
 
-  void Generator::MoveTo(const Turtle& t)
-  {
-    lastPosition= t.Location();
-    lastWidth= t.CurrentWidth();
-    lastMove= true;
-  }
+void Generator::MoveTo(const Turtle& t)
+{
+  lastPosition = t.Location();
+  lastWidth    = t.CurrentWidth();
+  lastMove     = true;
+}
 
 
-  void Generator::LineTo(const Turtle& t)
-  {
-    lastPosition= t.Location();
-    lastWidth= t.CurrentWidth();
-    lastMove= false;
-  }
+void Generator::LineTo(const Turtle& t)
+{
+  lastPosition = t.Location();
+  lastWidth    = t.CurrentWidth();
+  lastMove     = false;
+}
 
-  
-};
 
+}; // namespace LSys

@@ -22,8 +22,10 @@
  * $Log:	lexdefs.h,v $
  * Revision 1.2  90/10/12  18:48:21  leech
  * First public release.
- * 
+ *
  */
+
+#pragma once
 
 #define LEX_START      0    /* Start state */
 #define LEX_EXPRESSION 1    /* Scan expression NAMEs state */
