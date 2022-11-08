@@ -101,7 +101,7 @@ namespace LSys {
   {
     PDebug(PD_INTERPRET, cerr << "MoveHalf      " << endl);
 
-    const float args[1]= {0.5*t.DefaultDistance()};
+    const float args[1]= {0.5F * t.DefaultDistance()};
     Move(li, t, db, 1, args);
   }
 
@@ -134,7 +134,7 @@ namespace LSys {
   {
     PDebug(PD_INTERPRET, cerr << "DrawHalf      " << endl);
 
-    const float args[1]= {0.5*t.DefaultDistance()};
+    const float args[1]= {0.5F * t.DefaultDistance()};
     Draw(li, t, db, 1, args);
   }
 

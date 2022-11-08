@@ -73,7 +73,6 @@ using LSys::GenericGenerator;
 using LSys::srand48;
 
 #include "Parser.h"
-#include "lsys.tab.h"
 
 #define noArgs CommandLineOptions::noArgs
 #define optionalArg CommandLineOptions::optionalArg
@@ -247,7 +246,7 @@ int main(int argc, const char* argv[])
 {
   try {
     #if YYDEBUG != 0
-      yydebug= 1;
+//      yydebug= 1;
     #endif
     ParseDebug= 0;
 
@@ -326,7 +325,7 @@ int main(int argc, const char* argv[])
     ofstream* outputF= SetOutputFilename(outputFilename);
     ofstream* outputBnds= OpenOutputFile(boundsFilename);
 
-      yydebug = 1;
+//      yydebug = 1;
     yyparse(); // Parse input file
 
     if (model->start) {

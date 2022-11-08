@@ -5,14 +5,14 @@
 typedef union {
   int name;                         /* module or variable name id */
   float probability;                /* production probability */
-  Value* value;	                    /* numeric value */
-  Module* module;
-  Expression* expression;
-  LSys::List<Module>* moduleList;	  /* list of modules as in a production successor */
-  LSys::List<Expression>* expressionList;	/* list of expressions within a module */
-  Predecessor* predecessor;	        /* a production predecessor */
-  Successor* successor;	            /* a production successor */
-  LSys::List<Successor>* successors;/* list of production successors with probabilities */
+  LSys::Value* value;	                    /* numeric value */
+  LSys::Module* module;
+  LSys::Expression* expression;
+  LSys::List<LSys::Module>* moduleList;	  /* list of modules as in a production successor */
+  LSys::List<LSys::Expression>* expressionList;	/* list of expressions within a module */
+  LSys::Predecessor* predecessor;	        /* a production predecessor */
+  LSys::Successor* successor;	            /* a production successor */
+  LSys::List<LSys::Successor>* successors;/* list of production successors with probabilities */
 } yystype;
 # define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1

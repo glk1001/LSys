@@ -7,10 +7,9 @@
 #include "Production.h"
 #include "Value.h"
 
-namespace LSys {
-
 #include "token.inc"
 
+namespace LSys {
     const int LSYS_ERROR = ERROR;
     const int LSYS_VALUE = VALUE;
     const int LSYS_INTEGER = INTEGER;

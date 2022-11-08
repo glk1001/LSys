@@ -21,7 +21,7 @@
  * $Log:	Value.c,v $
  * Revision 1.6  95/05/24  17:14:48  leech
  * Fix for const-correctness.
- * 
+ *
  * Revision 1.5  92/06/22  00:21:49  leech
  * Make sure switch(enum type) has a default to suppress warning
  * messages.
@@ -467,25 +467,25 @@ namespace LSys {
 
   std::ostream& operator<<(std::ostream& o, const Value& v)
   {
-      if (&v == NULL)
-    return o;
+    if (&v == NULL)
+      return o;
 
-      switch (v.type) {
-    case intType:
+    switch (v.type) {
+      case intType:
         o << v.val.ival;
         break;
-    case floatType:
+      case floatType:
         o.setf(std::ios::showpoint);
         o << v.val.fval;
         o.unsetf(std::ios::showpoint);
         break;
-    case undefinedType:
-    default:
+      case undefinedType:
+      default:
         o << "(undefined value)";
         break;
-      }
-      return o;
+    }
+    return o;
   }
 
 
-};  
+}
