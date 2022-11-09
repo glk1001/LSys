@@ -1,13 +1,16 @@
 #pragma once
 
+#include <array>
+
+namespace LSys
+{
+inline constexpr int maxargs = 10;
+using ArgsArray              = std::array<float, maxargs>;
+}
+
 namespace Maths
 {
-
-inline constexpr double pi = 3.14159265358979323846;
-
-inline constexpr float tinyFloat   = 1.0e-5;
-inline constexpr double tinyDouble = 1.0e-14;
-
+inline constexpr auto SMALL_FLOAT = 0.00001F;
 
 double Round(double val, int numDecimalPlaces);
 

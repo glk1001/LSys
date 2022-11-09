@@ -63,14 +63,14 @@ inline Name::Name(int id) : index((id < 0 || id >= reverse_map_size) ? 0 : id)
 {
 }
 
-inline int operator==(const Name& a, const Name& b)
+inline bool operator==(const Name& a, const Name& b)
 {
-  return int(a) == int(b);
+  return static_cast<int>(a) == static_cast<int>(b);
 }
 
 inline int operator!=(const Name& a, const Name& b)
 {
-  return int(a) != int(b);
+  return static_cast<int>(a) != static_cast<int>(b);
 }
 
 std::ostream& operator<<(std::ostream&, const Name&);

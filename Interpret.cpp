@@ -31,6 +31,7 @@
 #include "Interpret.h"
 
 #include "Actions.h"
+#include "Consts.h"
 #include "Expression.h"
 #include "Generator.h"
 #include "Module.h"
@@ -52,7 +53,7 @@ namespace
 // Set up the default actions for interpretation
 void SetupActions(SymbolTable<Anyptr>& st)
 {
-  st.enter(drawObjectStart, Anyptr(DrawObject));
+  st.enter(DRAW_OBJECT_START, Anyptr(DrawObject));
   st.enter("f", Anyptr(Move));
   st.enter("z", Anyptr(MoveHalf));
   st.enter("F", Anyptr(Draw));
@@ -112,8 +113,8 @@ void Interpret(const List<Module>& ml, Generator& g, float turn, float width, fl
   for (const Module* m = mi.first(); m; m = mi.next())
   {
     std::string mname(m->name());
-    if (mname[0] == drawObjectStartChar)
-      mname = drawObjectStart;
+    if (mname[0] == DRAW_OBJECT_START_CHAR)
+      mname = DRAW_OBJECT_START;
     Anyptr p;
     if (!action.lookup(mname.c_str(), p))
     {
@@ -122,14 +123,19 @@ void Interpret(const List<Module>& ml, Generator& g, float turn, float width, fl
     else
     {
       // Fetch defined parameters
-      int nargs;
-      float args[maxargs];
-      for (nargs = 0; nargs < maxargs; nargs++)
-        if (m->getfloat(args[nargs], nargs) == false)
+      int numArgs = 0;
+      ArgsArray args{};
+      for (auto i = 0; i < maxargs; ++i)
+      {
+        if (not m->getfloat(args[i], i))
+        {
           break;
+        }
+        ++numArgs;
+      }
 
       Actionfunc f = reinterpret_cast<Actionfunc>(p);
-      (*f)(mi, t, g, nargs, args);
+      (*f)(mi, t, g, numArgs, args);
     }
     PDebug(PD_INTERPRET, cerr << t);
   }

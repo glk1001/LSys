@@ -18,7 +18,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	actions.c,v $
+ * $Log: actions.c,v $
  * Revision 1.3  91/03/20  10:36:16  leech
  * Better color support.
  *
@@ -39,6 +39,7 @@
 #include "Value.h"
 #include "debug.h"
 
+#include <cassert>
 #include <cstring>
 
 using std::cerr;
@@ -48,10 +49,6 @@ using std::endl;
 namespace LSys
 {
 
-const char drawObjectStartChar    = '~';
-const char* const drawObjectStart = "~";
-
-
 namespace
 {
 
@@ -59,281 +56,354 @@ namespace
 // The stack can get quite deep in recursive CurrentLeft-system
 // productions, thus we use a depth of 100 (probably should
 // use a dynamically allocated list).
-int polyptr         = -1;
-const int max_polys = 100;
-LSys::Polygon* polystack[max_polys];
+int polyPtr                 = -1;
+constexpr auto MAX_POLYGONS = 100;
+std::array<LSys::Polygon*, MAX_POLYGONS> polygonStack{};
 
-enum
+enum class State
 {
   START,
   DRAWING,
   POLYGON
-} State = START;
+};
+auto state = State::START;
 
 // Common Move/draw routine
-void MoveTurtle(Turtle&, int nargs, const float args[maxargs]);
+auto MoveTurtle(Turtle& turtle, int numArgs, const ArgsArray& args) noexcept -> void;
 
 // Set line width only if changed too much
-void SetLineWidth(Turtle&, Generator&);
+auto SetLineWidth(const Turtle& turtle, Generator& generator) noexcept -> void;
 
 // Set color only if changed
-void SetColor(Turtle&, Generator&);
+auto SetColor(const Turtle& turtle, Generator& generator) noexcept -> void;
 
 // Set texture only if changed
-void SetTexture(Turtle&, Generator&);
+auto SetTexture(const Turtle& turtle, Generator& generator) noexcept -> void;
 
 // Add an edge to the current polygon while moving
-void AddPolygonEdge(Turtle&, int nargs, const float args[maxargs]);
+auto AddPolygonEdge(Turtle& turtle, int numArgs, const ArgsArray& args) noexcept -> void;
 
-}; // namespace
-
+} // namespace
 
 // f(l) Move without drawing
-void Move(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int nargs, const float args[maxargs])
+auto Move([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+          Turtle& turtle,
+          Generator& generator,
+          const int numArgs,
+          const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "Move          " << endl);
 
-  if (State == DRAWING || State == START)
+  if ((state == State::DRAWING) or (state == State::START))
   {
-    MoveTurtle(t, nargs, args);
-    db.MoveTo(t);
+    MoveTurtle(turtle, numArgs, args);
+    generator.MoveTo(turtle);
   }
-  else if (State == POLYGON)
+  else
   {
-    AddPolygonEdge(t, nargs, args);
+    assert(state == State::POLYGON);
+    AddPolygonEdge(turtle, numArgs, args);
   }
 }
 
-
 // z Move half standard distance without drawing
-void MoveHalf(ConstListIterator<Module>& li, Turtle& t, Generator& db, int, const float[])
+auto MoveHalf(const ConstListIterator<Module>& moduleIter,
+              Turtle& turtle,
+              Generator& generator,
+              [[maybe_unused]] const int numArgs,
+              [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "MoveHalf      " << endl);
 
-  const float args[1] = {0.5F * t.DefaultDistance()};
-  Move(li, t, db, 1, args);
+  const ArgsArray oneArg = {0.5F * turtle.DefaultDistance()};
+  Move(moduleIter, turtle, generator, 1, oneArg);
 }
-
 
 // F(l) Move while drawing
 // Fr(l), Fl(l) - Right and CurrentLeft edges respectively
-void Draw(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int nargs, const float args[maxargs])
+auto Draw([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+          Turtle& turtle,
+          Generator& generator,
+          const int numArgs,
+          const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "Draw          " << endl);
 
-  if (State == START)
+  if (state == State::START)
   {
-    db.StartGraphics(t);
-    State = DRAWING;
+    generator.StartGraphics(turtle);
+    state = State::DRAWING;
   }
 
-  if (State == DRAWING)
+  if (state == State::DRAWING)
   {
-    MoveTurtle(t, nargs, args);
-    db.LineTo(t);
+    MoveTurtle(turtle, numArgs, args);
+    generator.LineTo(turtle);
   }
-  else if (State == POLYGON)
+  else
   {
-    AddPolygonEdge(t, nargs, args);
+    assert(state == State::POLYGON);
+    AddPolygonEdge(turtle, numArgs, args);
   }
 }
 
-
 // Z Draw half standard distance while drawing
-void DrawHalf(ConstListIterator<Module>& li, Turtle& t, Generator& db, int, const float[])
+auto DrawHalf(ConstListIterator<Module>& moduleIter,
+              Turtle& turtle,
+              Generator& generator,
+              [[maybe_unused]] const int numArgs,
+              [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "DrawHalf      " << endl);
 
-  const float args[1] = {0.5F * t.DefaultDistance()};
-  Draw(li, t, db, 1, args);
+  const auto oneArg = ArgsArray{0.5F * turtle.DefaultDistance()};
+  Draw(moduleIter, turtle, generator, 1, oneArg);
 }
 
-
 // -(t) Turn right: negative rotation about Z
-void TurnRight(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto TurnRight([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+               Turtle& turtle,
+               [[maybe_unused]] const Generator& generator,
+               const int numArgs,
+               const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "TurnRight     " << endl);
 
-  if (nargs == 0)
-    t.Turn(Turtle::negative);
+  if (0 == numArgs)
+  {
+    turtle.Turn(Turtle::negative);
+  }
   else
-    t.Turn(-Maths::ToRadians(args[0]));
+  {
+    turtle.Turn(-Maths::ToRadians(args[0]));
+  }
 }
 
-
 // +(t) Turn left; positive rotation about Z
-void TurnLeft(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto TurnLeft([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+              Turtle& turtle,
+              [[maybe_unused]] const Generator& generator,
+              const int numArgs,
+              const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "TurnLeft      " << endl);
 
-  if (nargs == 0)
-    t.Turn(Turtle::positive);
+  if (0 == numArgs)
+  {
+    turtle.Turn(Turtle::positive);
+  }
   else
-    t.Turn(Maths::ToRadians(args[0]));
+  {
+    turtle.Turn(Maths::ToRadians(args[0]));
+  }
 }
 
-
 // ^(t) Pitch up; negative rotation about Y
-void PitchUp(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto PitchUp([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+             Turtle& turtle,
+             [[maybe_unused]] const Generator& generator,
+             const int numArgs,
+             const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "PitchUp       " << endl);
 
-  if (nargs == 0)
-    t.Pitch(Turtle::negative);
+  if (0 == numArgs)
+  {
+    turtle.Pitch(Turtle::negative);
+  }
   else
-    t.Pitch(-Maths::ToRadians(args[0]));
+  {
+    turtle.Pitch(-Maths::ToRadians(args[0]));
+  }
 }
 
-
 // &(t) Pitch down; positive rotation about Y
-void PitchDown(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto PitchDown([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+               Turtle& turtle,
+               [[maybe_unused]] const Generator& generator,
+               const int numArgs,
+               const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "PitchDown     " << endl);
 
-  if (nargs == 0)
-    t.Pitch(Turtle::positive);
+  if (0 == numArgs)
+  {
+    turtle.Pitch(Turtle::positive);
+  }
   else
-    t.Pitch(Maths::ToRadians(args[0]));
+  {
+    turtle.Pitch(Maths::ToRadians(args[0]));
+  }
 }
 
-
 // /(t) Roll right; positive rotation about X
-void RollRight(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto RollRight([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+               Turtle& turtle,
+               [[maybe_unused]] const Generator& generator,
+               const int numArgs,
+               const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "RollRight     " << endl);
 
-  if (nargs == 0)
-    t.Roll(Turtle::positive);
+  if (0 == numArgs)
+  {
+    turtle.Roll(Turtle::positive);
+  }
   else
-    t.Roll(Maths::ToRadians(args[0]));
+  {
+    turtle.Roll(Maths::ToRadians(args[0]));
+  }
 }
 
-
 // \(t) Roll left; negative rotation about X
-void RollLeft(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto RollLeft([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+              Turtle& turtle,
+              [[maybe_unused]] const Generator& generator,
+              const int numArgs,
+              const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "RollLeft      " << endl);
 
-  if (nargs == 0)
-    t.Roll(Turtle::negative);
+  if (0 == numArgs)
+  {
+    turtle.Roll(Turtle::negative);
+  }
   else
-    t.Roll(-Maths::ToRadians(args[0]));
+  {
+    turtle.Roll(-Maths::ToRadians(args[0]));
+  }
 }
 
-
-// |	Turn around
-void Reverse(ConstListIterator<Module>&, Turtle& t, Generator&, int, const float[])
+// |  Turn around
+auto Reverse([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+             Turtle& turtle,
+             [[maybe_unused]] const Generator& generator,
+             [[maybe_unused]] const int numArgs,
+             [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "Reverse       " << endl);
 
-  t.Reverse();
+  turtle.Reverse();
 }
 
-
-// [	Push turtle state
-void Push(ConstListIterator<Module>&, Turtle& t, Generator&, int, const float[])
+// [  Push turtle state
+auto Push([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+          Turtle& turtle,
+          [[maybe_unused]] const Generator& generator,
+          [[maybe_unused]] const int numArgs,
+          [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "Push          " << endl);
 
-  t.Push();
+  turtle.Push();
 }
 
-
 // ]	Pop turtle state
-void Pop(ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto Pop(ConstListIterator<Module>& moduleIter,
+         Turtle& turtle,
+         Generator& generator,
+         [[maybe_unused]] const int numArgs,
+         [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "Pop           " << endl);
 
-  t.Pop();
+  turtle.Pop();
 
   // Look ahead; if the next module is also a Pop, don't do anything.
-  // Otherwise, reset the line width, color, and position
+  // Otherwise, reset the line width, color, and position.
   // This is an optimization to handle deep nesting ([[...][...[...]]]),
   // which happens a lot with trees.
 
-  const Module* obj = mi.next();
-  if (obj != 0)
+  const Module* const obj = moduleIter.next();
+  if (obj != nullptr)
   {
-    if (strcmp(obj->name(), "]"))
+    if (obj->name() != Name{"]"})
     {
-      SetLineWidth(t, db);
-      SetColor(t, db);
-      db.MoveTo(t);
+      SetLineWidth(turtle, generator);
+      SetColor(turtle, generator);
+      generator.MoveTo(turtle);
     }
     // Back off one step so the next module is interpreted properly
-    mi.previous();
+    moduleIter.previous();
   }
 }
 
-
 // $	Roll to horizontal plane (pg. 57)
-void RollHorizontal(ConstListIterator<Module>&, Turtle& t, Generator&, int, const float[])
+auto RollHorizontal([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                    Turtle& turtle,
+                    [[maybe_unused]] const Generator& generator,
+                    [[maybe_unused]] const int numArgs,
+                    [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "RollHorizontal" << endl);
 
-  t.RollHorizontal();
+  turtle.RollHorizontal();
 }
 
-
 // {	Start a new polygon
-void StartPolygon(ConstListIterator<Module>&, Turtle& t, Generator& db, int, const float[])
+auto StartPolygon([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                  const Turtle& turtle,
+                  Generator& generator,
+                  [[maybe_unused]] const int numArgs,
+                  [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "StartPolygon  " << endl);
 
-  if (State == DRAWING)
-    db.FlushGraphics(t);
-
-  State = POLYGON;
-  polyptr++;
-  if (polyptr >= max_polys)
+  if (state == State::DRAWING)
   {
-    cerr << "StartPolygon: polygon stack filled" << endl;
+    generator.FlushGraphics(turtle);
+  }
+
+  state = State::POLYGON;
+  ++polyPtr;
+  if (polyPtr >= MAX_POLYGONS)
+  {
+    cerr << "StartPolygon: polygon stack filled.\n";
     return;
   }
 
-  polystack[polyptr] = new LSys::Polygon;
+  polygonStack.at(polyPtr) = new LSys::Polygon;
 }
 
-
 // .	Add a vertex to the current polygon
-void PolygonVertex(ConstListIterator<Module>&, Turtle& t, Generator&, int, const float[])
+auto PolygonVertex([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                   const Turtle& turtle,
+                   [[maybe_unused]] const Generator& generator,
+                   [[maybe_unused]] const int numArgs,
+                   [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "PolygonVertex " << endl);
 
-  if (State != POLYGON)
+  if (state != State::POLYGON)
   {
     cerr << "Illegal: Polygon vertex while not in polygon mode\n";
     return;
   }
 
-  if (polyptr < 0)
+  if (polyPtr < 0)
   {
-    cerr << "PolygonVertex: no polygon being defined" << endl;
+    cerr << "PolygonVertex: no polygon being defined\n";
     return;
   }
-  else if (polyptr >= max_polys)
+  if (polyPtr >= MAX_POLYGONS)
+  {
     return; // Already got an error from StartPolygon
+  }
 
-  Vector* v = new Vector(t.Location());
-  polystack[polyptr]->append(v);
+  auto* const vec = new Vector(turtle.Location());
+  polygonStack.at(polyPtr)->append(vec);
 }
-
 
 // G	Move without creating a polygon edge
 // This seems like it should be illegal outside a polygon, but
 // the rose leaf example in the text uses G in this context.
 // Until the behavior is specified, just Move the turtle without
 // other effects.
-void PolygonMove(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto PolygonMove([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                 Turtle& turtle,
+                 [[maybe_unused]] const Generator& generator,
+                 const int numArgs,
+                 const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "PolygonMove   " << endl);
 
@@ -342,200 +412,269 @@ void PolygonMove(
   //	  return;
   //}
 
-  MoveTurtle(t, nargs, args);
+  MoveTurtle(turtle, numArgs, args);
 }
 
-
 // }	Close the current polygon
-void EndPolygon(ConstListIterator<Module>&, Turtle& t, Generator& db, int, const float[])
+auto EndPolygon([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                const Turtle& turtle,
+                Generator& generator,
+                [[maybe_unused]] const int numArgs,
+                [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
-  PDebug(PD_INTERPRET, cerr << "EndPolygon    " << endl);
+  PDebug(PD_INTERPRET, cerr << "EndPolygon    \n");
 
-  if (State != POLYGON || polyptr < 0)
+  if ((state != State::POLYGON) or (polyPtr < 0))
   {
-    cerr << "EndPolygon: no polygon being defined" << endl;
+    cerr << "EndPolygon: no polygon being defined\n";
     return;
   }
 
-  if (polyptr >= max_polys)
+  if (polyPtr >= MAX_POLYGONS)
   {
-    cerr << "EndPolygon: polygon stack too deep, polygon lost" << endl;
-    polyptr--;
+    cerr << "EndPolygon: polygon stack too deep, polygon lost\n";
+    --polyPtr;
   }
   else
   {
-    db.Polygon(t, *polystack[polyptr]);
-    delete polystack[polyptr];
-    polyptr--;
+    generator.Polygon(turtle, *polygonStack.at(polyPtr));
+    delete polygonStack.at(polyPtr);
+    --polyPtr;
     // Return to start state if no more polys on stack
-    if (polyptr < 0)
-      State = START;
+    if (polyPtr < 0)
+    {
+      state = State::START;
+    }
   }
 }
 
-
 // @md(f) Multiply DefaultDistance by f
-void MultiplyDefaultDistance(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto MultiplyDefaultDistance([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                             Turtle& turtle,
+                             [[maybe_unused]] const Generator& generator,
+                             const int numArgs,
+                             const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "MultiplyDefaultDist  " << endl);
 
-  if (nargs == 0)
-    t.SetDefaultDistance(1.1 * t.DefaultDistance());
+  if (0 == numArgs)
+  {
+    turtle.SetDefaultDistance(1.1F * turtle.DefaultDistance());
+  }
   else
-    t.SetDefaultDistance(args[0] * t.DefaultDistance());
+  {
+    turtle.SetDefaultDistance(args.at(0) * turtle.DefaultDistance());
+  }
 }
 
-
 // @ma(f) Multiply DefaultTurnAngle by f
-void MultiplyDefaultTurnAngle(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto MultiplyDefaultTurnAngle([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                              Turtle& turtle,
+                              [[maybe_unused]] const Generator& generator,
+                              const int numArgs,
+                              const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "MultiplyDefaultTurnAngle  " << endl);
 
-  if (nargs == 0)
-    t.SetDefaultTurnAngle(1.1 * t.DefaultTurnAngle());
+  if (0 == numArgs)
+  {
+    turtle.SetDefaultTurnAngle(1.1F * turtle.DefaultTurnAngle());
+  }
   else
-    t.SetDefaultTurnAngle(args[0] * t.DefaultTurnAngle());
+  {
+    turtle.SetDefaultTurnAngle(args[0] * turtle.DefaultTurnAngle());
+  }
 }
-
 
 // @mw(f) Multiply width by f
-void MultiplyWidth(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int nargs, const float args[maxargs])
+auto MultiplyWidth([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                   Turtle& turtle,
+                   Generator& generator,
+                   const int numArgs,
+                   const ArgsArray& args) noexcept -> void
 {
-  PDebug(PD_INTERPRET, cerr << "MultiplyWidth  " << endl);
+  PDebug(PD_INTERPRET, cerr << "MultiplyWidth  \n");
 
-  if (nargs == 0)
-    t.SetWidth(1.4 * t.CurrentWidth());
+  if (0 == numArgs)
+  {
+    turtle.SetWidth(1.4F * turtle.CurrentWidth());
+  }
   else
-    t.SetWidth(args[0] * t.CurrentWidth());
+  {
+    turtle.SetWidth(args[0] * turtle.CurrentWidth());
+  }
 
-  SetLineWidth(t, db);
+  SetLineWidth(turtle, generator);
 }
 
-
 // !(d) Set line width
-void ChangeWidth(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int nargs, const float args[maxargs])
+auto ChangeWidth([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                 Turtle& turtle,
+                 Generator& generator,
+                 const int numArgs,
+                 const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "ChangeWidth     " << endl);
 
-  if (nargs == 0)
-    t.SetWidth();
+  if (0 == numArgs)
+  {
+    turtle.SetWidth();
+  }
   else
-    t.SetWidth(args[0]);
+  {
+    turtle.SetWidth(args[0]);
+  }
 
-  SetLineWidth(t, db);
+  SetLineWidth(turtle, generator);
 }
-
 
 // '	Increment color index
 // '(n) Set color index
 // '(r,g,b) Set RGB color
-void ChangeColor(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int nargs, const float args[maxargs])
+auto ChangeColor([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                 Turtle& turtle,
+                 Generator& generator,
+                 const int numArgs,
+                 const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "ChangeColor   " << endl);
 
-  if (nargs >= 3)
-    t.SetColor(Vector(args[0], args[1], args[2]));
-  if (nargs >= 2)
-    t.SetColor(args[0], args[1]);
-  else if (nargs > 0)
-    t.SetColor((int)args[0]);
+  if (numArgs >= 3)
+  {
+    turtle.SetColor(Vector(args.at(0), args.at(1), args.at(2)));
+  }
+  if (numArgs >= 2)
+  {
+    turtle.SetColor(static_cast<int>(args.at(0)), static_cast<int>(args.at(1)));
+  }
+  else if (numArgs > 0)
+  {
+    turtle.SetColor(static_cast<int>(args.at(0)));
+  }
   else
-    t.IncrementColor();
+  {
+    turtle.IncrementColor();
+  }
 
-  SetColor(t, db);
+  SetColor(turtle, generator);
 }
 
-
 // @Tx(n)	Change texture index
-void ChangeTexture(
-    ConstListIterator<Module>&, Turtle& t, Generator& db, int, const float args[maxargs])
+auto ChangeTexture([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                   Turtle& turtle,
+                   Generator& generator,
+                   [[maybe_unused]] const int numArgs,
+                   const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "ChangeTexture   " << endl);
 
-  t.SetTexture((int)args[0]);
+  turtle.SetTexture(static_cast<int>(args[0]));
 
-  SetTexture(t, db);
+  SetTexture(turtle, generator);
 }
-
 
 // ~	Draw the following object at the turtle's position and frame
 // Needs a standardized object file format for this.
 // Should leave graphics mode before drawing object.
-void DrawObject(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int nargs, const float args[])
+auto DrawObject(const ConstListIterator<Module>& moduleIter,
+                const Turtle& turtle,
+                Generator& generator,
+                const int numArgs,
+                const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "DrawObject    " << endl);
 
   //  Module* obj= mi.next();
-  const Module* obj = mi.current();
-  if (obj != 0)
-    db.DrawObject(t, *obj, nargs, args);
+  const Module* const obj = moduleIter.current();
+  if (obj != nullptr)
+  {
+    generator.DrawObject(turtle, *obj, numArgs, args);
+  }
 }
 
-
-void GeneralisedCylinderStart(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto GeneralisedCylinderStart([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                              [[maybe_unused]] const Turtle& turtle,
+                              [[maybe_unused]] const Generator& generator,
+                              [[maybe_unused]] const int numArgs,
+                              [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
+  // Not implemented
 }
 
-
-void GeneralisedCylinderControlPoint(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto GeneralisedCylinderControlPoint([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                                     [[maybe_unused]] const Turtle& turtle,
+                                     [[maybe_unused]] const Generator& generator,
+                                     [[maybe_unused]] const int numArgs,
+                                     [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
+  // Not implemented
 }
 
-
-void GeneralisedCylinderEnd(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto GeneralisedCylinderEnd([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                            [[maybe_unused]] const Turtle& turtle,
+                            [[maybe_unused]] const Generator& generator,
+                            [[maybe_unused]] const int numArgs,
+                            [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
+  // Not implemented
 }
 
-
-void GeneralisedCylinderTangents(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto GeneralisedCylinderTangents([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                                 [[maybe_unused]] const Turtle& turtle,
+                                 [[maybe_unused]] const Generator& generator,
+                                 [[maybe_unused]] const int numArgs,
+                                 [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
+  // Not implemented
 }
 
-
-void GeneralisedCylinderTangentLengths(
-    ConstListIterator<Module>& mi, Turtle& t, Generator& db, int, const float[])
+auto GeneralisedCylinderTangentLengths([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+                                       [[maybe_unused]] const Turtle& turtle,
+                                       [[maybe_unused]] const Generator& generator,
+                                       [[maybe_unused]] const int numArgs,
+                                       [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
+  // Not implemented
 }
-
 
 // %	Truncate a branch
 // E.g., ignore all modules up to the next ]
 // Note that this code is cloned from right-context
 // matching in Production::matches()
-void CutBranch(ConstListIterator<Module>& mi, Turtle&, Generator&, int, const float[])
+auto CutBranch(ConstListIterator<Module>& moduleIter,
+               [[maybe_unused]] const Turtle& turtle,
+               [[maybe_unused]] const Generator& generator,
+               [[maybe_unused]] const int numArgs,
+               [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
   PDebug(PD_INTERPRET, cerr << "CutBranch     " << endl);
 
   // Must find a matching ]; skip anything else including
   //	bracketed substrings.
-  const Module* obj;
+  const Module* obj{};
   int brackets;
-  for (brackets = 0, obj = mi.next(); obj; obj = mi.next())
+  for (brackets = 0, obj = moduleIter.next(); obj; obj = moduleIter.next())
   {
     if (obj->name() == RBRACKET)
     {
-      if (brackets-- == 0)
+      --brackets;
+      if (0 == brackets)
+      {
         break;
+      }
     }
     else if (obj->name() == LBRACKET)
-      brackets++;
+    {
+      ++brackets;
+    }
   }
 
   // Back off one step so the pop itself is handled by interpret()
-  if (obj != 0)
-    mi.previous();
+  if (obj != nullptr)
+  {
+    moduleIter.previous();
+  }
 }
-
 
 // t	Enable/disable tropism corrections after each Move
 // t(x,y,z,e)	- enable tropism; tropism vector is T= (x,y,z),
@@ -543,147 +682,153 @@ void CutBranch(ConstListIterator<Module>& mi, Turtle&, Generator&, int, const fl
 // t(0)		- disable tropism
 // t(1)		- reenable tropism with last (T,e) parameters
 
-static void tropism_error()
+static auto TropismError() noexcept -> void
 {
-  cerr << "Tropism: expect arguments (x,y,z,e) or (e)." << endl;
+  cerr << "Tropism: expect arguments (x,y,z,e) or (e).\n";
 }
 
 
-void Tropism(
-    ConstListIterator<Module>&, Turtle& t, Generator&, int nargs, const float args[maxargs])
+auto Tropism([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
+             Turtle& turtle,
+             [[maybe_unused]] const Generator& generator,
+             const int numArgs,
+             const ArgsArray& args) noexcept -> void
 {
-  if (nargs == 0)
+  if (0 == numArgs)
   {
-    tropism_error();
+    TropismError();
     return;
   }
 
-  if (nargs == 1)
+  if (1 == numArgs)
   {
     // Only one parameter; disable tropism if it equals 0,
     // otherwise enable tropism with the specified parameter.
-
-    float e = args[0];
-    if (e == 0)
-      t.DisableTropism();
-    else if (e == 1)
+    if (const auto susceptibility = args.at(0); std::fabs(susceptibility) < Maths::SMALL_FLOAT)
     {
-      t.SetTropismVector(e);
-      t.EnableTropism();
+      turtle.DisableTropism();
+    }
+    // TODO(glk) - Is this check for 1 OK?
+    else if (std::fabs(susceptibility - 1.0F) < Maths::SMALL_FLOAT)
+    {
+      turtle.SetTropismVector(susceptibility);
+      turtle.EnableTropism();
     }
     return;
   }
 
-  if (nargs < 4)
+  if (numArgs < 4)
   {
-    tropism_error();
+    TropismError();
     return;
   }
 
   // Construct the tropism vector
-  t.SetTropismVector(Vector(args[0], args[1], args[2]));
-  t.SetTropismVector(args[3]);
-  t.EnableTropism();
+  turtle.SetTropismVector(Vector(args.at(0), args.at(1), args.at(2)));
+  turtle.SetTropismVector(args.at(3));
+  turtle.EnableTropism();
 }
-
 
 namespace
 {
 
-void MoveTurtle(Turtle& t, int nargs, const float args[maxargs])
+auto MoveTurtle(Turtle& turtle, const int numArgs, const ArgsArray& args) noexcept -> void
 {
-  if (nargs == 0)
-    t.Move();
+  if (0 == numArgs)
+  {
+    turtle.Move();
+  }
   else
-    t.Move(args[0]);
+  {
+    turtle.Move(args[0]);
+  }
 }
 
-
-void AddPolygonEdge(Turtle& t, int nargs, const float args[maxargs])
+auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) noexcept -> void
 {
   // Add an edge to the current polygon
-  ConstPolygonIterator pi(*polystack[polyptr]);
-  const Vector* v = pi.last();
+  ConstPolygonIterator polygonIter(*polygonStack.at(polyPtr));
+  const Vector* const vec = polygonIter.last();
 
   // See if the starting point needs to be added (only if
   // it's different from the last point defined in
   // the polygon, or there are no points defined in the polygon
   // yet).
-  Vector* p = new Vector(t.Location());
-  if ((v == 0) || (*v != *p))
+  if (auto* const point = new Vector(turtle.Location()); (nullptr == vec) or (*vec != *point))
   {
-    PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding first vertex " << *p << endl);
-    polystack[polyptr]->append(p);
+    PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding first vertex " << *point << endl);
+    polygonStack.at(polyPtr)->append(point);
   }
 
   // Move and add the ending point to the polygon.
-  MoveTurtle(t, nargs, args);
-  PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding last vertex  " << t.Location() << endl);
-  polystack[polyptr]->append(new Vector(t.Location()));
+  MoveTurtle(turtle, numArgs, args);
+  PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding last vertex  " << turtle.Location() << endl);
+  polygonStack.at(polyPtr)->append(new Vector(turtle.Location()));
 }
 
-
-void SetLineWidth(Turtle& t, Generator& db)
+auto SetLineWidth(const Turtle& turtle, Generator& generator) noexcept -> void
 {
-  const float epsilon        = 1e-6;
-  static float lastlinewidth = -1;
+  static constexpr auto epsilon = 1e-6F;
+  static float lastLineWidth    = -1.0F;
 
   // Don't bother changing line width if 'small enough'.
   // This is an optimization to handle e.g. !(w)[!(w/2)F][!(w/2)F]
   //sort of cases, which happen a lot with trees.
-  if (std::fabs(t.CurrentWidth() - lastlinewidth) < epsilon)
-    return;
-
-  if (State == DRAWING)
+  if (std::fabs(turtle.CurrentWidth() - lastLineWidth) < epsilon)
   {
-    db.FlushGraphics(t);
-    State = START;
+    return;
   }
 
-  db.SetWidth(t);
-  lastlinewidth = t.CurrentWidth();
+  if (state == State::DRAWING)
+  {
+    generator.FlushGraphics(turtle);
+    state = State::START;
+  }
+
+  generator.SetWidth(turtle);
+  lastLineWidth = turtle.CurrentWidth();
 }
 
-
-void SetColor(Turtle& t, Generator& db)
+auto SetColor(const Turtle& turtle, Generator& generator) noexcept -> void
 {
   static Color lastcolor(-1);
 
   // Don't change color if not needed, again an optimization
-  if (t.CurrentColor() == lastcolor)
-    return;
-
-  if (State == DRAWING)
+  if (turtle.CurrentColor() == lastcolor)
   {
-    db.FlushGraphics(t);
-    State = START;
+    return;
   }
 
-  db.SetColor(t);
-  lastcolor = t.CurrentColor();
+  if (state == State::DRAWING)
+  {
+    generator.FlushGraphics(turtle);
+    state = State::START;
+  }
+
+  generator.SetColor(turtle);
+  lastcolor = turtle.CurrentColor();
 }
 
-
-void SetTexture(Turtle& t, Generator& db)
+auto SetTexture(const Turtle& turtle, Generator& generator) noexcept -> void
 {
   static int lastTexture(-1);
 
   // Don't change txture if not needed, again an optimization
-  if (t.CurrentTexture() == lastTexture)
-    return;
-
-  if (State == DRAWING)
+  if (turtle.CurrentTexture() == lastTexture)
   {
-    db.FlushGraphics(t);
-    State = START;
+    return;
   }
 
-  db.SetTexture(t);
-  lastTexture = t.CurrentTexture();
+  if (state == State::DRAWING)
+  {
+    generator.FlushGraphics(turtle);
+    state = State::START;
+  }
+
+  generator.SetTexture(turtle);
+  lastTexture = turtle.CurrentTexture();
 }
 
+} // namespace
 
-}; // namespace
-
-
-}; // namespace LSys
+} // namespace LSys

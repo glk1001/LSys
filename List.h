@@ -54,7 +54,7 @@ class ConstListIterator
 public:
   ConstListIterator(const List<T>&);
   ~ConstListIterator();
-  const T* current();
+  const T* current() const;
   const T* first();
   const T* last();
   const T* next();
@@ -203,9 +203,9 @@ inline ConstListIterator<T>::~ConstListIterator()
 }
 
 template<typename T>
-inline const T* ConstListIterator<T>::current()
+inline const T* ConstListIterator<T>::current() const
 {
-  return (ptr != list->stdlist.end()) ? *ptr : 0;
+  return (ptr != list->stdlist.end()) ? *ptr : nullptr;
 }
 
 template<typename T>

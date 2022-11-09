@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Consts.h"
 #include "Generator.h"
 
 #include <string>
@@ -31,7 +32,7 @@ public:
   void flower(const Turtle&, float radius);
   void leaf(const Turtle&, float length);
   void apex(const Turtle&, Vector& start, float length);
-  void DrawObject(const Turtle&, const Module&, int nargs, const float args[]);
+  void DrawObject(const Turtle&, const Module&, int nargs, const ArgsArray& args) override;
 
   // Functions to change rendering parameters
   void SetColor(const Turtle&);

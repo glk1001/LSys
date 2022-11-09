@@ -43,8 +43,8 @@ namespace LSys
 // This should be restricted to the scope of class Turtle
 struct TropismInfo
 {
-  Vector t; // Tropism vector
-  float e; // Suspectibility parameter
+  Vector tropismVector; // Tropism vector
+  float susceptibility; // Susceptibility parameter
   bool flag; // Whether to apply it
 };
 
@@ -63,12 +63,12 @@ struct Color
   } c;
 
   Color() {}
-  Color(int i)
+  explicit Color(const int i)
   {
     type    = COLOR_INDEX;
     c.index = i;
   }
-  Color(const Vector& v)
+  explicit Color(const Vector& v)
   {
     type            = COLOR_RGB;
     *(Vector*)c.rgb = v;
@@ -76,11 +76,10 @@ struct Color
 
   float graylevel() const; // Force interpretation as gray scale [0..1]
   Vector rgbcolor() const; // Force interpretation as RGB [0..1]^3
-  int operator==(const Color&) const;
+  bool operator==(const Color&) const;
 };
 
 std::ostream& operator<<(std::ostream&, const Color&);
-
 
 class Turtle
 {

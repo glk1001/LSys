@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "Consts.h"
 #include "Module.h"
 #include "Polygon.h"
 #include "Turtle.h"
@@ -64,8 +65,8 @@ public:
   // Functions to draw objects in graphics mode
   virtual void MoveTo(const Turtle&);
   virtual void LineTo(const Turtle&);
-  virtual void DrawObject(const Turtle&, const Module&, int nargs, const float args[]) = 0;
-  virtual void Polygon(const Turtle&, const LSys::Polygon&)                            = 0;
+  virtual void DrawObject(const Turtle&, const Module&, int nargs, const ArgsArray& args) = 0;
+  virtual void Polygon(const Turtle&, const LSys::Polygon&)                               = 0;
 
   // Functions to change rendering parameters
   virtual void SetColor(const Turtle&)     = 0;

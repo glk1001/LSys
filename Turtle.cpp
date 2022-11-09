@@ -161,13 +161,13 @@ void Turtle::SetGravity(const Vector& gvec)
 
 void Turtle::SetTropismVector(const Vector& t)
 {
-  tropism.t = t;
+  tropism.tropismVector = t;
 }
 
 
 void Turtle::SetTropismVector(float e)
 {
-  tropism.e = e;
+  tropism.susceptibility = e;
 }
 
 
@@ -356,13 +356,13 @@ void Turtle::Move(float d)
 
   // Apply tropism, if enabled.
   // This consists of rotating by the vector e (CurrentHeading ^ T).
-  if (tropism.flag && (tropism.e != 0))
+  if (tropism.flag && (tropism.susceptibility != 0))
   {
-    const Vector a = CurrentHeading() ^ tropism.t;
+    const Vector a = CurrentHeading() ^ tropism.tropismVector;
     // This is bogus ??????????????????????????????????????????????????????????
     // const float m= a.magnitude();
     //if (m != 0)
-    frame.rotate(a, tropism.e);
+    frame.rotate(a, tropism.susceptibility);
   }
 }
 
@@ -430,7 +430,7 @@ std::ostream& operator<<(std::ostream& o, TropismInfo& t)
   else
     o << "[disabled";
 
-  return o << "; vector: " << t.t << " e: " << t.e << " ]";
+  return o << "; vector: " << t.tropismVector << " e: " << t.susceptibility << " ]";
 }
 
 
@@ -476,14 +476,17 @@ Vector Color::rgbcolor() const
 }
 
 
-int Color::operator==(const Color& b) const
+bool Color::operator==(const Color& b) const
 {
   if (type != b.type)
+  {
     return 0;
+  }
   if (type == COLOR_INDEX)
+  {
     return c.index == b.c.index;
-  else
-    return rgbcolor() == b.rgbcolor();
+  }
+  return rgbcolor() == b.rgbcolor();
 }
 
 

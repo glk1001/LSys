@@ -175,14 +175,14 @@ inline float operator*(const Vector& a, const Vector& b)
   return a(0) * b(0) + a(1) * b(1) + a(2) * b(2);
 }
 
-inline int operator==(const Vector& a, const Vector& b)
+inline bool operator==(const Vector& a, const Vector& b)
 {
   return (a(0) == b(0)) && (a(1) == b(1)) && (a(2) == b(2));
 }
 
-inline int operator!=(const Vector& a, const Vector& b)
+inline bool operator!=(const Vector& a, const Vector& b)
 {
-  return !(a == b);
+  return not(a == b);
 }
 
 inline float Distance(const Vector& a, const Vector& b)

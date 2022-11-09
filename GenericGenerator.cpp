@@ -200,7 +200,10 @@ void GenericGenerator::LineTo(const Turtle& t)
 }
 
 
-void GenericGenerator::DrawObject(const Turtle& t, const Module& m, int nargs, const float args[])
+void GenericGenerator::DrawObject(const Turtle& t,
+                                  const Module& m,
+                                  int nargs,
+                                  const ArgsArray& args)
 {
   const std::string objectName = m.name().str() + 1; // skip '~'
   const Vector contactPoint    = this->LastPosition();
