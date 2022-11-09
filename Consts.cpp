@@ -1,18 +1,17 @@
 #include "Consts.h"
 
-#include <assert.h>
+#include <cassert>
 #include <cmath>
-
 
 namespace Maths
 {
 
-double Round(double val, int numDecimalPlaces)
+auto Round(const double val, const int numDecimalPlaces) -> double
 {
   assert(numDecimalPlaces >= 0);
 
-  static int lastNumDecimalPlaces = 0;
-  static double lastPowerOfTen    = 1.0;
+  static auto lastNumDecimalPlaces = 0;
+  static auto lastPowerOfTen       = 1.0;
   //    static double oneOnLastPowerOfTen= 1.0;
 
   if (numDecimalPlaces != lastNumDecimalPlaces)
@@ -22,10 +21,10 @@ double Round(double val, int numDecimalPlaces)
     //      oneOnLastPowerOfTen= 1.0/lastPowerOfTen;
   }
 
-  double roundedVal = double(std::floor(val * lastPowerOfTen)) / lastPowerOfTen;
+  const auto roundedVal = std::floor(val * lastPowerOfTen) / lastPowerOfTen;
   //    if (std::fabs(roundedVal) < oneOnLastPowerOfTen) roundedVal= 0.0;
 
   return roundedVal;
 }
 
-}; // namespace Maths
+} // namespace Maths

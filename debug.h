@@ -46,10 +46,7 @@ extern int ParseDebug;
 #define PDEBUG_ENABLED
 #ifdef PDEBUG_ENABLED
 #define PDebug(level, code) \
-  if (ParseDebug) \
-  { \
-    code; \
-  }
+  [&]() { if (ParseDebug) { code; } } ()
 #else
 #define PDebug(level, code)
 #endif

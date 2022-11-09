@@ -125,7 +125,7 @@ void Interpret(const List<Module>& ml, Generator& g, float turn, float width, fl
       // Fetch defined parameters
       int numArgs = 0;
       ArgsArray args{};
-      for (auto i = 0; i < maxargs; ++i)
+      for (auto i = 0; i < MAX_ARGS; ++i)
       {
         if (not m->getfloat(args[i], i))
         {

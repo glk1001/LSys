@@ -47,19 +47,24 @@ class Expression
 {
 public:
   Expression(int o, Expression* lop, Expression* rop);
-  Expression(const Name&, List<Expression>* args = 0);
-  Expression(const Value*);
-  Expression(const Value&);
+  explicit Expression(const Name&, List<Expression>* funcArgs = nullptr);
+  explicit Expression(const Value&);
   ~Expression();
 
   // Access methods
-  int type() const { return op; }
-  Name name() const;
+  [[nodiscard]] auto GetType() const -> int { return op; }
+  [[nodiscard]] auto GetName() const -> Name;
 
   // Evaluation methods
-  Value evaluate(const SymbolTable<Value>&) const;
-  Value leval(const SymbolTable<Value>& st) const { return lchild()->evaluate(st); }
-  Value reval(const SymbolTable<Value>& st) const { return rchild()->evaluate(st); }
+  [[nodiscard]] auto Evaluate(const SymbolTable<Value>& symbolTable) const -> Value;
+  [[nodiscard]] auto LEval(const SymbolTable<Value>& st) const -> Value
+  {
+    return GetLChild()->Evaluate(st);
+  }
+  [[nodiscard]] auto REval(const SymbolTable<Value>& st) const -> Value
+  {
+    return GetRChild()->Evaluate(st);
+  }
 
   friend std::ostream& operator<<(std::ostream&, const Expression&);
 
@@ -75,18 +80,28 @@ private:
     char v[sizeof(Value)]; // Ensure union is big enough for a Value
     Expression* args[2]; // Child expressions
   } val;
-  Name varname() const { return Name(val.name.id); }
-  Value value() const { return *(Value*)&val.v; }
-  Expression* lchild() const { return val.args[0]; }
-  Expression* rchild() const { return val.args[1]; }
-  Name funcname() const { return Name(val.name.id); }
-  List<Expression>* funcargs() const { return val.name.args; }
+  [[nodiscard]] auto GetVarName() const -> Name { return Name(val.name.id); }
+  [[nodiscard]] auto GetValue() const -> Value { return *(Value*)&val.v; }
+  [[nodiscard]] auto GetLChild() const -> Expression* { return val.args[0]; }
+  [[nodiscard]] auto GetRChild() const -> Expression* { return val.args[1]; }
+  [[nodiscard]] auto GetFuncName() const -> Name { return Name(val.name.id); }
+  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>* { return val.name.args; }
 };
 
-bool bind(const List<Expression>* formals, const List<Expression>* values, SymbolTable<Value>&);
-bool conforms(const List<Expression>* formals, const List<Expression>* values);
-List<Expression>* instantiate(const List<Expression>* before, const SymbolTable<Value>&);
-bool getfloat(const SymbolTable<Value>&, const List<Expression>&, float&, unsigned int n = 0);
-bool getvalue(const SymbolTable<Value>&, const List<Expression>&, Value&, unsigned int n = 0);
+[[nodiscard]] auto Bind(const List<Expression>* formals,
+                        const List<Expression>* values,
+                        SymbolTable<Value>& symbolTable) -> bool;
+[[nodiscard]] auto Conforms(const List<Expression>* formals, const List<Expression>* values)
+    -> bool;
+[[nodiscard]] auto Instantiate(const List<Expression>* before,
+                               const SymbolTable<Value>& symbolTable) -> List<Expression>*;
+[[nodiscard]] auto GetFloat(const SymbolTable<Value>& symbolTable,
+                            const List<Expression>& expressionList,
+                            float& val,
+                            unsigned int n = 0) -> bool;
+[[nodiscard]] auto GetValue(const SymbolTable<Value>& symbolTable,
+                            const List<Expression>& expressionList,
+                            Value& val,
+                            unsigned int n = 0) -> bool;
 
 } // namespace LSys

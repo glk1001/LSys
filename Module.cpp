@@ -93,9 +93,9 @@ void Module::empty()
 //  modules should conform() for this method to succeed.
 bool Module::bind(const Module& values, SymbolTable<Value>& st) const
 {
-  PDebug(PD_MODULE, cerr << "Module::bind: formals= " << *this << " values= " << values << endl);
+  PDebug(PD_MODULE, cerr << "Module::Bind: formals= " << *this << " values= " << values << endl);
 
-  if (LSys::bind(param, values.param, st) == false)
+  if (not LSys::Bind(param, values.param, st))
   {
     cerr << "failure binding module " << values << " to " << *this << endl;
     return false;
@@ -113,7 +113,7 @@ bool Module::conforms(const Module& m) const
   if (tag != m.tag)
     return false;
 
-  return LSys::conforms(param, m.param);
+  return LSys::Conforms(param, m.param);
 }
 
 
@@ -121,11 +121,11 @@ bool Module::conforms(const Module& m) const
 //  module's expressions evaluated in the context of the symbol table.
 Module* Module::instantiate(SymbolTable<Value>& st) const
 {
-  List<Expression>* el = LSys::instantiate(param, st);
+  List<Expression>* el = LSys::Instantiate(param, st);
   Module* new_m        = new Module(Name(tag), el, ignoreflag ? true : false);
 
   PDebug(PD_MODULE,
-         cerr << "Module::instantiate: " << *this << " @ " << (void*)this << " -> " << *new_m
+         cerr << "Module::Instantiate: " << *this << " @ " << (void*)this << " -> " << *new_m
               << " @ " << (void*)new_m << endl);
   PDebug(PD_MODULE, cerr << "        old elist: " << *el << endl);
 
@@ -143,7 +143,7 @@ bool Module::getfloat(float& f, unsigned int n) const
 
   // An empty symbol table used to ensure the argument is a bound value.
   static SymbolTable<Value> st;
-  return LSys::getfloat(st, *param, f, n);
+  return LSys::GetFloat(st, *param, f, n);
 }
 
 

@@ -1098,7 +1098,8 @@ case 8:
 #line 151 "lsys.y"
 { Value v;
                       if (!parserSymbolTable.lookup(Name{yyvsp[-1].name}, v))
-                        parserSymbolTable.enter(Name{yyvsp[-1].name}, yyvsp[0].expression->evaluate(parserSymbolTable));
+                        parserSymbolTable.enter(Name{yyvsp[-1].name},
+                                                yyvsp[0].expression->Evaluate(parserSymbolTable));
 		      delete yyvsp[0].expression;
 		    ;
     break;}
@@ -1271,7 +1272,7 @@ case 37:
 case 38:
 #line 323 "lsys.y"
 { if (BindExpression == true) {
-			Value v = yyvsp[0].expression->evaluate(parserSymbolTable);
+			Value v = yyvsp[0].expression->Evaluate(parserSymbolTable);
 			yyvsp[-2].expressionList->append(new Expression(v));
 			delete yyvsp[0].expression;
 		      } else {
@@ -1286,7 +1287,7 @@ case 39:
 { yyval.expressionList = new LSys::List<Expression>;
 		      PDebug(PD_PARSER, std::cerr << "Parsed expression: " << *yyvsp[0].expression << std::endl);
 		      if (BindExpression == true) {
-			Value v = yyvsp[0].expression->evaluate(parserSymbolTable);
+			Value v = yyvsp[0].expression->Evaluate(parserSymbolTable);
 			yyval.expressionList->append(new Expression(v));
 			delete yyvsp[0].expression;
 		      } else {

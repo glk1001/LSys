@@ -263,7 +263,7 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
     return true;
   else
   {
-    Value v = condition->evaluate(st);
+    Value v = condition->Evaluate(st);
     PDebug(PD_PRODUCTION, cerr << "    [condition] -> " << v << endl);
     int i;
     if (v.value(i) == true)

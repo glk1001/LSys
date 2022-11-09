@@ -17,7 +17,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Expression.c,v $
+ * $Log: Expression.c,v $
  * Revision 1.5  95/05/24  17:12:51  leech
  * Fix for const-correctness.
  *
@@ -35,7 +35,6 @@
 
 #include "Expression.h"
 
-#include "Production.h"
 #include "Rand.h"
 #include "SymbolTable.h"
 #include "Value.h"
@@ -54,204 +53,224 @@ namespace LSys
 {
 
 
-#define EXPRFUNC(name) Value name(const SymbolTable<Value>& st, List<Expression>& args)
+#define EXPRFUNC(name) \
+  Value name(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
 typedef EXPRFUNC((*Exprfunc));
 
 
-EXPRFUNC(expr_sin)
+[[nodiscard]] auto expr_sin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::sin(Maths::ToRadians(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_cos)
+[[nodiscard]] auto expr_cos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::cos(Maths::ToRadians(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_tan)
+[[nodiscard]] auto expr_tan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::tan(Maths::ToRadians(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_asin)
+[[nodiscard]] auto expr_asin(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(Maths::ToDegrees(std::asin(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_acos)
+[[nodiscard]] auto expr_acos(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(Maths::ToDegrees(std::acos(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_atan)
+[[nodiscard]] auto expr_atan(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(Maths::ToDegrees(std::atan(x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_atan2)
+[[nodiscard]] auto expr_atan2(const SymbolTable<Value>& symbolTable,
+                              List<Expression>& expressionList) -> Value
 {
-  float x, y;
-  if (getfloat(st, args, y) && getfloat(st, args, x, 1))
+  auto x = 0.0F;
+  auto y = 0.0F;
+  if (GetFloat(symbolTable, expressionList, y) and GetFloat(symbolTable, expressionList, x, 1))
+  {
     return Value(Maths::ToDegrees(std::atan2(y, x)));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
 // Returns type of argument
-EXPRFUNC(expr_abs)
+[[nodiscard]] auto expr_abs(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  Value v;
-  if (getvalue(st, args, v))
+  if (auto v = Value{}; GetValue(symbolTable, expressionList, v))
+  {
     return v.abs();
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
 // Always returns int
-EXPRFUNC(expr_ceil)
+[[nodiscard]] auto expr_ceil(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
-    return Value((int)std::ceil(x));
-  else
-    return Value();
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
+    return Value(static_cast<int>(std::ceil(x)));
+  }
+  return Value();
 }
 
 
 // Always returns int
-EXPRFUNC(expr_floor)
+[[nodiscard]] auto expr_floor(const SymbolTable<Value>& symbolTable,
+                              List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
-    return Value((int)std::floor(x));
-  else
-    return Value();
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
+    return Value(static_cast<int>(std::floor(x)));
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_exp)
+[[nodiscard]] auto expr_exp(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::exp(x));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_log)
+[[nodiscard]] auto expr_log(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::log(x));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
-EXPRFUNC(expr_log10)
+[[nodiscard]] auto expr_log10(const SymbolTable<Value>& symbolTable,
+                              List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(std::log10(x));
-  else
-    return Value();
+  }
+  return Value();
 }
 
 
 // Return a uniformly distributed random number;
 //  rand()  returns [0,1)
 //  rand(n) returns [0,n)   (floating point)
-EXPRFUNC(expr_rand)
+[[nodiscard]] auto expr_rand(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  float x;
-  if (getfloat(st, args, x))
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
     return Value(x * drand48());
-  else
-    return Value(drand48());
+  }
+  return Value(drand48());
 }
-
 
 // Reseed the random number generator and return the seed;
 //  srand() sets the seed to the current time, while
 //  srand(value) sets it to the specified value.
-EXPRFUNC(expr_srand)
+[[nodiscard]] auto expr_srand(const SymbolTable<Value>& symbolTable,
+                              List<Expression>& expressionList) -> Value
 {
-  float x;
-  long seed;
+  auto seed = 0L;
   // Should have getint()
-  if (getfloat(st, args, x))
-    seed = long(x);
+  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
+  {
+    seed = static_cast<long>(x);
+  }
   else
-    seed = time(NULL);
+  {
+    seed = ::time(nullptr);
+  }
 
-  srand48(seed);
-  return Value((int)seed);
+  srand48(static_cast<uint32_t>(seed));
+  return Value(static_cast<int>(seed));
 }
-
 
 // The function table for function terms in expressions
-static SymbolTable<Anyptr>* Functab = NULL;
+static SymbolTable<Anyptr>* funcTab = nullptr;
 
-static void setup_functions()
+static auto SetupFunctions() -> void
 {
-  if (Functab)
+  if (funcTab != nullptr)
+  {
     return;
+  }
 
-  Functab = new SymbolTable<Anyptr>;
-  Functab->enter("sin", Anyptr(expr_sin));
-  Functab->enter("cos", Anyptr(expr_cos));
-  Functab->enter("tan", Anyptr(expr_tan));
-  Functab->enter("asin", Anyptr(expr_asin));
-  Functab->enter("acos", Anyptr(expr_acos));
-  Functab->enter("atan", Anyptr(expr_atan));
-  Functab->enter("atan2", Anyptr(expr_atan2));
-  Functab->enter("abs", Anyptr(expr_abs));
-  Functab->enter("ceil", Anyptr(expr_ceil));
-  Functab->enter("floor", Anyptr(expr_floor));
-  Functab->enter("exp", Anyptr(expr_exp));
-  Functab->enter("log", Anyptr(expr_log));
-  Functab->enter("log10", Anyptr(expr_log10));
-  Functab->enter("rand", Anyptr(expr_rand));
-  Functab->enter("srand", Anyptr(expr_srand));
+  funcTab = new SymbolTable<Anyptr>;
+  funcTab->enter("sin", Anyptr(expr_sin));
+  funcTab->enter("cos", Anyptr(expr_cos));
+  funcTab->enter("tan", Anyptr(expr_tan));
+  funcTab->enter("asin", Anyptr(expr_asin));
+  funcTab->enter("acos", Anyptr(expr_acos));
+  funcTab->enter("atan", Anyptr(expr_atan));
+  funcTab->enter("atan2", Anyptr(expr_atan2));
+  funcTab->enter("abs", Anyptr(expr_abs));
+  funcTab->enter("ceil", Anyptr(expr_ceil));
+  funcTab->enter("floor", Anyptr(expr_floor));
+  funcTab->enter("exp", Anyptr(expr_exp));
+  funcTab->enter("log", Anyptr(expr_log));
+  funcTab->enter("log10", Anyptr(expr_log10));
+  funcTab->enter("rand", Anyptr(expr_rand));
+  funcTab->enter("srand", Anyptr(expr_srand));
 }
 
-
-const char* opname(int op)
+[[nodiscard]] auto GetOpName(const int op) -> const char*
 {
-  static char s[] = " ";
+  static char str[] = " ";
 
   switch (op)
   {
@@ -274,137 +293,116 @@ const char* opname(int op)
     case LSYS_GE:
       return ">=";
     default:
-      s[0] = op;
-      return s;
+      str[0] = static_cast<char>(op);
+      return str;
   }
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Expression& e)
+std::ostream& operator<<(std::ostream& o, const Expression& expression)
 {
-  if (&e == NULL)
-    return o;
-
-  switch (e.op)
+  switch (expression.op)
   {
     case LSYS_NAME:
-      o << e.varname();
+      o << expression.GetVarName();
       break;
     case LSYS_FUNCTION:
-      o << e.funcname() << *e.funcargs();
+      o << expression.GetFuncName() << *expression.GetFuncArgs();
       break;
     case LSYS_VALUE:
-      o << e.value();
+      o << expression.GetValue();
       break;
     case LSYS_UMINUS:
     case '!':
     case '~':
-      o << opname(e.op) << *e.lchild();
+      o << GetOpName(expression.op) << *expression.GetLChild();
       break;
     default:
-      o << '(' << *e.lchild() << opname(e.op) << *e.rchild() << ')';
+      o << '(' << *expression.GetLChild() << GetOpName(expression.op) << *expression.GetRChild()
+        << ')';
       break;
   }
   return o;
 }
 
-
-Expression::Expression(int o, Expression* lop, Expression* rop)
+Expression::Expression(const int o, Expression* const lop, Expression* const rop) : op{o}
 {
   PDebug(PD_EXPRESSION,
          cerr << "Creating expression w/op " << o << "='" << (char)o << "'"
               << " &lhs= " << (void*)lop << " &rhs= " << (void*)rop << endl);
 
-  op          = o;
   val.args[0] = lop;
   val.args[1] = rop;
 }
 
-
 // Create a function call node, or a named variable node if there are
 //  no arguments.
-Expression::Expression(const Name& name, List<Expression>* funcargs)
+Expression::Expression(const Name& name, List<Expression>* const funcArgs)
 {
-  if (funcargs == NULL)
+  if (nullptr == funcArgs)
   {
     PDebug(PD_EXPRESSION,
-           cerr << "Creating expression w/op " << LSYS_NAME << " name " << name << endl);
+           cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << endl);
 
     op            = LSYS_NAME;
     val.name.id   = name;
-    val.name.args = NULL;
+    val.name.args = nullptr;
   }
   else
   {
     PDebug(PD_EXPRESSION,
-           cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name << *funcargs
+           cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name << *funcArgs
                 << endl);
 
     op            = LSYS_FUNCTION;
     val.name.id   = name;
-    val.name.args = funcargs;
+    val.name.args = funcArgs;
   }
 }
 
 
 // Create a value node
-// The passed pointer is not used.
-Expression::Expression(const Value* v)
+Expression::Expression(const Value& value) : op{LSYS_VALUE}
 {
   PDebug(PD_EXPRESSION,
-         cerr << "Creating expression w/op " << LSYS_VALUE << " value " << *v << endl);
+         cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << endl);
 
-  op              = LSYS_VALUE;
-  *(Value*)&val.v = *v;
+  *(Value*)&val.v = value;
 }
-
-
-// Create a value node
-Expression::Expression(const Value& v)
-{
-  PDebug(PD_EXPRESSION,
-         cerr << "Creating expression w/op " << LSYS_VALUE << " value " << v << endl);
-
-  op              = LSYS_VALUE;
-  *(Value*)&val.v = v;
-}
-
 
 Expression::~Expression()
 {
   switch (op)
   {
     case LSYS_NAME:
-      PDebug(PD_EXPRESSION, cerr << "Deleting expression::name (not dynamic)" << endl);
+      PDebug(PD_EXPRESSION, cerr << "Deleting expression::GetName (not dynamic)" << endl);
       break;
     case LSYS_FUNCTION:
       PDebug(PD_EXPRESSION,
-             cerr << "Deleting expression::function " << varname() << "args @ " << funcargs()
+             cerr << "Deleting expression::function " << GetVarName() << "args @ " << GetFuncArgs()
                   << endl);
-      delete funcargs();
+      delete GetFuncArgs();
       break;
     case LSYS_VALUE:
-      PDebug(PD_EXPRESSION, cerr << "Deleting expression::value (not dynamic)" << endl);
+      PDebug(PD_EXPRESSION, cerr << "Deleting expression::GetValue (not dynamic)" << endl);
       break;
     default:
       PDebug(PD_EXPRESSION,
-             cerr << "Deleting expression::op= " << op << " kids @ " << (void*)lchild() << " @ "
-                  << (void*)rchild() << endl);
-      delete lchild();
-      delete rchild();
+             cerr << "Deleting expression::op= " << op << " kids @ " << (void*)GetLChild() << " @ "
+                  << (void*)GetRChild() << endl);
+      delete GetLChild();
+      delete GetRChild();
       break;
   }
 }
 
-
-Name Expression::name() const
+auto Expression::GetName() const -> Name
 {
-  static Name bogus("[Not a Name]");
-  return (op == LSYS_NAME) ? varname() : bogus;
+  static const Name s_BOGUS{"[Not a Name]"};
+  return (op == LSYS_NAME) ? GetVarName() : s_BOGUS;
 }
 
 
-Value Expression::evaluate(const SymbolTable<Value>& st) const
+auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 {
   Value v;
   Anyptr p;
@@ -412,172 +410,172 @@ Value Expression::evaluate(const SymbolTable<Value>& st) const
   switch (op)
   {
     case LSYS_VALUE:
-      return value();
+      return GetValue();
 
     case LSYS_FUNCTION:
-      if (Functab == NULL)
-        setup_functions();
-      if (Functab->lookup(funcname(), p))
+      if (funcTab == nullptr)
       {
-        Exprfunc f = (Exprfunc)p;
-        return (*f)(st, *funcargs());
+        SetupFunctions();
       }
-      else
+      if (funcTab->lookup(GetFuncName(), p))
       {
-        cerr << "Unimplemented function '" << funcname() << "'" << endl;
-        return Value();
+        const Exprfunc func = (Exprfunc)p;
+        return (*func)(symbolTable, *GetFuncArgs());
       }
+      cerr << "Unimplemented function '" << GetFuncName() << "'\n";
+      return Value();
 
     case LSYS_NAME:
-      if (st.lookup(varname(), v))
-        return v;
-      else
+      if (symbolTable.lookup(GetVarName(), v))
       {
-        cerr << "Fatal error in Expression::evaluate: no bound variable '" << varname() << "'"
-             << endl;
-        return Value();
+        return v;
       }
+      cerr << "Fatal error in Expression::Evaluate: no bound variable '" << GetVarName() << "'\n";
+      return Value();
 
     // Unary operators
 
     // Arithmetic
     case LSYS_UMINUS:
-      return -leval(st);
+      return -LEval(symbolTable);
 
     // Bitwise complement
     case '~':
-      return ~leval(st);
+      return ~LEval(symbolTable);
 
     // Logical complement
     case '!':
-      return !leval(st);
+      return !LEval(symbolTable);
 
     // Binary operators
 
     // Bitwise logical and, or
     case '&':
-      return leval(st) & reval(st);
+      return LEval(symbolTable) & REval(symbolTable);
     case '|':
-      return leval(st) | reval(st);
+      return LEval(symbolTable) | REval(symbolTable);
 
     // Logical and, or
     case LSYS_AND:
-      return leval(st) && reval(st);
+      return LEval(symbolTable) && REval(symbolTable);
     case LSYS_OR:
-      return leval(st) || reval(st);
+      return LEval(symbolTable) || REval(symbolTable);
 
     // Logical comparisons
     case LSYS_EQ:
-      return leval(st) == reval(st);
+      return LEval(symbolTable) == REval(symbolTable);
     case LSYS_NE:
-      return leval(st) != reval(st);
+      return LEval(symbolTable) != REval(symbolTable);
     case '<':
-      return leval(st) < reval(st);
+      return LEval(symbolTable) < REval(symbolTable);
     case LSYS_LE:
-      return leval(st) <= reval(st);
+      return LEval(symbolTable) <= REval(symbolTable);
     case LSYS_GE:
-      return leval(st) >= reval(st);
+      return LEval(symbolTable) >= REval(symbolTable);
     case '>':
-      return leval(st) > reval(st);
+      return LEval(symbolTable) > REval(symbolTable);
 
     // Arithmetic
     case '+':
-      return leval(st) + reval(st);
+      return LEval(symbolTable) + REval(symbolTable);
     case '-':
-      return leval(st) - reval(st);
+      return LEval(symbolTable) - REval(symbolTable);
     case '*':
-      return leval(st) * reval(st);
+      return LEval(symbolTable) * REval(symbolTable);
     case '/':
-      return leval(st) / reval(st);
+      return LEval(symbolTable) / REval(symbolTable);
     // Modulo
     case '%':
-      return leval(st) % reval(st);
+      return LEval(symbolTable) % REval(symbolTable);
     // Power, *not* XOR as in C
     case '^':
-      return leval(st) ^ reval(st);
+      return LEval(symbolTable) ^ REval(symbolTable);
 
     // Shouldn't get here
     default:
-      cerr << "Fatal error in Expression::evaluate: unrecognized operator '" << (char)op
-           << "'= " << (int)op << endl;
+      cerr << "Fatal error in Expression::Evaluate: unrecognized operator '"
+           << static_cast<char>(op) << "'= " << op << "\n";
       return Value();
   }
 }
-
 
 // Bind symbolic names of the list to values in list 'values'
 // using symbol table st for evaluation and binding. The two
 // lists should conform() for this method to succeed.
 // Returns true on success, false otherwise.
-bool bind(const List<Expression>* formals, const List<Expression>* values, SymbolTable<Value>& st)
+auto Bind(const List<Expression>* const formals,
+          const List<Expression>* const values,
+          SymbolTable<Value>& symbolTable) -> bool
 {
   // No binding need be done if one list is NULL
-  if (formals == NULL || values == NULL)
-    return true;
-
-  if (conforms(formals, values) == false)
+  if ((nullptr == formals) or (nullptr == values))
   {
-    cerr << "bind: formal and value lists are not the same length" << endl;
+    return true;
+  }
+
+  if (not Conforms(formals, values))
+  {
+    cerr << "Bind: formal and GetValue lists are not the same length\n";
     return false;
   }
 
-  ConstListIterator<Expression> left(*formals), right(*values);
+  auto left  = ConstListIterator<Expression>{*formals};
+  auto right = ConstListIterator<Expression>{*values};
   const Expression* lp;
   const Expression* rp;
 
-  for (lp = left.first(), rp = right.first(); lp != 0 && rp != 0;
+  for (lp = left.first(), rp = right.first(); (lp != nullptr) and (rp != nullptr);
        lp = left.next(), rp = right.next())
   {
-
-    if (lp->type() != LSYS_NAME)
+    if (lp->GetType() != LSYS_NAME)
     {
-      cerr << "bind: left expression " << *lp << " is not a formal" << endl;
+      cerr << "Bind: left expression " << *lp << " is not a formal\n";
       return false;
     }
-    if (rp->type() != LSYS_VALUE)
+    if (rp->GetType() != LSYS_VALUE)
     {
-      cerr << "bind: right expression " << *rp << " is not a value" << endl;
+      cerr << "Bind: right expression " << *rp << " is not a GetValue\n";
       return false;
     }
-    Value v = rp->evaluate(st);
-    PDebug(PD_EXPRESSION, cerr << "Binding " << lp->name() << "= " << v << endl);
-    st.enter(lp->name(), v);
+    const Value v = rp->Evaluate(symbolTable);
+    PDebug(PD_EXPRESSION, cerr << "Binding " << lp->GetName() << "= " << v << "\n");
+    symbolTable.enter(lp->GetName(), v);
   }
 
   return true;
 }
 
-
 // Check if list 'el' is conformant with the list, e.g.,
 // that they have the same number of expressions.
-bool conforms(const List<Expression>* formals, const List<Expression>* values)
+auto Conforms(const List<Expression>* const formals, const List<Expression>* const values) -> bool
 {
-  const int fsize = formals ? formals->size() : 0;
-  const int vsize = values ? values->size() : 0;
-  return (fsize == vsize) ? true : false;
+  const auto fSize = (formals != nullptr) ? formals->size() : 0U;
+  const auto vSize = (values != nullptr) ? values->size() : 0U;
+  return fSize == vSize;
 }
-
 
 // Instantiate the list; that is, return a copy with all of the
 // expressions evaluated in the context of the symbol table.
 // Return a NULL expression list if a NULL list is passed
-List<Expression>* instantiate(const List<Expression>* before, const SymbolTable<Value>& st)
+auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>& symbolTable)
+    -> List<Expression>*
 {
-  if (before == NULL)
-    return NULL;
-
-  List<Expression>* new_el = new List<Expression>;
-  ConstListIterator<Expression> ei(*before);
-
-  for (const Expression* e = ei.first(); e; e = ei.next())
+  if (nullptr == before)
   {
-    Expression* new_e = new Expression(e->evaluate(st));
+    return nullptr;
+  }
+
+  auto* const new_el = new List<Expression>;
+  auto ei            = ConstListIterator<Expression>{*before};
+
+  for (const auto* e = ei.first(); e != nullptr; e = ei.next())
+  {
+    auto* const new_e = new Expression(e->Evaluate(symbolTable));
     new_el->append(new_e);
   }
 
   return new_el;
 }
-
 
 // Return the n'th (0 base) value in the list, if available.
 // Evaluates the expression against specified symbol table; if the
@@ -586,40 +584,49 @@ List<Expression>* instantiate(const List<Expression>* before, const SymbolTable<
 // parameters or the parameter is not a number.
 // This should be wrapped around a method of class List(Expression),
 // but that's a pain with the template method used.
-bool getvalue(const SymbolTable<Value>& st, const List<Expression>& list, Value& v, unsigned int n)
+auto GetValue(const SymbolTable<Value>& symbolTable,
+              const List<Expression>& expressionList,
+              Value& val,
+              unsigned int n) -> bool
 {
   // Ensure there are enough parameters
-  if (n >= list.size())
+  if (n >= expressionList.size())
+  {
     return false;
+  }
 
-  ConstListIterator<Expression> ei(list);
+  auto ei = ConstListIterator<Expression>{expressionList};
 
   // Fetch the n'th expression in the list
-  const Expression* e;
-  for (e = ei.first(); n > 0; n--)
+  const Expression* e = nullptr;
+  for (e = ei.first(); n > 0; --n)
+  {
     e = ei.next();
+  }
 
   // Should be an assertion
-  if (e == 0)
+  if (nullptr == e)
+  {
     return false;
+  }
 
   // Evaluate the expression. Since all expressions should have reduced
   //   to bound values by now, an empty symbol table is used.
-  v = e->evaluate(st);
+  val = e->Evaluate(symbolTable);
 
   return true;
 }
 
-
-bool getfloat(const SymbolTable<Value>& st, const List<Expression>& list, float& f, unsigned int n)
+auto GetFloat(const SymbolTable<Value>& symbolTable,
+              const List<Expression>& expressionList,
+              float& val,
+              const unsigned int n) -> bool
 {
-  Value v;
-
-  if (getvalue(st, list, v, n))
-    return v.value(f);
-  else
-    return false;
+  if (Value v; GetValue(symbolTable, expressionList, v, n))
+  {
+    return v.value(val);
+  }
+  return false;
 }
 
-
-}; // namespace LSys
+} // namespace LSys

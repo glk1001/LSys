@@ -4,17 +4,17 @@
 
 namespace LSys
 {
-inline constexpr int maxargs = 10;
-using ArgsArray              = std::array<float, maxargs>;
+inline constexpr int MAX_ARGS = 10;
+using ArgsArray               = std::array<float, MAX_ARGS>;
 }
 
 namespace Maths
 {
 inline constexpr auto SMALL_FLOAT = 0.00001F;
 
-double Round(double val, int numDecimalPlaces);
+[[nodiscard]] auto Round(double val, int numDecimalPlaces) -> double;
 
-inline double sq(double val)
+[[nodiscard]] constexpr auto sq(const double val) -> double
 {
   return val * val;
 }
