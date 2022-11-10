@@ -1,6 +1,4 @@
-/* interpret.c - interprets an Left-system using a Turtle and taking
- *  actions to render the resulting database.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -26,7 +24,6 @@
  * First public release.
  *
  */
-//static char RCSid[] = "$Id: interpret.c,v 1.3 91/03/20 10:36:40 leech Exp $";
 
 #include "Interpret.h"
 
@@ -48,7 +45,7 @@ namespace LSys
 namespace
 {
 
-// Set up the default actions for interpretation
+// Set up the default actions for interpretation.
 [[nodiscard]] auto GetActionSymbolTable() -> SymbolTable<ActionFunc>
 {
   SymbolTable<ActionFunc> symbolTable{};
@@ -93,7 +90,7 @@ namespace
 
 [[nodiscard]] auto GetModuleName(const Module& mod) -> std::string
 {
-  if (const auto moduleName = mod.GetName().str(); moduleName[0] != DRAW_OBJECT_START_CHAR)
+  if (auto moduleName = mod.GetName().str(); moduleName[0] != DRAW_OBJECT_START_CHAR)
   {
     return moduleName;
   }
@@ -123,11 +120,11 @@ namespace
 
 // Interpret a bound Left-system, producing output on the specified stream.
 // Default values for line width, movement, and turn angles are specified.
-void Interpret(const List<Module>& moduleList,
+auto Interpret(const List<Module>& moduleList,
                IGenerator& generator,
                const float turn,
                const float width,
-               const float distance)
+               const float distance) -> void
 {
   Turtle turtle(turn, width);
   turtle.SetHeading(Vector(0, 1, 0)); // H = +Y

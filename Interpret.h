@@ -1,7 +1,4 @@
-/* interpret.h - external definition of L-system interpreter.
- *
- * $Id: interpret.h,v 1.2 90/10/12 18:48:20 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	interpret.h,v $
+ * $Log: interpret.h,v $
  * Revision 1.2  90/10/12  18:48:20  leech
  * First public release.
  *
@@ -32,7 +29,10 @@
 namespace LSys
 {
 
-extern void Interpret(
-    const List<Module>&, IGenerator&, float turn = 90, float width = 1, float distance = 1);
+auto Interpret(const List<Module>& moduleList,
+               IGenerator& generator,
+               float turn     = 90.0F,
+               float width    = 1.0F,
+               float distance = 1.0F) -> void;
 
 } // namespace LSys
