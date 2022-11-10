@@ -40,11 +40,9 @@
 #include "debug.h"
 
 #include <cassert>
-#include <cstring>
 
 using std::cerr;
 using std::endl;
-
 
 namespace LSys
 {
@@ -362,7 +360,7 @@ auto StartPolygon([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
     return;
   }
 
-  polygonStack.at(polyPtr) = new LSys::Polygon;
+  polygonStack.at(static_cast<uint32_t>(polyPtr)) = new LSys::Polygon;
 }
 
 // .	Add a vertex to the current polygon
@@ -391,7 +389,7 @@ auto PolygonVertex([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 
   auto* const vec = new Vector(turtle.Location());
-  polygonStack.at(polyPtr)->append(vec);
+  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(vec);
 }
 
 // G	Move without creating a polygon edge
@@ -437,8 +435,8 @@ auto EndPolygon([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    generator.Polygon(turtle, *polygonStack.at(polyPtr));
-    delete polygonStack.at(polyPtr);
+    generator.Polygon(turtle, *polygonStack.at(static_cast<uint32_t>(polyPtr)));
+    delete polygonStack.at(static_cast<uint32_t>(polyPtr));
     --polyPtr;
     // Return to start state if no more polys on stack
     if (polyPtr < 0)
@@ -747,7 +745,7 @@ auto MoveTurtle(Turtle& turtle, const int numArgs, const ArgsArray& args) noexce
 auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) noexcept -> void
 {
   // Add an edge to the current polygon
-  ConstPolygonIterator polygonIter(*polygonStack.at(polyPtr));
+  ConstPolygonIterator polygonIter(*polygonStack.at(static_cast<uint32_t>(polyPtr)));
   const Vector* const vec = polygonIter.last();
 
   // See if the starting point needs to be added (only if
@@ -757,13 +755,13 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
   if (auto* const point = new Vector(turtle.Location()); (nullptr == vec) or (*vec != *point))
   {
     PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding first vertex " << *point << endl);
-    polygonStack.at(polyPtr)->append(point);
+    polygonStack.at(static_cast<uint32_t>(polyPtr))->append(point);
   }
 
   // Move and add the ending point to the polygon.
   MoveTurtle(turtle, numArgs, args);
   PDebug(PD_INTERPRET, cerr << "AddPolygonEdge: adding last vertex  " << turtle.Location() << endl);
-  polygonStack.at(polyPtr)->append(new Vector(turtle.Location()));
+  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(new Vector(turtle.Location()));
 }
 
 auto SetLineWidth(const Turtle& turtle, Generator& generator) noexcept -> void

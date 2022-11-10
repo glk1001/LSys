@@ -49,6 +49,7 @@ class Generator
 {
 public:
   Generator(std::ofstream* output, std::ofstream* boundsOutput);
+  virtual ~Generator() = default;
 
   void SetName(const std::string&);
   virtual void SetHeader(const std::string&) = 0;
@@ -84,13 +85,13 @@ protected:
 private:
   Vector lastPosition;
   float lastWidth;
-  bool lastMove; // Was last move/draw a move?
-  std::string objectName; // Name of generated object
+  bool lastMove = true; // Was last move/draw a move?
+  std::string objectName = "null_object"; // Name of generated object
 };
 
 
 inline Generator::Generator(std::ofstream* o, std::ofstream* bo)
-  : out(o), boundsOutput(bo), objectName("null_object"), lastMove(true)
+  : out(o), boundsOutput(bo)
 {
 }
 

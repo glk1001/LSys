@@ -41,6 +41,7 @@
 
 #include "Consts.h"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -54,19 +55,12 @@ namespace LSys
 class Vector
 {
 public:
-  float& operator[](int i) { return x[i]; }
-  float operator[](int i) const { return x[i]; }
-  float operator()(int i) const { return x[i]; }
+  float& operator[](uint32_t i) { return x[i]; }
+  float operator[](uint32_t i) const { return x[i]; }
+  float operator()(uint32_t i) const { return x[i]; }
 
-  Vector(){};
-  Vector(const Vector& v)
-  {
-    x[0] = v[0];
-    x[1] = v[1];
-    x[2] = v[2];
-  }
-
-  Vector(const float* v)
+  Vector() = default;
+  explicit Vector(const float* v)
   {
     x[0] = v[0];
     x[1] = v[1];
@@ -79,16 +73,14 @@ public:
     x[2] = zval;
   };
 
-  operator float*() { return x; }
-
   float magnitude() { return std::sqrt(Maths::sq(x[0]) + Maths::sq(x[1]) + Maths::sq(x[2])); }
 
   Vector& normalize()
   {
     float mag = this->magnitude();
-    if (mag != 0.0)
+    if (mag != 0.0F)
     {
-      mag = 1.0 / mag;
+      mag = 1.0F / mag;
       x[0] *= mag;
       x[1] *= mag;
       x[2] *= mag;
@@ -135,8 +127,9 @@ public:
   friend Vector operator-(const Vector&, const Vector&); // Vector subtraction
   friend Vector operator^(const Vector&, const Vector&); // Vector cross product
   friend float operator*(const Vector&, const Vector&); // Vector inner product
+
 private:
-  float x[3];
+  std::array<float, 3> x{};
 };
 
 inline Vector operator-(const Vector& v)
@@ -212,8 +205,8 @@ public:
   Matrix() {}
   Matrix(initialize flag, const Vector&, const Vector&, const Vector&);
 
-  float* operator[](int i) { return m[i]; }
-  const float* operator[](int i) const { return m[i]; }
+  float* operator[](uint32_t i) { return m_matrix[i]; }
+  const float* operator[](uint32_t i) const { return m_matrix[i]; }
   Matrix& zero();
   Matrix& identity();
   Matrix& rotate(axis a, float alpha);
@@ -224,7 +217,7 @@ public:
   Matrix operator*(const Matrix&) const;
 
 private:
-  float m[3][4];
+  float m_matrix[3][4];
 };
 
 Matrix view_matrix(const Point& eye, const Point& lookat, const Vector& vup);

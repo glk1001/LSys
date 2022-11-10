@@ -38,10 +38,8 @@
 using std::cerr;
 using std::endl;
 
-
 namespace LSys
 {
-
 
 void Generator::OutputFailed()
 {
@@ -49,12 +47,10 @@ void Generator::OutputFailed()
   std::exit(1);
 }
 
-
 void Generator::SetName(const std::string& name)
 {
   objectName = name;
 }
-
 
 void Generator::Prelude(const Turtle& t)
 {
@@ -64,7 +60,6 @@ void Generator::Prelude(const Turtle& t)
     OutputFailed();
 }
 
-
 void Generator::Postscript(const Turtle& t)
 {
   (void)t;
@@ -73,14 +68,12 @@ void Generator::Postscript(const Turtle& t)
   out->close();
 }
 
-
 void Generator::MoveTo(const Turtle& t)
 {
   lastPosition = t.Location();
   lastWidth    = t.CurrentWidth();
   lastMove     = true;
 }
-
 
 void Generator::LineTo(const Turtle& t)
 {
@@ -89,5 +82,4 @@ void Generator::LineTo(const Turtle& t)
   lastMove     = false;
 }
 
-
-}; // namespace LSys
+} // namespace LSys

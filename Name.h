@@ -55,11 +55,11 @@ private:
   static SymbolTable<int>* map;
   static char** reverse_map;
   static int next_index;
-  static int reverse_map_size;
+  static uint32_t reverse_map_size;
   int index;
 };
 
-inline Name::Name(int id) : index((id < 0 || id >= reverse_map_size) ? 0 : id)
+inline Name::Name(int id) : index((id < 0 or id >= static_cast<int>(reverse_map_size)) ? 0 : id)
 {
 }
 

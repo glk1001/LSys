@@ -1,3 +1,11 @@
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wregister"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 /* A Bison parser, made from lsys.y
    by GNU bison 1.35.  */
 
@@ -1178,7 +1186,7 @@ case 23:
 case 24:
 #line 242 "lsys.y"
 { float f;
-		      if (yyvsp[-1].value->value(f))
+		      if (yyvsp[-1].value->GetFloatValue(f))
 			yyval.probability = f;
 		      else
 			yyval.probability = 0.0;

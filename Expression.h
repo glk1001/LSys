@@ -70,22 +70,24 @@ public:
 
 private:
   int op;
-  union
+  struct ExpressionValue
   {
-    struct
+    struct Name
     {
       int id; // Name id
       List<Expression>* args; // Function arguments
-    } name;
-    char v[sizeof(Value)]; // Ensure union is big enough for a Value
+    };
+    Name name;
+    Value value; // Ensure union is big enough for a Value
     Expression* args[2]; // Child expressions
-  } val;
-  [[nodiscard]] auto GetVarName() const -> Name { return Name(val.name.id); }
-  [[nodiscard]] auto GetValue() const -> Value { return *(Value*)&val.v; }
-  [[nodiscard]] auto GetLChild() const -> Expression* { return val.args[0]; }
-  [[nodiscard]] auto GetRChild() const -> Expression* { return val.args[1]; }
-  [[nodiscard]] auto GetFuncName() const -> Name { return Name(val.name.id); }
-  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>* { return val.name.args; }
+  };
+  ExpressionValue m_expressionValue;
+  [[nodiscard]] auto GetVarName() const -> Name { return Name{m_expressionValue.name.id}; }
+  [[nodiscard]] auto GetValue() const -> Value { return m_expressionValue.value; }
+  [[nodiscard]] auto GetLChild() const -> Expression* { return m_expressionValue.args[0]; }
+  [[nodiscard]] auto GetRChild() const -> Expression* { return m_expressionValue.args[1]; }
+  [[nodiscard]] auto GetFuncName() const -> Name { return Name(m_expressionValue.name.id); }
+  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>* { return m_expressionValue.name.args; }
 };
 
 [[nodiscard]] auto Bind(const List<Expression>* formals,

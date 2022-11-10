@@ -7,7 +7,7 @@ namespace LSys
 
 std::ostream& operator<<(std::ostream& o, Anyptr p)
 {
-  return o << *(void**)&p;
+  return o << *reinterpret_cast<void**>(&p);
 }
 
 };

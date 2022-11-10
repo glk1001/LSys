@@ -51,68 +51,49 @@ using std::endl;
 namespace LSys
 {
 
-
 // If not initialized to a value, has an undefined value
-Value::Value()
+Value::Value() : type{undefinedType}, val{}
 {
-  type = undefinedType;
 }
 
-
-Value::Value(bool i)
+Value::Value(const bool value) : type{intType}
 {
-  type     = intType;
-  val.ival = int(i);
+  val.ival = value != 0;
 }
 
-
-Value::Value(int i)
+Value::Value(const int value) : type{intType}
 {
-  type     = intType;
-  val.ival = i;
+  val.ival = value;
 }
 
-
-Value::Value(float f)
+Value::Value(const float value) : type{floatType}
 {
-  type     = floatType;
-  val.fval = f;
+  val.fval = value;
 }
 
-
-Value::Value(double d)
+Value::Value(const double value) : type{floatType}
 {
-  type     = floatType;
-  val.fval = d;
+  val.fval = static_cast<float>(value);
 }
 
-
-Value::Value(const Value& v)
-{
-  type = v.type;
-  val  = v.val;
-}
-
-
-Value::Optype Value::binary_optype(const Value& v) const
+Value::Optype Value::binary_optype(const Value& value) const
 {
   if (type == intType)
   {
-    if (v.type == intType)
+    if (value.type == intType)
       return II;
-    else if (v.type == floatType)
+    else if (value.type == floatType)
       return IF;
   }
   else if (type == floatType)
   {
-    if (v.type == intType)
+    if (value.type == intType)
       return FI;
-    else if (v.type == floatType)
+    else if (value.type == floatType)
       return FF;
   }
   return UNDEF;
 }
-
 
 // Unary negation
 Value Value::operator-() const
@@ -129,7 +110,6 @@ Value Value::operator-() const
   }
 }
 
-
 // Unary bitwise complement
 Value Value::operator~() const
 {
@@ -138,13 +118,13 @@ Value Value::operator~() const
     case intType:
       return Value(~val.ival);
     case floatType:
-      cerr << "Value::operator~(): cannot complement non-integer value" << endl;
+      cerr << "Value::operator~(): cannot complement non-integer GetFloatValue\n";
+      return Value();
     case undefinedType:
     default:
       return Value();
   }
 }
-
 
 // Unary logical complement
 Value Value::operator!() const
@@ -154,13 +134,13 @@ Value Value::operator!() const
     case intType:
       return Value(!val.ival);
     case floatType:
-      cerr << "Value::operator!(): cannot complement non-integer value" << endl;
+      cerr << "Value::operator!(): cannot complement non-integer GetFloatValue\n";
+      return Value();
     case undefinedType:
     default:
       return Value();
   }
 }
-
 
 // Absolute value
 Value Value::abs() const
@@ -177,92 +157,91 @@ Value Value::abs() const
   }
 }
 
-
 // Binary bitwise AND
-Value Value::operator&(const Value& v) const
+Value Value::operator&(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival & v.val.ival);
+      return Value(val.ival & value.val.ival);
     case IF:
     case FI:
     case FF:
       cerr << "Value::operator&(): cannot bitwise AND non-integer values" << endl;
+      return Value();
     case UNDEF:
     default:
       return Value();
   }
 }
 
-
 // Binary bitwise OR
-Value Value::operator|(const Value& v) const
+Value Value::operator|(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival | v.val.ival);
+      return Value(val.ival | value.val.ival);
     case IF:
     case FI:
     case FF:
       cerr << "Value::operator|(): cannot bitwise OR non-integer values" << endl;
+      return Value();
     case UNDEF:
     default:
       return Value();
   }
 }
 
-
 // Binary logical AND
-Value Value::operator&&(const Value& v) const
+Value Value::operator&&(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival && v.val.ival);
+      return Value(val.ival && value.val.ival);
     case IF:
     case FI:
     case FF:
       cerr << "Value::operator&&(): cannot logical AND non-integer values" << endl;
+      return Value();
     case UNDEF:
     default:
       return Value();
   }
 }
 
-
 // Binary logical OR
-Value Value::operator||(const Value& v) const
+Value Value::operator||(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival || v.val.ival);
+      return Value(val.ival || value.val.ival);
     case IF:
     case FI:
     case FF:
       cerr << "Value::operator||(): cannot logical OR non-integer values" << endl;
+      return Value();
     case UNDEF:
     default:
       return Value();
   }
 }
 
-
 // Equality
-Value Value::operator==(const Value& v) const
+Value Value::operator==(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival == v.val.ival);
+      return Value(val.ival == value.val.ival);
     case IF:
-      return Value(val.ival == v.val.fval);
+      return Value(static_cast<float>(val.ival) == value.val.fval);
     case FI:
-      return Value(val.fval == v.val.ival);
+      return Value(val.fval == static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval == v.val.fval);
+      return Value(val.fval == value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -270,18 +249,18 @@ Value Value::operator==(const Value& v) const
 }
 
 // Inequality
-Value Value::operator!=(const Value& v) const
+Value Value::operator!=(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival != v.val.ival);
+      return Value(val.ival != value.val.ival);
     case IF:
-      return Value(val.ival != v.val.fval);
+      return Value(static_cast<float>(val.ival) != value.val.fval);
     case FI:
-      return Value(val.fval != v.val.ival);
+      return Value(val.fval != static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval != v.val.fval);
+      return Value(val.fval != value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -289,18 +268,18 @@ Value Value::operator!=(const Value& v) const
 }
 
 // Less-than
-Value Value::operator<(const Value& v) const
+Value Value::operator<(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival < v.val.ival);
+      return Value(val.ival < value.val.ival);
     case IF:
-      return Value(val.ival < v.val.fval);
+      return Value(static_cast<float>(val.ival) < value.val.fval);
     case FI:
-      return Value(val.fval < v.val.ival);
+      return Value(val.fval < static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval < v.val.fval);
+      return Value(val.fval < value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -308,18 +287,18 @@ Value Value::operator<(const Value& v) const
 }
 
 // Less-than or equal-to
-Value Value::operator<=(const Value& v) const
+Value Value::operator<=(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival <= v.val.ival);
+      return Value(val.ival <= value.val.ival);
     case IF:
-      return Value(val.ival <= v.val.fval);
+      return Value(static_cast<float>(val.ival) <= value.val.fval);
     case FI:
-      return Value(val.fval <= v.val.ival);
+      return Value(val.fval <= static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval <= v.val.fval);
+      return Value(val.fval <= value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -327,18 +306,18 @@ Value Value::operator<=(const Value& v) const
 }
 
 // Greater-than or equal-to
-Value Value::operator>=(const Value& v) const
+Value Value::operator>=(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival >= v.val.ival);
+      return Value(val.ival >= value.val.ival);
     case IF:
-      return Value(val.ival >= v.val.fval);
+      return Value(static_cast<float>(val.ival) >= value.val.fval);
     case FI:
-      return Value(val.fval >= v.val.ival);
+      return Value(val.fval >= static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval >= v.val.fval);
+      return Value(val.fval >= value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -346,18 +325,18 @@ Value Value::operator>=(const Value& v) const
 }
 
 // Greater-than
-Value Value::operator>(const Value& v) const
+Value Value::operator>(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival > v.val.ival);
+      return Value(val.ival > value.val.ival);
     case IF:
-      return Value(val.ival > v.val.fval);
+      return Value(static_cast<float>(val.ival) > value.val.fval);
     case FI:
-      return Value(val.fval > v.val.ival);
+      return Value(val.fval > static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval > v.val.fval);
+      return Value(val.fval > value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -365,18 +344,18 @@ Value Value::operator>(const Value& v) const
 }
 
 // Binary addition
-Value Value::operator+(const Value& v) const
+Value Value::operator+(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival + v.val.ival);
+      return Value(val.ival + value.val.ival);
     case IF:
-      return Value(val.ival + v.val.fval);
+      return Value(static_cast<float>(val.ival) + value.val.fval);
     case FI:
-      return Value(val.fval + v.val.ival);
+      return Value(val.fval + static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval + v.val.fval);
+      return Value(val.fval + value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -384,18 +363,18 @@ Value Value::operator+(const Value& v) const
 }
 
 // Subtraction
-Value Value::operator-(const Value& v) const
+Value Value::operator-(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival - v.val.ival);
+      return Value(val.ival - value.val.ival);
     case IF:
-      return Value(val.ival - v.val.fval);
+      return Value(static_cast<float>(val.ival) - value.val.fval);
     case FI:
-      return Value(val.fval - v.val.ival);
+      return Value(val.fval - static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval - v.val.fval);
+      return Value(val.fval - value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -403,18 +382,18 @@ Value Value::operator-(const Value& v) const
 }
 
 // Multiplication
-Value Value::operator*(const Value& v) const
+Value Value::operator*(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(val.ival * v.val.ival);
+      return Value(val.ival * value.val.ival);
     case IF:
-      return Value(val.ival * v.val.fval);
+      return Value(static_cast<float>(val.ival) * value.val.fval);
     case FI:
-      return Value(val.fval * v.val.ival);
+      return Value(val.fval * static_cast<float>(value.val.ival));
     case FF:
-      return Value(val.fval * v.val.fval);
+      return Value(val.fval * value.val.fval);
     case UNDEF:
     default:
       return Value();
@@ -423,36 +402,39 @@ Value Value::operator*(const Value& v) const
 
 // Division (checks for /0 and returns an undefined number)
 // Note that int / int -> float, unlike C rules
-Value Value::operator/(const Value& v) const
+Value Value::operator/(const Value& value) const
 {
-  float divisor, dividend;
-
-  if (type == undefinedType || v.type == undefinedType)
+  if (type == undefinedType || value.type == undefinedType)
+  {
     return Value();
+  }
 
-  divisor = (v.type == intType) ? (float)v.val.ival : v.val.fval;
-
-  if (divisor == 0)
+  auto divisor = (value.type == intType) ? static_cast<float>(value.val.ival) : value.val.fval;
+  if (divisor == 0.0F)
+  {
     return Value();
+  }
 
-  dividend = (type == intType) ? (float)val.ival : val.fval;
+  const auto dividend = (type == intType) ? static_cast<float>(val.ival) : val.fval;
+
   return Value(dividend / divisor);
 }
 
 // Modulo (checks for /0 and returns an undefined number)
-Value Value::operator%(const Value& v) const
+Value Value::operator%(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      if (v.val.ival == 0)
+      if (value.val.ival == 0)
         return Value();
       else
-        return Value(val.ival % v.val.ival);
+        return Value(val.ival % value.val.ival);
     case IF:
     case FI:
     case FF:
-      cerr << "Value::operator%(): cannot compute modulo of non-integer values" << endl;
+      cerr << "Value::operator%(): cannot compute modulo of non-integer values\n";
+      return Value();
     case UNDEF:
     default:
       return Value();
@@ -460,18 +442,18 @@ Value Value::operator%(const Value& v) const
 }
 
 // Power
-Value Value::operator^(const Value& v) const
+Value Value::operator^(const Value& value) const
 {
-  switch (binary_optype(v))
+  switch (binary_optype(value))
   {
     case II:
-      return Value(std::pow(double(val.ival), v.val.ival));
+      return Value(std::pow(double(val.ival), value.val.ival));
     case IF:
-      return Value(std::pow(float(val.ival), v.val.fval));
+      return Value(std::pow(float(val.ival), value.val.fval));
     case FI:
-      return Value(std::pow(val.fval, v.val.ival));
+      return Value(std::pow(val.fval, value.val.ival));
     case FF:
-      return Value(std::pow(val.fval, v.val.fval));
+      return Value(std::pow(val.fval, value.val.fval));
     case UNDEF:
     default:
       return Value();
@@ -479,48 +461,43 @@ Value Value::operator^(const Value& v) const
 }
 
 // Returns numeric value in i, true if a valid integer
-bool Value::value(int& i) const
+bool Value::GetIntValue(int& value) const
 {
   if (type == intType)
   {
-    i = val.ival;
+    value = val.ival;
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
-// Returns numeric value in f, true if a valid integer or real number
-//  (integers are converted to floats).
-bool Value::value(float& f) const
+bool Value::GetFloatValue(float& value) const
 {
   if (type == intType)
   {
-    f = val.ival;
+    value = static_cast<float>(val.ival);
     return true;
   }
-  else if (type == floatType)
+  if (type == floatType)
   {
-    f = val.fval;
+    value = val.fval;
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
-std::ostream& operator<<(std::ostream& o, const Value& v)
+std::ostream& operator<<(std::ostream& o, const Value& value)
 {
-  if (&v == NULL)
-    return o;
-
-  switch (v.type)
+  switch (value.type)
   {
     case intType:
-      o << v.val.ival;
+      o << value.val.ival;
       break;
     case floatType:
       o.setf(std::ios::showpoint);
-      o << v.val.fval;
+      o << value.val.fval;
       o.unsetf(std::ios::showpoint);
       break;
     case undefinedType:
@@ -530,6 +507,5 @@ std::ostream& operator<<(std::ostream& o, const Value& v)
   }
   return o;
 }
-
 
 } // namespace LSys

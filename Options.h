@@ -240,7 +240,7 @@ public:
     ArgRequired = -5
   };
 
-  Options();
+  Options() = default;
   Options(const char* name, const char* const optv[], const char* const optDescriptions[]);
   virtual ~Options();
 
@@ -253,7 +253,10 @@ public:
   unsigned Controls() const { return optctrls; }
 
   // Controls() (with 1 argument) sets new control settings
-  void Controls(unsigned newctrls) { optctrls = newctrls; }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+  void Controls(unsigned int newctrls) { optctrls = newctrls; }
+#pragma GCC diagnostic pop
   void Controls(const char* flagsStr);
 
   // reset for another pass to parse for options
@@ -362,9 +365,9 @@ public:
 class OptArgvIter : public OptIterRwd
 {
 public:
-  OptArgvIter(const char* const argv[]) : av(argv), ac(-1), ndx(0) {}
+  OptArgvIter(const char* const argv[]) : ac(-1), av(argv) {}
 
-  OptArgvIter(int argc, const char* const argv[]) : av(argv), ac(argc), ndx(0) {}
+  OptArgvIter(int argc, const char* const argv[]) : ac(argc), av(argv) {}
 
   virtual ~OptArgvIter();
 
@@ -377,7 +380,7 @@ public:
   int Index() { return ndx; }
 
 private:
-  int ndx; // Index of current arg
+  int ndx = 0; // Index of current arg
   int ac; // arg count
   const char* const* av; // arg vector
 };

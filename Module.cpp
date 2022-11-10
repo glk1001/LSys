@@ -55,7 +55,7 @@ Module::Module(const Name& n, List<Expression>* elist, bool ignore) : tag(n)
   ignoreflag = (ignore == true);
   emptyflag  = 0;
 
-  PDebug(PD_MODULE, cerr << "Creating module " << *this << " @ " << (void*)this << endl);
+  PDebug(PD_MODULE, cerr << "Creating module " << *this << " @ " << this << "\n");
 }
 
 
@@ -66,14 +66,14 @@ Module::Module(Module& m) : tag(m.tag)
   ignoreflag = m.ignoreflag;
   emptyflag  = 0;
 
-  PDebug(PD_MODULE, cerr << "Copying module " << *this << endl);
+  PDebug(PD_MODULE, cerr << "Copying module " << *this << "\n");
 }
 
 
 Module::~Module()
 {
   //PDebug(PD_MEMLEAK, memfree("Module::~Module()", this));
-  PDebug(PD_MODULE, cerr << "Deleting module @ " << (void*)this << endl);
+  PDebug(PD_MODULE, cerr << "Deleting module @ " << this << "\n");
 
   if (emptyflag == 0)
     delete param;
@@ -125,9 +125,9 @@ Module* Module::instantiate(SymbolTable<Value>& st) const
   Module* new_m        = new Module(Name(tag), el, ignoreflag ? true : false);
 
   PDebug(PD_MODULE,
-         cerr << "Module::Instantiate: " << *this << " @ " << (void*)this << " -> " << *new_m
-              << " @ " << (void*)new_m << endl);
-  PDebug(PD_MODULE, cerr << "        old elist: " << *el << endl);
+         cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *new_m
+              << " @ " << new_m << "\n");
+  PDebug(PD_MODULE, cerr << "        old elist: " << *el << "\n");
 
   return new_m;
 }
@@ -146,18 +146,13 @@ bool Module::getfloat(float& f, unsigned int n) const
   return LSys::GetFloat(st, *param, f, n);
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Module& m)
+std::ostream& operator<<(std::ostream& o, const Module& mod)
 {
-  if (&m == NULL)
-    return o;
-
-  o << Name(m.tag);
-  if (m.param != NULL && m.param->size() > 0)
-    o << *m.param;
+  o << Name(mod.tag);
+  if (mod.param != NULL && mod.param->size() > 0)
+    o << *mod.param;
 
   return o;
 }
 
-
-}; // namespace LSys
+} // namespace LSys

@@ -36,9 +36,10 @@ public:
     oneOrMoreArgs
   };
 
-public:
   CommandLineOptions(bool use_f_flag = true);
+  CommandLineOptions(const CommandLineOptions&) = delete;
   ~CommandLineOptions();
+
   template<typename T>
   void Add(char optChar,
            const std::string& longOpt,
@@ -49,7 +50,6 @@ public:
   void SetPositional(int minNum, int maxNum, std::vector<std::string>*);
   OptionReturnCode ProcessOptions(int argc, const char* argv[]);
 
-public:
   char LastShortOption() const;
   const char* LastLongOption() const;
   void Usage(std::ostream&, const char* positionalParamsDescription);
@@ -57,21 +57,19 @@ public:
   static char OptTypeChar(OptionTypes t) { return optTypeChar[t]; }
 
 private:
-  CommandLineOptions(const CommandLineOptions&) {}
   Options* rawOptions;
-  std::vector<CommandLineOptionBase*> cmdOptions;
-  int minNumPositional;
-  int maxNumPositional;
-  std::vector<std::string>* positionalParams;
+  std::vector<CommandLineOptionBase*> cmdOptions{};
+  const char** optionDefinitions = nullptr;
+  const char** optionDescriptions = nullptr;
+  int minNumPositional = 0;
+  int maxNumPositional = 0;
+  std::vector<std::string>* positionalParams = nullptr;
+  char lastShortOption{};
+  const char* lastLongOption = nullptr;
   void FreeCmdOptions();
-  char lastShortOption;
-  const char* lastLongOption;
-  const char** optionDefinitions;
-  const char** optionDescriptions;
   void FreeOptionDefinitions();
   void FreeOptionDescriptions();
 };
-
 
 class CommandLineOptionBase
 {
@@ -83,9 +81,8 @@ public:
   CommandLineOptionBase(const CommandLineOptionBase&);
   virtual ~CommandLineOptionBase() {}
   virtual CommandLineOptionBase* Clone() const;
-  virtual void SetValue(const char* valStr) {}
+  virtual void SetValue([[maybe_unused]] const char* valStr) {}
 
-public:
   char OptChar() const { return optChar; }
   CommandLineOptions::OptionTypes OptType() const { return optType; }
   std::string LongOpt() const { return longOpt; }
@@ -98,14 +95,13 @@ private:
   std::string optDescription;
 };
 
-
 template<typename T>
 class CommandLineOption : public CommandLineOptionBase
 {
 public:
-  CommandLineOption(char optChar,
-                    const std::string& longOpt,
-                    const std::string& optDescription,
+  CommandLineOption(char optionChar,
+                    const std::string& longOption,
+                    const std::string& optionDescription,
                     CommandLineOptions::OptionTypes,
                     T* theVal);
   CommandLineOption(const CommandLineOption&);
@@ -117,19 +113,18 @@ private:
   T* theVal;
 };
 
-
 template<typename T>
-CommandLineOption<T>::CommandLineOption(char optChar,
-                                        const std::string& longOpt,
-                                        const std::string& optDescription,
-                                        CommandLineOptions::OptionTypes optType,
+CommandLineOption<T>::CommandLineOption(char optionChar,
+                                        const std::string& longOption,
+                                        const std::string& optionDescription,
+                                        CommandLineOptions::OptionTypes optionType,
                                         T* _theVal)
-  : CommandLineOptionBase(optChar, longOpt, optDescription, optType), theVal(_theVal)
+  : CommandLineOptionBase(optionChar, longOption, optionDescription, optionType), theVal(_theVal)
 {
   if (theVal == 0)
   {
     throw std::runtime_error("Cannot have null option address for short option " +
-                             std::string(1, optChar) + ", long option " + longOpt);
+                             std::string(1, optionChar) + ", long option " + longOption);
   }
 }
 
@@ -169,7 +164,6 @@ inline void CommandLineOption<std::vector<std::string>>::SetValue(const char* va
   if (valStr != 0)
     theVal->push_back(valStr); // ????????????????????????????????????????
 }
-
 
 template<typename T>
 inline void CommandLineOptions::Add(char optChar,

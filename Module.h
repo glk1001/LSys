@@ -65,7 +65,7 @@ public:
   friend std::ostream& operator<<(std::ostream&, const Module&);
 
 private:
-  short tag; // Module name
+  int tag; // Module name
   char ignoreflag; // Should module be ignored in context?
   char emptyflag; // Should tag & param be deleted?
   List<Expression>* param; // Expressions bound to module

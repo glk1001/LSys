@@ -1,0 +1,1 @@
+/home/greg/Prj/github/xbmc/visualization.goom/cmake

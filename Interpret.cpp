@@ -94,53 +94,59 @@ void SetupActions(SymbolTable<Anyptr>& st)
 
 // Interpret a bound Left-system, producing output on the specified stream.
 // Default values for line width, movement, and turn angles are specified.
-void Interpret(const List<Module>& ml, Generator& g, float turn, float width, float distance)
+void Interpret(const List<Module>& moduleList,
+               Generator& generator,
+               const float turn,
+               const float width,
+               const float distance)
 {
   SymbolTable<Anyptr> action;
   SetupActions(action);
 
-  Turtle t(turn, width);
-  t.SetHeading(Vector(0, 1, 0)); // H = +Y
-  t.SetLeft(Vector(-1, 0, 0)); // Left = -X
-  t.SetUp(Vector(0, 0, 1)); // Up = +Z
-  t.SetGravity(Vector(0, 1, 0));
-  t.SetWidth(width); // ???????????????????????????????????????????????????????
-  t.SetDefaultDistance(distance);
+  Turtle turtle(turn, width);
+  turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
+  turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X
+  turtle.SetUp(Vector(0, 0, 1)); // Up = +Z
+  turtle.SetGravity(Vector(0, 1, 0));
+  turtle.SetWidth(width); // ???????????????????????????????????????????????????????
+  turtle.SetDefaultDistance(distance);
 
-  g.Prelude(t);
+  generator.Prelude(turtle);
 
-  ConstListIterator<Module> mi(ml);
-  for (const Module* m = mi.first(); m; m = mi.next())
+  auto modList = ConstListIterator<Module>{moduleList};
+  for (const auto* mod = modList.first(); mod; mod = modList.next())
   {
-    std::string mname(m->name());
-    if (mname[0] == DRAW_OBJECT_START_CHAR)
-      mname = DRAW_OBJECT_START;
+    std::string modName(mod->name());
+    if (modName[0] == DRAW_OBJECT_START_CHAR)
+    {
+      modName = DRAW_OBJECT_START;
+    }
     Anyptr p;
-    if (!action.lookup(mname.c_str(), p))
+    if (not action.lookup(modName.c_str(), p))
     {
-      PDebug(PD_INTERPRET, cerr << "Unknown action for " << *m << endl);
+      PDebug(PD_INTERPRET, cerr << "Unknown action for " << *mod << "\n");
+      continue;
     }
-    else
-    {
-      // Fetch defined parameters
-      int numArgs = 0;
-      ArgsArray args{};
-      for (auto i = 0; i < MAX_ARGS; ++i)
-      {
-        if (not m->getfloat(args[i], i))
-        {
-          break;
-        }
-        ++numArgs;
-      }
 
-      Actionfunc f = reinterpret_cast<Actionfunc>(p);
-      (*f)(mi, t, g, numArgs, args);
+    // Fetch defined parameters
+    int numArgs = 0;
+    ArgsArray args{};
+    for (auto i = 0U; i < MAX_ARGS; ++i)
+    {
+      if (not mod->getfloat(args[i], i))
+      {
+        break;
+      }
+      ++numArgs;
     }
-    PDebug(PD_INTERPRET, cerr << t);
+
+    Actionfunc f = reinterpret_cast<Actionfunc>(p);
+    (*f)(modList, turtle, generator, numArgs, args);
+
+    PDebug(PD_INTERPRET, cerr << turtle);
   }
 
-  g.Postscript(t);
+  generator.Postscript(turtle);
 }
 
 

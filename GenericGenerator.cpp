@@ -96,20 +96,20 @@ void GenericGenerator::OutputBounds(const Turtle& t)
 }
 
 
-void GenericGenerator::Polygon(const Turtle& t, const LSys::Polygon& p)
+void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon)
 {
   // Draw the polygon
 
-  ConstPolygonIterator pi(p);
-  StartGraphics(t);
+  ConstPolygonIterator pi(polygon);
+  StartGraphics(turtle);
 
-  const Vector start     = this->LastPosition();
-  const Vector end       = t.Location();
-  const int frontColor   = t.CurrentColor().c.index;
-  const int backColor    = t.CurrentBackColor().c.index;
-  const int frontTexture = t.CurrentTexture();
-  const int backTexture  = t.CurrentTexture();
-  const float width      = t.CurrentWidth();
+  //const Vector start     = this->LastPosition();
+  //const Vector end       = turtle.Location();
+  const int frontColor   = turtle.CurrentColor().m_color.index;
+  const int backColor    = turtle.CurrentBackColor().m_color.index;
+  const int frontTexture = turtle.CurrentTexture();
+  const int backTexture  = turtle.CurrentTexture();
+  //const float width      = turtle.CurrentWidth();
 
   groupNum++;
   *out << "Start_Object_Group " << groupNum << '\n';
@@ -148,13 +148,13 @@ void GenericGenerator::LineTo(const Turtle& t)
 {
   const Vector start      = this->LastPosition();
   const Vector end        = t.Location();
-  const int frontColor    = t.CurrentColor().c.index;
-  const int backColor     = t.CurrentBackColor().c.index;
+  const int frontColor    = t.CurrentColor().m_color.index;
+  const int backColor     = t.CurrentBackColor().m_color.index;
   const int frontTexture  = t.CurrentTexture();
   const int backTexture   = t.CurrentTexture();
   const float lineLength  = Distance(start, end);
-  const float startRadius = 0.5 * this->LastWidth() * lineLength / 100.0;
-  const float endRadius   = 0.5 * t.CurrentWidth() * lineLength / 100.0;
+  const float startRadius = (0.5F * this->LastWidth() * lineLength) / 100.0F;
+  const float endRadius   = (0.5F * t.CurrentWidth() * lineLength) / 100.0F;
 
   groupNum++;
   *out << "Start_Object_Group " << groupNum << '\n';
@@ -200,19 +200,19 @@ void GenericGenerator::LineTo(const Turtle& t)
 }
 
 
-void GenericGenerator::DrawObject(const Turtle& t,
-                                  const Module& m,
-                                  int nargs,
+void GenericGenerator::DrawObject(const Turtle& turtle,
+                                  const Module& mod,
+                                  const int numArgs,
                                   const ArgsArray& args)
 {
-  const std::string objectName = m.name().str() + 1; // skip '~'
+  const std::string objName    = mod.name().str() + 1; // skip '~'
   const Vector contactPoint    = this->LastPosition();
-  const float width            = t.CurrentWidth();
-  const float distance         = t.DefaultDistance();
-  const int frontColor         = t.CurrentColor().c.index;
-  const int backColor          = t.CurrentBackColor().c.index;
-  const int frontTexture       = t.CurrentTexture();
-  const int backTexture        = t.CurrentTexture();
+  const float width            = turtle.CurrentWidth();
+  const float distance         = turtle.DefaultDistance();
+  const int frontColor         = turtle.CurrentColor().m_color.index;
+  const int backColor          = turtle.CurrentBackColor().m_color.index;
+  const int frontTexture       = turtle.CurrentTexture();
+  const int backTexture        = turtle.CurrentTexture();
 
   groupNum++;
   *out << "Start_Object_Group " << groupNum << '\n';
@@ -229,7 +229,7 @@ void GenericGenerator::DrawObject(const Turtle& t,
   *out << " "
        << "object" << '\n';
   *out << " "
-       << "  Name: " << objectName << '\n';
+       << "  Name: " << objName << '\n';
   *out << " "
        << "  LineWidth: " << Maths::Round(width, precision) << '\n';
   *out << " "
@@ -240,21 +240,23 @@ void GenericGenerator::DrawObject(const Turtle& t,
   *out << '\n';
   *out << " "
        << "  Heading: ";
-  OutputVec(*out, t.CurrentHeading());
+  OutputVec(*out, turtle.CurrentHeading());
   *out << '\n';
   *out << " "
        << "  Left: ";
-  OutputVec(*out, t.CurrentLeft());
+  OutputVec(*out, turtle.CurrentLeft());
   *out << '\n';
   *out << " "
        << "  Up:";
-  OutputVec(*out, t.CurrentUp());
+  OutputVec(*out, turtle.CurrentUp());
   *out << '\n';
   *out << " "
-       << "  nargs: " << nargs << '\n';
-  for (int i = 0; i < nargs; i++)
+       << "  nargs: " << numArgs << '\n';
+  for (auto i = 0U; i < static_cast<uint32_t>(numArgs); i++)
+  {
     *out << "  "
          << "    " << args[i] << '\n';
+  }
   *out << '\n';
 
   *out << "End_Object_Group " << groupNum << '\n';

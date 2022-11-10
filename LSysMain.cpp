@@ -131,7 +131,7 @@ ofstream* SetOutputFilename(const char* ofile)
          << "-maxgen  sets number of generations to produce\n"
          << "-delta   sets default turn angle\n"
          << "-width   sets default line width\n"
-         << "-seed    sets seed value\n"
+         << "-seed    sets seed GetFloatValue\n"
          << "-display displays the L-systems produced at each generation\n"
          << "-stats   displays module stats for each generation\n";
 
@@ -179,11 +179,11 @@ void SetDefaults(
   {
     if (st.lookup("maxgen", v))
     {
-      if (int i; v.value(i))
+      if (int i; v.GetIntValue(i))
         *maxgen = i;
       else
       {
-        cerr << "Invalid value specified for maxgen: " << v << endl;
+        cerr << "Invalid GetFloatValue specified for maxgen: " << v << endl;
         exit(1);
       }
     }
@@ -195,9 +195,9 @@ void SetDefaults(
   {
     if (st.lookup("delta", v))
     {
-      if (!v.value(*delta))
+      if (!v.GetFloatValue(*delta))
       {
-        cerr << "Invalid value specified for delta: " << v << endl;
+        cerr << "Invalid GetFloatValue specified for delta: " << v << endl;
         exit(1);
       }
     }
@@ -209,9 +209,9 @@ void SetDefaults(
   {
     if (st.lookup("width", v))
     {
-      if (!v.value(*width))
+      if (!v.GetFloatValue(*width))
       {
-        cerr << "Invalid value specified for width: " << v << endl;
+        cerr << "Invalid GetFloatValue specified for width: " << v << endl;
         exit(1);
       }
     }
@@ -223,9 +223,9 @@ void SetDefaults(
   {
     if (st.lookup("distance", v))
     {
-      if (!v.value(*distance))
+      if (!v.GetFloatValue(*distance))
       {
-        cerr << "Invalid value specified for distance: " << v << endl;
+        cerr << "Invalid GetFloatValue specified for distance: " << v << endl;
         exit(1);
       }
     }
@@ -271,7 +271,7 @@ int main(int argc, const char* argv[])
     const string deltaDescr    = "sets the default turn angle";
     const string distanceDescr = "sets the default line length";
     const string widthDescr    = "sets the default line width";
-    const string seedDescr     = "sets the seed value";
+    const string seedDescr     = "sets the seed GetFloatValue";
     const string displayDescr  = "displays the L-systems produced at each generation";
     const string statsDescr    = "displays module statistics for each generation";
     const string outputDescr   = "output filename";

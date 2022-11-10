@@ -266,7 +266,7 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
     Value v = condition->Evaluate(st);
     PDebug(PD_PRODUCTION, cerr << "    [condition] -> " << v << endl);
     int i;
-    if (v.value(i) == true)
+    if (v.GetIntValue(i) == true)
       return i ? true : false;
     else
       return false;
@@ -290,8 +290,8 @@ List<Module>* Production::produce(const Module* predecessor, SymbolTable<Value>&
   }
 
   // Pick one of the successors of the production at random.
-  const float random_var       = drand48();
-  float cumulative_probability = 0;
+  const auto random_var       = static_cast<float>(drand48());
+  auto cumulative_probability = 0.0F;
 
   const List<Module>* mlist;
   const Successor* succ;
@@ -334,12 +334,11 @@ List<Module>* Production::produce(const Module* predecessor, SymbolTable<Value>&
 
 std::ostream& operator<<(std::ostream& o, const Successor& s)
 {
-  if (&s == 0)
-    return o;
-
   o << "\t-> ";
-  if (s.probability < 1)
+  if (s.probability < 1.0F)
+  {
     o << '(' << s.probability << ") ";
+  }
   o << *s.mlist;
 
   return o;
@@ -362,14 +361,15 @@ std::ostream& operator<<(std::ostream& o, const Predecessor& c)
 
 std::ostream& operator<<(std::ostream& o, const Production& p)
 {
-  if (&p == 0)
-    return o;
-
   o << "( " << p.prodname << " : " << *p.input;
   if (p.cfree)
+  {
     o << " (CF) ";
+  }
   if (p.condition)
+  {
     o << " : " << *p.condition;
+  }
   o << *p.successors;
 
   return o;

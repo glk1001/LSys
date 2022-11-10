@@ -54,11 +54,10 @@ class Value
 {
 public:
   Value();
-  Value(bool); //GLK
-  Value(int);
-  Value(float);
-  Value(double);
-  Value(const Value&);
+  explicit Value(bool value); //GLK
+  explicit Value(int value);
+  explicit Value(float value);
+  explicit Value(double value);
 
   Value operator-() const;
   Value operator~() const;
@@ -81,8 +80,8 @@ public:
   Value operator%(const Value&) const;
   Value operator^(const Value&) const;
 
-  bool value(int&) const;
-  bool value(float&) const;
+  bool GetIntValue(int& value) const;
+  bool GetFloatValue(float& value) const;
 
   friend std::ostream& operator<<(std::ostream&, const Value&);
 

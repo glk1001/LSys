@@ -46,7 +46,7 @@ namespace LSys
 SymbolTable<int>* Name::map = 0;
 char** Name::reverse_map    = 0;
 int Name::next_index        = 0;
-int Name::reverse_map_size  = 0;
+uint32_t Name::reverse_map_size  = 0U;
 
 // Amount to extend name table by when it fills up
 const int map_incr = 20;
@@ -60,23 +60,27 @@ Name::Name(const char* tag)
   if (map == 0)
     map = new SymbolTable<int>;
 
-  PDebug(PD_NAME, cerr << "Name(" << (void*)tag << std::flush << "= " << tag << ")" << endl);
+  PDebug(PD_NAME, cerr << "Name(" << tag << std::flush << "= " << tag << ")\n");
 
   // If the name already exists in the symbol table, use the assigned
   // hash value. Otherwise, enter it in the table with the next
   // sequential value.
   if (map->lookup(tag, index) == false)
   {
-    if (next_index == reverse_map_size)
+    if (next_index == static_cast<int>(reverse_map_size))
     {
       // Allocate more space for the inverse map from IDs to strings
       //GLK int size= reverse_map_size + map_incr;
       char** s = new char*[reverse_map_size + map_incr];
 
-      for (int i = 0; i < reverse_map_size; i++)
+      for (auto i = 0U; i < reverse_map_size; ++i)
+      {
         s[i] = reverse_map[i];
+      }
       if (reverse_map != 0)
+      {
         delete reverse_map;
+      }
       reverse_map = s;
       reverse_map_size += map_incr;
     }
@@ -86,10 +90,9 @@ Name::Name(const char* tag)
   }
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Name& n)
+std::ostream& operator<<(std::ostream& o, const Name& name)
 {
-  return o << (const char*)n;
+  return o << name.str();
   //  return o << "[id: " << int(n) << " name: " << (const char *)n << "]";
 }
 

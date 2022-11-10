@@ -40,6 +40,8 @@ using std::ostream;
 namespace Utilities
 {
 
+OptIter::~OptIter() = default;
+
 // I need a portable version of "tolower" that does NOT modify
 // non-uppercase characters.
 //
@@ -233,20 +235,14 @@ kwdmatch_t kwdmatch(const char* src, const char* attempt, int len = 0);
 #define pathDelimiter '/'
 #endif
 
-Options::Options()
-  : cmdname(""), optvec(0), explicitEnd(0), optctrls(Default | NoGuessing), nextchar(0), listopt(0)
-{
-}
-
-
 Options::Options(const char* name, const char* const optv[], const char* const optDescriptions[])
-  : cmdname(name),
+  : explicitEnd(0),
+    optctrls(Default),
     optvec(optv),
     optDesc(optDescriptions),
-    explicitEnd(0),
-    optctrls(Default),
     nextchar(0),
-    listopt(0)
+    listopt(0),
+    cmdname(name)
 {
   const char* basename = ::strrchr(cmdname, pathDelimiter);
   if (basename != 0)
@@ -254,6 +250,7 @@ Options::Options(const char* name, const char* const optv[], const char* const o
   this->CheckSyntax();
 }
 
+Options::~Options() = default;
 
 void Options::SetOptions(const char* name,
                          const char* const optv[],
@@ -267,12 +264,6 @@ void Options::SetOptions(const char* name,
     cmdname = basename + 1;
   this->CheckSyntax();
 }
-
-
-Options::~Options()
-{
-}
-
 
 // Make sure each option-specifier has correct syntax.
 //
@@ -528,7 +519,10 @@ int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
       nextchar -= 1;
       optctrls |= (Options::Quiet | Options::NoGuessing);
       int optchar = ParseLongOpt(iter, optarg, longOpt);
-      optctrls    = save_ctrls;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+      optctrls = save_ctrls;
+#pragma GCC diagnostic pop
       if (optchar > 0)
       {
         return optchar;
@@ -631,7 +625,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
   const char* val = strpbrk(nextchar, ":=");
   if (val)
   {
-    len = val - nextchar;
+    len = static_cast<int>(val - nextchar);
     ++val;
   }
 
@@ -648,7 +642,10 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
       const char* save_nextchar = nextchar;
       optctrls |= (Options::Quiet | Options::NoGuessing);
       int optchar = ParseOpt(iter, optarg, longOpt);
-      optctrls    = save_ctrls;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+      optctrls = save_ctrls;
+#pragma GCC diagnostic pop
       if (optchar > 0)
       {
         return optchar;
@@ -709,8 +706,9 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
   optarg = 0;
   if (optspec.isValRequired() && !(optctrls & Options::Quiet))
   {
-    const char* spc       = ::strchr(*longOpt, ' ');
-    const int longopt_len = (spc != 0) ? spc - *longOpt : ::strlen(*longOpt);
+    const auto* spc = ::strchr(*longOpt, ' ');
+    const auto longopt_len =
+        (spc != nullptr) ? static_cast<int>(spc - *longOpt) : static_cast<int>(::strlen(*longOpt));
     cerr << cmdname << ": argument required for " << ((optctrls & Options::LongOnly) ? "-" : "--");
     cerr.write(*longOpt, longopt_len) << " option." << endl;
   }
@@ -981,9 +979,12 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
 #ifdef NO_USAGE
   return (*buf = '\0');
 #else
-  static char default_value[] = "<value>";
+  static char default_value[] = "<GetFloatValue>";
   if (isHiddenOpt())
-    return (unsigned)(*buf = '\0');
+  {
+    *buf = '\0';
+    return static_cast<unsigned int>(*buf);
+  }
   char optchar        = this->OptChar();
   const char* longopt = this->LongOpt();
   const char* optDesc = this->Description();
@@ -996,17 +997,19 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   if (longopt)
   {
     value       = ::strchr(longopt, ' ');
-    longopt_len = (value) ? (value - longopt) : ::strlen(longopt);
+    longopt_len = (value) ? static_cast<int>(value - longopt) : static_cast<int>(::strlen(longopt));
   }
   else
   {
     value = ::strchr(spec + 1, ' ');
   }
   while (value && (*value == ' '))
+  {
     ++value;
+  }
   if (value && *value)
   {
-    value_len = ::strlen(value);
+    value_len = static_cast<int>(::strlen(value));
   }
   else
   {
@@ -1039,7 +1042,9 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   }
 
   if ((!isNullOpt(optchar)) && (longopt))
+  {
     *(p++) = '|';
+  }
 
   // print the long option
   if (longopt)
@@ -1049,7 +1054,7 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
     {
       *(p++) = '-';
     }
-    strncpy(p, longopt, longopt_len);
+    strncpy(p, longopt, static_cast<size_t>(longopt_len));
     p += longopt_len;
   }
 
@@ -1058,7 +1063,9 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   {
     *(p++) = ' ';
     if (isValOptional())
+    {
       *(p++) = '[';
+    }
     strcpy(p, value);
     p += value_len;
     if (isList())
@@ -1067,7 +1074,9 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
       p += 4;
     }
     if (isValOptional())
+    {
       *(p++) = ']';
+    }
   }
   *(p++) = ']';
 
@@ -1079,15 +1088,9 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   *p = '\0';
   strcat(p, optDesc);
 
-  return (unsigned)strlen(buf);
+  return static_cast<unsigned int>(strlen(buf));
 #endif
 }
-
-
-OptIter::~OptIter()
-{
-}
-
 
 const char* OptIter::operator()()
 {

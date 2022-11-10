@@ -47,20 +47,14 @@ const char CommandLineOptions::optTypeChar[oneOrMoreArgs + 1] = {
 };
 
 
-CommandLineOptions::CommandLineOptions(bool use_f_flag)
-  : rawOptions(new Options),
-    optionDefinitions(0),
-    optionDescriptions(0),
-    minNumPositional(0),
-    maxNumPositional(0),
-    positionalParams(0)
+CommandLineOptions::CommandLineOptions(const bool use_f_flag)
+  : rawOptions{new Options}
 {
   if (use_f_flag)
   {
     this->Add(CommandLineOptionBase('f', "control <string>", "", optionalArg));
   }
 }
-
 
 CommandLineOptions::~CommandLineOptions()
 {
@@ -83,15 +77,17 @@ void CommandLineOptions::FreeCmdOptions()
 
 void CommandLineOptions::FreeOptionDefinitions()
 {
-  if (optionDefinitions != 0)
+  if (optionDefinitions != nullptr)
   {
     int i = 0;
     while (true)
     {
       if (optionDefinitions[i] == 0)
+      {
         break;
-      free((void*)(optionDefinitions[i]));
-      i++;
+      }
+      free(reinterpret_cast<void*>(const_cast<char*>(optionDefinitions[i])));
+      ++i;
     }
     delete[] optionDefinitions;
   }
@@ -100,15 +96,17 @@ void CommandLineOptions::FreeOptionDefinitions()
 
 void CommandLineOptions::FreeOptionDescriptions()
 {
-  if (optionDescriptions != 0)
+  if (optionDescriptions != nullptr)
   {
     int i = 0;
     while (true)
     {
       if (optionDescriptions[i] == 0)
+      {
         break;
-      free((void*)(optionDescriptions[i]));
-      i++;
+      }
+      free(reinterpret_cast<void*>(const_cast<char*>(optionDescriptions[i])));
+      ++i;
     }
     delete[] optionDescriptions;
   }
@@ -238,7 +236,7 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
       positionalParams->push_back(argv[i]);
   }
 
-  const int numPositional = positionalParams->size();
+  const auto numPositional = static_cast<int>(positionalParams->size());
   if (numPositional < minNumPositional)
   {
     if (!(rawOptions->Controls() & Options::Quiet))

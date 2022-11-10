@@ -49,29 +49,29 @@ const int stackdepth = 100;
 const float relative_line_width = 1;
 
 
-Turtle::Turtle(float delta, float wscale) : pos(0, 0, 0), bbox(pos)
+Turtle::Turtle(float delta, float wscale) : m_position(0, 0, 0), m_boundingBox(m_position)
 {
   // Allocate and initialize turtle state stack
-  stackptr         = 0;
-  f                = new Matrix[stackdepth];
-  p                = new Vector[stackdepth];
-  t                = new TropismInfo[stackdepth];
-  d                = new float[stackdepth];
-  defaultTurnStack = new float[stackdepth];
-  w                = new float[stackdepth];
-  c                = new Color[stackdepth];
-  colorBackStack   = new Color[stackdepth];
-  textureStack     = new int[stackdepth];
+  m_stackPtr         = 0;
+  m_framePtr         = new Matrix[stackdepth];
+  m_positionPtr      = new Vector[stackdepth];
+  m_tropismPtr       = new TropismInfo[stackdepth];
+  m_defaultDistPtr   = new float[stackdepth];
+  m_defaultTurnStack = new float[stackdepth];
+  m_widthPtr         = new float[stackdepth];
+  m_colorPtr         = new Color[stackdepth];
+  m_colorBackStack   = new Color[stackdepth];
+  m_textureStack     = new int[stackdepth];
 
   this->SetDefaults(wscale, delta);
 
   // Set up initial frame and position, moving in +X with up in Z
-  frame.identity();
+  m_frame.identity();
   this->SetGravity(this->CurrentHeading());
 
   // Default tropism vector is towards ground, but tropism is disabled
   this->SetTropismVector(-this->CurrentHeading());
-  this->SetTropismVector(0.2);
+  this->SetTropismVector(0.2F);
   this->DisableTropism();
 
   //  this->SetWidth(1);
@@ -85,136 +85,136 @@ Turtle::Turtle(float delta, float wscale) : pos(0, 0, 0), bbox(pos)
 
 Turtle::~Turtle()
 {
-  delete[] f;
-  delete[] p;
-  delete[] t;
-  delete[] defaultTurnStack;
-  delete[] d;
-  delete[] w;
-  delete[] c;
-  delete[] colorBackStack;
-  delete[] textureStack;
+  delete[] m_framePtr;
+  delete[] m_positionPtr;
+  delete[] m_tropismPtr;
+  delete[] m_defaultTurnStack;
+  delete[] m_defaultDistPtr;
+  delete[] m_widthPtr;
+  delete[] m_colorPtr;
+  delete[] m_colorBackStack;
+  delete[] m_textureStack;
 }
 
 
 // CurrentHeading is first column of frame
 Vector Turtle::CurrentHeading() const
 {
-  return Vector(frame[0][0], frame[1][0], frame[2][0]);
+  return Vector(m_frame[0][0], m_frame[1][0], m_frame[2][0]);
 }
 
 
 // Set heading
 void Turtle::SetHeading(const Vector& CurrentHeading)
 {
-  frame[0][0] = CurrentHeading(0);
-  frame[1][0] = CurrentHeading(1);
-  frame[2][0] = CurrentHeading(2);
+  m_frame[0][0] = CurrentHeading(0);
+  m_frame[1][0] = CurrentHeading(1);
+  m_frame[2][0] = CurrentHeading(2);
 }
 
 
 // CurrentLeft is second column of frame
 Vector Turtle::CurrentLeft() const
 {
-  return Vector(frame[0][1], frame[1][1], frame[2][1]);
+  return Vector(m_frame[0][1], m_frame[1][1], m_frame[2][1]);
 }
 
 
 // Set left
 void Turtle::SetLeft(const Vector& l)
 {
-  frame[0][1] = l(0);
-  frame[1][1] = l(1);
-  frame[2][1] = l(2);
+  m_frame[0][1] = l(0);
+  m_frame[1][1] = l(1);
+  m_frame[2][1] = l(2);
 }
 
 
 // CurrentUp is third column of frame
 Vector Turtle::CurrentUp() const
 {
-  return Vector(frame[0][2], frame[1][2], frame[2][2]);
+  return Vector(m_frame[0][2], m_frame[1][2], m_frame[2][2]);
 }
 
 
 // Set up
 void Turtle::SetUp(const Vector& u)
 {
-  frame[0][2] = u(0);
-  frame[1][2] = u(1);
-  frame[2][2] = u(2);
+  m_frame[0][2] = u(0);
+  m_frame[1][2] = u(1);
+  m_frame[2][2] = u(2);
 }
 
 
 // Set the whole frame at once
 void Turtle::SetFrame(const Matrix& m)
 {
-  frame = m;
+  m_frame = m;
 }
 
 
 // Set the antigravity vector
 void Turtle::SetGravity(const Vector& gvec)
 {
-  gravity = gvec;
+  m_gravity = gvec;
 }
 
 
-void Turtle::SetTropismVector(const Vector& t)
+void Turtle::SetTropismVector(const Vector& vec)
 {
-  tropism.tropismVector = t;
+  m_tropism.tropismVector = vec;
 }
 
 
-void Turtle::SetTropismVector(float e)
+void Turtle::SetTropismVector(const float susceptibility)
 {
-  tropism.susceptibility = e;
+  m_tropism.susceptibility = susceptibility;
 }
 
 
 void Turtle::DisableTropism()
 {
-  tropism.flag = false;
+  m_tropism.flag = false;
 }
 
 
 void Turtle::EnableTropism()
 {
-  tropism.flag = true;
+  m_tropism.flag = true;
 }
 
 // Set line width
-void Turtle::SetWidth(float w)
+void Turtle::SetWidth(const float width)
 {
   //  width= w * widthScale * relative_line_width;
-  width = w;
+  m_width = width;
 }
 
 
 // Get the default drawing parameters
 void Turtle::GetDefaults(float* wscale, float* delta)
 {
-  *wscale = widthScale;
-  *delta  = Maths::ToDegrees(defaultTurn);
+  *wscale = m_widthScale;
+  *delta  = Maths::ToDegrees(m_defaultTurn);
 }
 
 
 // Set the default drawing parameters
 void Turtle::SetDefaults(float wscale, float delta)
 {
-  widthScale  = wscale;
-  defaultTurn = Maths::ToRadians(delta);
+  m_widthScale  = wscale;
+  m_defaultTurn = Maths::ToRadians(delta);
 }
 
 
 void Turtle::SetDefaultDistance(float d)
 {
-  defaultDist = d;
+  m_defaultDist = d;
 }
 
 
 void Turtle::SetDefaultTurnAngle(float a)
 {
-  defaultTurn = Maths::ToRadians(a);
+  m_defaultTurn = Maths::ToRadians(a);
 }
 
 
@@ -222,35 +222,35 @@ void Turtle::SetDefaultTurnAngle(float a)
 // It may index a color map or define a grayscale value.
 void Turtle::SetColor(int c)
 {
-  color = Color(c);
+  m_color = Color(c);
 }
 
 void Turtle::SetColor(int c1, int c2)
 {
-  color     = Color(c1);
-  colorBack = Color(c2);
+  m_color     = Color(c1);
+  m_colorBack = Color(c2);
 }
 
 
 // Set color index. This is interpreted by the output generator.
 void Turtle::SetTexture(int t)
 {
-  texture = t;
+  m_texture = t;
 }
 
 
 // Set RGB color
 void Turtle::SetColor(const Vector& c)
 {
-  color = Color(c);
+  m_color = Color(c);
 }
 
 
 // Increment the current color index
 void Turtle::IncrementColor()
 {
-  if (color.type == COLOR_INDEX)
-    color.c.index++;
+  if (m_color.type == COLOR_INDEX)
+    m_color.m_color.index++;
   else
     std::cerr << "Turtle::increment_color(): current color is RGB, not index!" << std::endl;
 }
@@ -260,15 +260,15 @@ void Turtle::IncrementColor()
 void Turtle::Turn(direction d)
 {
   if (d == positive)
-    frame.rotate(Matrix::z, defaultTurn);
+    m_frame.rotate(Matrix::z, m_defaultTurn);
   else
-    frame.rotate(Matrix::z, -defaultTurn);
+    m_frame.rotate(Matrix::z, -m_defaultTurn);
 }
 
 
 void Turtle::Turn(float alpha)
 {
-  frame.rotate(Matrix::z, alpha);
+  m_frame.rotate(Matrix::z, alpha);
 }
 
 
@@ -276,15 +276,15 @@ void Turtle::Turn(float alpha)
 void Turtle::Pitch(direction d)
 {
   if (d == positive)
-    frame.rotate(Matrix::y, defaultTurn);
+    m_frame.rotate(Matrix::y, m_defaultTurn);
   else
-    frame.rotate(Matrix::y, -defaultTurn);
+    m_frame.rotate(Matrix::y, -m_defaultTurn);
 }
 
 
 void Turtle::Pitch(float alpha)
 {
-  frame.rotate(Matrix::y, alpha);
+  m_frame.rotate(Matrix::y, alpha);
 }
 
 
@@ -292,22 +292,22 @@ void Turtle::Pitch(float alpha)
 void Turtle::Roll(direction d)
 {
   if (d == positive)
-    frame.rotate(Matrix::x, defaultTurn);
+    m_frame.rotate(Matrix::x, m_defaultTurn);
   else
-    frame.rotate(Matrix::x, -defaultTurn);
+    m_frame.rotate(Matrix::x, -m_defaultTurn);
 }
 
 
 void Turtle::Roll(float alpha)
 {
-  frame.rotate(Matrix::x, alpha);
+  m_frame.rotate(Matrix::x, alpha);
 }
 
 
 // Spin around 180 degrees
 void Turtle::Reverse()
 {
-  frame.reverse();
+  m_frame.reverse();
 }
 
 
@@ -315,83 +315,82 @@ void Turtle::Reverse()
 // vector (see pg. 57).
 void Turtle::RollHorizontal()
 {
-  const float tolerance = 1e-4;
-  Vector H              = CurrentHeading();
-  Vector l              = gravity ^ H;
-  Vector u;
+  static constexpr auto tolerance = 1e-4F;
+
+  const auto heading = CurrentHeading();
+  auto left          = m_gravity ^ heading;
 
   // Don't do anything if heading is too close to the antigravity vector
-  float m = l.magnitude();
-  if (m < tolerance)
+  auto magnitude = left.magnitude();
+  if (magnitude < tolerance)
+  {
     return;
+  }
 
   // new CurrentLeft vector is normalized v ^ CurrentHeading
-  m = 1 / m;
-  l[0] *= m;
-  l[1] *= m;
-  l[2] *= m;
+  magnitude = 1.0F / magnitude;
+  left[0] *= magnitude;
+  left[1] *= magnitude;
+  left[2] *= magnitude;
 
-  // new CurrentUp vector is fixed by CurrentHeading and l
-  u = H ^ l;
+  // New CurrentUp vector is fixed by heading and left
+  const auto up = heading ^ left;
 
-  // reset the CurrentLeft and CurrentUp vectors
-  SetLeft(l);
-  SetUp(u);
+  // Reset the CurrentLeft and CurrentUp vectors
+  SetLeft(left);
+  SetUp(up);
 }
-
 
 void Turtle::Move()
 {
-  this->Move(defaultDist);
+  this->Move(m_defaultDist);
 }
 
-
-// Move along heading vector for distance d.
+// Move along heading vector for distance.
 // Keep track of the motion bounds and apply a tropism correction
 // if that is enabled.
-void Turtle::Move(float d)
+void Turtle::Move(const float distance)
 {
-  pos += d * this->CurrentHeading();
-  bbox.Expand(pos);
+  m_position += distance * this->CurrentHeading();
+  m_boundingBox.Expand(m_position);
 
   // Apply tropism, if enabled.
   // This consists of rotating by the vector e (CurrentHeading ^ T).
-  if (tropism.flag && (tropism.susceptibility != 0))
+  if (m_tropism.flag && (m_tropism.susceptibility != 0))
   {
-    const Vector a = CurrentHeading() ^ tropism.tropismVector;
+    const Vector a = CurrentHeading() ^ m_tropism.tropismVector;
     // This is bogus ??????????????????????????????????????????????????????????
     // const float m= a.magnitude();
     //if (m != 0)
-    frame.rotate(a, tropism.susceptibility);
+    m_frame.rotate(a, m_tropism.susceptibility);
   }
 }
-
 
 // Save state
 // Handle over/underflow gracefully
 void Turtle::Push()
 {
-  if (stackptr < 0)
+  if (m_stackPtr < 0)
   {
     std::cerr << "Turtle::Push(): can't Push below bottom of stack!" << std::endl;
   }
-  else if (stackptr >= stackdepth - 1)
+  else if (m_stackPtr >= stackdepth - 1)
   {
     std::cerr << "Turtle::Push(): stack depth exceeded, lost new frame!" << std::endl;
   }
   else
   {
-    defaultTurnStack[stackptr] = defaultTurn;
-    d[stackptr]                = defaultDist;
-    f[stackptr]                = frame;
-    t[stackptr]                = tropism;
-    p[stackptr]                = pos;
-    w[stackptr]                = width;
-    c[stackptr]                = color;
-    colorBackStack[stackptr]   = colorBack;
-    textureStack[stackptr]     = texture;
+    m_defaultTurnStack[m_stackPtr] = m_defaultTurn;
+    m_defaultDistPtr[m_stackPtr]   = m_defaultDist;
+    m_framePtr[m_stackPtr]         = m_frame;
+    m_tropismPtr[m_stackPtr]       = m_tropism;
+    m_positionPtr[m_stackPtr]      = m_position;
+    m_widthPtr[m_stackPtr]         = m_width;
+    m_colorPtr[m_stackPtr]         = m_color;
+    m_colorBackStack[m_stackPtr]   = m_colorBack;
+    m_textureStack[m_stackPtr]     = m_texture;
   }
-  stackptr++;
+  m_stackPtr++;
 }
 
 
@@ -399,27 +398,27 @@ void Turtle::Push()
 // Handle over/underflow gracefully
 void Turtle::Pop()
 {
-  if (stackptr > stackdepth)
+  if (m_stackPtr > stackdepth)
   {
     std::cerr << "Turtle::Pop(): can't restore lost frame!" << std::endl;
   }
-  else if (stackptr <= 0)
+  else if (m_stackPtr <= 0)
   {
     std::cerr << "Turtle::Pop(): cannot Pop frame below bottom of stack!" << std::endl;
   }
   else
   {
-    frame       = f[stackptr - 1];
-    tropism     = t[stackptr - 1];
-    pos         = p[stackptr - 1];
-    width       = w[stackptr - 1];
-    color       = c[stackptr - 1];
-    colorBack   = colorBackStack[stackptr - 1];
-    texture     = textureStack[stackptr - 1];
-    defaultDist = d[stackptr - 1];
-    defaultTurn = defaultTurnStack[stackptr - 1];
+    m_frame       = m_framePtr[m_stackPtr - 1];
+    m_tropism     = m_tropismPtr[m_stackPtr - 1];
+    m_position    = m_positionPtr[m_stackPtr - 1];
+    m_width       = m_widthPtr[m_stackPtr - 1];
+    m_color       = m_colorPtr[m_stackPtr - 1];
+    m_colorBack   = m_colorBackStack[m_stackPtr - 1];
+    m_texture     = m_textureStack[m_stackPtr - 1];
+    m_defaultDist = m_defaultDistPtr[m_stackPtr - 1];
+    m_defaultTurn = m_defaultTurnStack[m_stackPtr - 1];
   }
-  stackptr--;
+  m_stackPtr--;
 }
 
 
@@ -441,7 +440,7 @@ std::ostream& operator<<(std::ostream& o, Turtle& t)
     << "\tH  =         " << t.CurrentHeading() << '\n'
     << "\tL  =         " << t.CurrentLeft() << '\n'
     << "\tU  =         " << t.CurrentUp() << '\n'
-    << "\tTropism=     " << t.tropism << '\n'
+    << "\tTropism=     " << t.m_tropism << '\n'
     << "\tcolor index= " << t.CurrentColor() << '\n'
     << "\tdefaultDist= " << t.DefaultDistance() << '\n'
     << "\twidth=       " << t.CurrentWidth() << std::endl;
@@ -453,13 +452,13 @@ std::ostream& operator<<(std::ostream& o, Turtle& t)
 float Color::graylevel() const
 {
   if (type == COLOR_INDEX)
-    return c.index / 100.0;
-  else
   {
-    Vector* v = (Vector*)&c.rgb;
-    // G= .3R + .6G + .1B
-    return .3 * (*v)(0) + .6 * (*v)(1) + .1 * (*v)(2);
+    return static_cast<float>(m_color.index) / 100.0F;
   }
+
+  const auto* v = reinterpret_cast<const Vector*>(&m_color.rgb);
+  // G= .3R + .6G + .1B
+  return (0.3F * (*v)(0)) + (0.6F * (*v)(1)) + (0.1F * (*v)(2));
 }
 
 
@@ -471,8 +470,8 @@ Vector Color::rgbcolor() const
     const float g = graylevel();
     return Vector(g, g, g);
   }
-  else
-    return *(const Vector*)&c.rgb;
+
+  return *reinterpret_cast<const Vector*>(&m_color.rgb);
 }
 
 
@@ -484,7 +483,7 @@ bool Color::operator==(const Color& b) const
   }
   if (type == COLOR_INDEX)
   {
-    return c.index == b.c.index;
+    return m_color.index == b.m_color.index;
   }
   return rgbcolor() == b.rgbcolor();
 }
@@ -493,7 +492,7 @@ bool Color::operator==(const Color& b) const
 std::ostream& operator<<(std::ostream& o, const Color& c)
 {
   if (c.type == COLOR_INDEX)
-    o << "index = " << c.c.index;
+    o << "index = " << c.m_color.index;
   else
     o << "RGB = " << c.rgbcolor();
   return o;

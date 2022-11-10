@@ -12,9 +12,9 @@ namespace Maths
 {
 inline constexpr auto SMALL_FLOAT = 0.00001F;
 
-[[nodiscard]] auto Round(double val, int numDecimalPlaces) -> double;
+[[nodiscard]] auto Round(float val, int numDecimalPlaces) -> float;
 
-[[nodiscard]] constexpr auto sq(const double val) -> double
+[[nodiscard]] constexpr auto sq(const float val) -> float
 {
   return val * val;
 }

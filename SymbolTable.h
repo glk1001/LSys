@@ -70,7 +70,9 @@ bool SymbolTable<T>::lookup(const std::string& name, T& v) const
 {
   typename SymbolTableMap::const_iterator iter = symTable.find(name);
   if (iter == symTable.end())
+  {
     return false;
+  }
   v = iter->second.Value();
   return true;
 }

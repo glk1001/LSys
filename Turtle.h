@@ -60,18 +60,15 @@ struct Color
   {
     int index;
     char rgb[sizeof(Vector)];
-  } c;
+  } m_color{};
 
-  Color() {}
-  explicit Color(const int i)
+  Color() = default;
+  explicit Color(const int i) : type{COLOR_INDEX} { m_color.index = i; }
+  explicit Color(const Vector& v) : type{COLOR_RGB}
   {
-    type    = COLOR_INDEX;
-    c.index = i;
-  }
-  explicit Color(const Vector& v)
-  {
-    type            = COLOR_RGB;
-    *(Vector*)c.rgb = v;
+    m_color.rgb[0] = static_cast<char>(v[0]);
+    m_color.rgb[1] = static_cast<char>(v[1]);
+    m_color.rgb[2] = static_cast<char>(v[2]);
   }
 
   float graylevel() const; // Force interpretation as gray scale [0..1]
@@ -95,9 +92,9 @@ public:
 
   void GetDefaults(float* wscale, float* delta);
   void SetDefaults(float wscale, float delta);
-  BoundingBox Bounds() const { return bbox; }
+  BoundingBox Bounds() const { return m_boundingBox; }
 
-  Vector Location() const { return pos; }
+  Vector Location() const { return m_position; }
 
   // Methods to modify turtle parameters
   Vector CurrentHeading() const;
@@ -107,35 +104,35 @@ public:
   Vector CurrentUp() const;
   void SetUp(const Vector&);
 
-  float DefaultDistance() const { return defaultDist; }
+  float DefaultDistance() const { return m_defaultDist; }
   void SetDefaultDistance(float d = 1);
 
-  float DefaultTurnAngle() const { return Maths::ToDegrees(defaultTurn); }
+  float DefaultTurnAngle() const { return Maths::ToDegrees(m_defaultTurn); }
   void SetDefaultTurnAngle(float a = 90);
 
-  Matrix CurrentFrame() const { return frame; }
+  Matrix CurrentFrame() const { return m_frame; }
   void SetFrame(const Matrix&);
   void SetGravity(const Vector&);
 
-  float CurrentWidth() const { return width; }
+  float CurrentWidth() const { return m_width; }
   //      float CurrentUnscaledWidth() const;
-  void SetWidth(float w = 1);
+  void SetWidth(float width = 1);
 
-  Color CurrentColor() const { return color; }
-  Color CurrentBackColor() const { return colorBack; }
+  Color CurrentColor() const { return m_color; }
+  Color CurrentBackColor() const { return m_colorBack; }
   void IncrementColor();
   void SetColor(int c = 0);
   void SetColor(int c1, int colorBack);
   void SetColor(const Vector&);
 
-  int CurrentTexture() const { return texture; } // Line texture
+  int CurrentTexture() const { return m_texture; } // Line texture
   void SetTexture(int t = 0);
 
   // Functions for enabling/disabling application of tropism
   // after each segment is drawn.
-  TropismInfo GetTropism() const { return tropism; }
+  TropismInfo GetTropism() const { return m_tropism; }
   void SetTropismVector(const Vector&);
-  void SetTropismVector(float e);
+  void SetTropismVector(float susceptibility);
   void DisableTropism();
   void EnableTropism();
 
@@ -163,23 +160,45 @@ public:
   friend std::ostream& operator<<(std::ostream&, Turtle&);
 
 private:
-  Matrix frame, *f; // Orientation frame of turtle
-  Vector pos, *p; // Position of turtle
-  float defaultDist, *d; // Standard distance to Move turtle
-  float defaultTurn, *defaultTurnStack;
-  float width, *w; // Line width
-  Color color, *c; // Color index
-  Color colorBack, *colorBackStack;
-  int texture, *textureStack; // Texture index
-  TropismInfo tropism, *t; // Tropism
+  // Orientation frame of turtle
+  Matrix m_frame;
+  Matrix* m_framePtr;
 
-  int stackptr; // Stack depth
+  // Position of turtle
+  Vector m_position;
+  Vector* m_positionPtr;
 
-  BoundingBox bbox; // Bounding box of turtle path
+  // Standard distance to Move turtle
+  float m_defaultDist;
+  float* m_defaultDistPtr;
 
-  Vector gravity; // Antigravity vector
+  float m_defaultTurn;
+  float* m_defaultTurnStack;
 
-  float widthScale; // Amount to scale linewidth by
+  // Line width
+  float m_width;
+  float* m_widthPtr;
+
+  // Color index
+  Color m_color;
+  Color* m_colorPtr;
+  Color m_colorBack;
+  Color* m_colorBackStack;
+
+  // Texture index
+  int m_texture;
+  int* m_textureStack;
+
+  TropismInfo m_tropism;
+  TropismInfo* m_tropismPtr;
+
+  int m_stackPtr; // Stack depth
+
+  BoundingBox m_boundingBox; // Bounding box of turtle path
+
+  Vector m_gravity; // Antigravity vector
+
+  float m_widthScale; // Amount to scale linewidth by
 };
 
 std::ostream& operator<<(std::ostream&, TropismInfo&);

@@ -45,8 +45,14 @@ extern int ParseDebug;
 
 #define PDEBUG_ENABLED
 #ifdef PDEBUG_ENABLED
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wextra"
 #define PDebug(level, code) \
   [&]() { if (ParseDebug) { code; } } ()
+#pragma GCC diagnostic pop
+
 #else
 #define PDebug(level, code)
 #endif

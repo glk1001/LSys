@@ -214,7 +214,7 @@ typedef EXPRFUNC((*Exprfunc));
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(x * drand48());
+    return Value(static_cast<double>(x) * drand48());
   }
   return Value(drand48());
 }
@@ -327,11 +327,11 @@ std::ostream& operator<<(std::ostream& o, const Expression& expression)
 Expression::Expression(const int o, Expression* const lop, Expression* const rop) : op{o}
 {
   PDebug(PD_EXPRESSION,
-         cerr << "Creating expression w/op " << o << "='" << (char)o << "'"
-              << " &lhs= " << (void*)lop << " &rhs= " << (void*)rop << endl);
+         cerr << "Creating expression w/op " << o << "='" << static_cast<char>(o) << "'"
+              << " &lhs= " << lop << " &rhs= " << rop << "\n");
 
-  val.args[0] = lop;
-  val.args[1] = rop;
+  m_expressionValue.args[0] = lop;
+  m_expressionValue.args[1] = rop;
 }
 
 // Create a function call node, or a named variable node if there are
@@ -344,8 +344,8 @@ Expression::Expression(const Name& name, List<Expression>* const funcArgs)
            cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << endl);
 
     op            = LSYS_NAME;
-    val.name.id   = name;
-    val.name.args = nullptr;
+    m_expressionValue.name.id   = name;
+    m_expressionValue.name.args = nullptr;
   }
   else
   {
@@ -354,8 +354,8 @@ Expression::Expression(const Name& name, List<Expression>* const funcArgs)
                 << endl);
 
     op            = LSYS_FUNCTION;
-    val.name.id   = name;
-    val.name.args = funcArgs;
+    m_expressionValue.name.id   = name;
+    m_expressionValue.name.args = funcArgs;
   }
 }
 
@@ -366,7 +366,7 @@ Expression::Expression(const Value& value) : op{LSYS_VALUE}
   PDebug(PD_EXPRESSION,
          cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << endl);
 
-  *(Value*)&val.v = value;
+  m_expressionValue.value = value;
 }
 
 Expression::~Expression()
@@ -387,8 +387,8 @@ Expression::~Expression()
       break;
     default:
       PDebug(PD_EXPRESSION,
-             cerr << "Deleting expression::op= " << op << " kids @ " << (void*)GetLChild() << " @ "
-                  << (void*)GetRChild() << endl);
+             cerr << "Deleting expression::op= " << op << " kids @ " << GetLChild() << " @ "
+                  << GetRChild() << "\n");
       delete GetLChild();
       delete GetRChild();
       break;
@@ -404,8 +404,8 @@ auto Expression::GetName() const -> Name
 
 auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 {
-  Value v;
-  Anyptr p;
+  Value value;
+  Anyptr anyPtr;
 
   switch (op)
   {
@@ -413,22 +413,22 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       return GetValue();
 
     case LSYS_FUNCTION:
-      if (funcTab == nullptr)
+      if (nullptr == funcTab)
       {
         SetupFunctions();
       }
-      if (funcTab->lookup(GetFuncName(), p))
+      if (funcTab->lookup(GetFuncName(), anyPtr))
       {
-        const Exprfunc func = (Exprfunc)p;
+        const auto func = reinterpret_cast<Exprfunc>(anyPtr);
         return (*func)(symbolTable, *GetFuncArgs());
       }
       cerr << "Unimplemented function '" << GetFuncName() << "'\n";
       return Value();
 
     case LSYS_NAME:
-      if (symbolTable.lookup(GetVarName(), v))
+      if (symbolTable.lookup(GetVarName(), value))
       {
-        return v;
+        return value;
       }
       cerr << "Fatal error in Expression::Evaluate: no bound variable '" << GetVarName() << "'\n";
       return Value();
@@ -624,7 +624,7 @@ auto GetFloat(const SymbolTable<Value>& symbolTable,
 {
   if (Value v; GetValue(symbolTable, expressionList, v, n))
   {
-    return v.value(val);
+    return v.GetFloatValue(val);
   }
   return false;
 }
