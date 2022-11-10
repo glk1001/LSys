@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSharedSettings">
+    <configurations>
+      <configuration PROFILE_NAME="gcc-12" ENABLED="true" GENERATION_DIR="build-clion-gcc-12-Debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="gcc-12" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -DYYDEBUG=1;PDEBUG_ENABLED=1 -D_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1" BUILD_OPTIONS="-- -j 6" />
+    </configurations>
+  </component>
+</project>
