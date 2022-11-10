@@ -43,114 +43,100 @@ using std::endl;
 namespace LSys
 {
 
-
-// These Names are used in context matching to ascend/descend tree levels
-Name LBRACKET("["), RBRACKET("]");
-
-Module::Module(const Name& n, List<Expression>* elist, bool ignore) : tag(n)
+Module::Module(const Name& name, List<Expression>* expressionList, const bool ignoreFlag)
+  : m_tag(name), m_ignoreFlag{ignoreFlag}, m_param{expressionList}
 {
-
-  //PDebug(PD_MEMLEAK, memalloc("Module::Module(name,elist,ignore)", this));
-  param      = elist;
-  ignoreflag = (ignore == true);
-  emptyflag  = 0;
-
   PDebug(PD_MODULE, cerr << "Creating module " << *this << " @ " << this << "\n");
 }
 
-
-Module::Module(Module& m) : tag(m.tag)
+Module::Module(const Module& mod)
+  : m_tag(mod.m_tag), m_ignoreFlag{mod.m_ignoreFlag}, m_emptyFlag{false}, m_param{mod.m_param}
 {
-  //PDebug(PD_MEMLEAK, memalloc("Module::Module(Module &)", this));
-  param      = m.param;
-  ignoreflag = m.ignoreflag;
-  emptyflag  = 0;
-
   PDebug(PD_MODULE, cerr << "Copying module " << *this << "\n");
 }
 
-
 Module::~Module()
 {
-  //PDebug(PD_MEMLEAK, memfree("Module::~Module()", this));
   PDebug(PD_MODULE, cerr << "Deleting module @ " << this << "\n");
 
-  if (emptyflag == 0)
-    delete param;
+  if (not m_emptyFlag)
+  {
+    delete m_param;
+  }
 }
-
 
 // Don't delete parameter list when destructor called, even if it's
 //  dynamically allocated.
-void Module::empty()
+void Module::Empty()
 {
-  emptyflag = 1;
+  m_emptyFlag = true;
 }
-
 
 // Bind symbolic names of the module to values in module 'values'
 //  using symbol table st for evaluation and binding. The two
 //  modules should conform() for this method to succeed.
-bool Module::bind(const Module& values, SymbolTable<Value>& st) const
+bool Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const
 {
   PDebug(PD_MODULE, cerr << "Module::Bind: formals= " << *this << " values= " << values << endl);
 
-  if (not LSys::Bind(param, values.param, st))
+  if (not LSys::Bind(m_param, values.m_param, symbolTable))
   {
     cerr << "failure binding module " << values << " to " << *this << endl;
     return false;
   }
-  else
-    return true;
-}
 
+  return true;
+}
 
 // Check if module 'm' is conformant with the module, e.g.,
 //  that they have the same name and their expression lists are
 //  conformant.
-bool Module::conforms(const Module& m) const
+bool Module::Conforms(const Module& mod) const
 {
-  if (tag != m.tag)
+  if (m_tag != mod.m_tag)
+  {
     return false;
+  }
 
-  return LSys::Conforms(param, m.param);
+  return LSys::Conforms(m_param, mod.m_param);
 }
-
 
 // Instantiate the module; that is, return a copy with all of the
 //  module's expressions evaluated in the context of the symbol table.
-Module* Module::instantiate(SymbolTable<Value>& st) const
+Module* Module::Instantiate(SymbolTable<Value>& symbolTable) const
 {
-  List<Expression>* el = LSys::Instantiate(param, st);
-  Module* new_m        = new Module(Name(tag), el, ignoreflag ? true : false);
+  List<Expression>* el = LSys::Instantiate(m_param, symbolTable);
+  Module* new_m        = new Module{Name(m_tag), el, m_ignoreFlag};
 
   PDebug(PD_MODULE,
-         cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *new_m
-              << " @ " << new_m << "\n");
+         cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *new_m << " @ "
+              << new_m << "\n");
   PDebug(PD_MODULE, cerr << "        old elist: " << *el << "\n");
 
   return new_m;
 }
 
 
-// Return the n'th (0 base) parameter of module m in f, if available.
-// Returns true on success, false if m does not have enough parameters
+// Return the n'th (0 base) parameter of module in f, if available.
+// Returns true on success, false if module does not have enough parameters
 //  or the parameter is not a number.
-bool Module::getfloat(float& f, unsigned int n) const
+bool Module::GetFloat(float& fltValue, unsigned int n) const
 {
-  if (param == 0)
+  if (m_param == 0)
+  {
     return false;
+  }
 
   // An empty symbol table used to ensure the argument is a bound value.
-  static SymbolTable<Value> st;
-  return LSys::GetFloat(st, *param, f, n);
+  static const SymbolTable<Value> symbolTable{};
+  return LSys::GetFloat(symbolTable, *m_param, fltValue, n);
 }
 
 std::ostream& operator<<(std::ostream& o, const Module& mod)
 {
-  o << Name(mod.tag);
-  if (mod.param != NULL && mod.param->size() > 0)
-    o << *mod.param;
+  o << Name(mod.m_tag);
+  if (mod.m_param != NULL && mod.m_param->size() > 0)
+    o << *mod.m_param;
 
   return o;
 }

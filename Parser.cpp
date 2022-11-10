@@ -1105,8 +1105,8 @@ case 7:
 case 8:
 #line 151 "lsys.y"
 { Value v;
-                      if (!parserSymbolTable.lookup(Name{yyvsp[-1].name}, v))
-                        parserSymbolTable.enter(Name{yyvsp[-1].name},
+                      if (!parserSymbolTable.lookup(Name{yyvsp[-1].name}.str(), v))
+                        parserSymbolTable.enter(Name{yyvsp[-1].name}.str(),
                                                 yyvsp[0].expression->Evaluate(parserSymbolTable));
 		      delete yyvsp[0].expression;
 		    ;
@@ -1155,8 +1155,8 @@ case 16:
 case 19:
 #line 207 "lsys.y"
 {
-		      PDebug(PD_PARSER, std::cerr << "Ignoring name " << Name{yyvsp[0].name} << std::endl);
-		      parserIgnoreTable.enter(Name(yyvsp[0].name), Value(1));
+		      PDebug(PD_PARSER, std::cerr << "Ignoring GetName " << Name{yyvsp[0].name} << std::endl);
+		      parserIgnoreTable.enter(Name{yyvsp[0].name}.str(), Value(1));
 		    ;
     break;}
 case 20:
@@ -1258,7 +1258,7 @@ case 33:
 case 34:
 #line 305 "lsys.y"
 { Value v;
-		      bool ignore = parserIgnoreTable.lookup(Name{yyvsp[-1].name}, v);
+		      bool ignore = parserIgnoreTable.lookup(Name{yyvsp[-1].name}.str(), v);
 
 		      yyval.module = new Module(Name{yyvsp[-1].name}, yyvsp[0].expressionList, ignore);
 		    ;

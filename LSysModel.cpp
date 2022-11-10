@@ -98,7 +98,7 @@ List<Module>* LSysModel::Generate(List<Module>* oldModuleList)
     {
       PDebug(PD_PRODUCTION, cerr << "\tno match found, passing production unchanged\n");
       newModuleList->append(new Module(*m));
-      m->empty();
+      m->Empty();
     }
   }
 

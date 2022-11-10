@@ -935,7 +935,7 @@ int OptionSpec::isSyntaxError(const char* Name) const
   int error = 0;
   if ((!spec) || (!*spec))
   {
-    cerr << Name << ": empty option specifier." << endl;
+    cerr << Name << ": Empty option specifier." << endl;
     cerr << "\tmust be at least 1 character long." << endl;
     ++error;
   }

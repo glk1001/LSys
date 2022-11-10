@@ -87,7 +87,10 @@ private:
   [[nodiscard]] auto GetLChild() const -> Expression* { return m_expressionValue.args[0]; }
   [[nodiscard]] auto GetRChild() const -> Expression* { return m_expressionValue.args[1]; }
   [[nodiscard]] auto GetFuncName() const -> Name { return Name(m_expressionValue.name.id); }
-  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>* { return m_expressionValue.name.args; }
+  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*
+  {
+    return m_expressionValue.name.args;
+  }
 };
 
 [[nodiscard]] auto Bind(const List<Expression>* formals,
@@ -99,7 +102,7 @@ private:
                                const SymbolTable<Value>& symbolTable) -> List<Expression>*;
 [[nodiscard]] auto GetFloat(const SymbolTable<Value>& symbolTable,
                             const List<Expression>& expressionList,
-                            float& val,
+                            float& fltValue,
                             unsigned int n = 0) -> bool;
 [[nodiscard]] auto GetValue(const SymbolTable<Value>& symbolTable,
                             const List<Expression>& expressionList,

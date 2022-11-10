@@ -18,7 +18,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	interpret.c,v $
+ * $Log: interpret.c,v $
  * Revision 1.3  91/03/20  10:36:40  leech
  * Support for G++.
  *
@@ -37,12 +37,10 @@
 #include "Module.h"
 #include "SymbolTable.h"
 #include "Turtle.h"
-#include "Value.h"
 #include "debug.h"
 
-using std::cerr;
-using std::endl;
-
+#include <iostream>
+#include <string>
 
 namespace LSys
 {
@@ -51,42 +49,73 @@ namespace
 {
 
 // Set up the default actions for interpretation
-void SetupActions(SymbolTable<Anyptr>& st)
+[[nodiscard]] auto GetActionSymbolTable() -> SymbolTable<ActionFunc>
 {
-  st.enter(DRAW_OBJECT_START, Anyptr(DrawObject));
-  st.enter("f", Anyptr(Move));
-  st.enter("z", Anyptr(MoveHalf));
-  st.enter("F", Anyptr(Draw));
-  st.enter("Fl", Anyptr(Draw));
-  st.enter("Fr", Anyptr(Draw));
-  st.enter("Z", Anyptr(DrawHalf));
-  st.enter("+", Anyptr(TurnLeft));
-  st.enter("-", Anyptr(TurnRight));
-  st.enter("&", Anyptr(PitchDown));
-  st.enter("^", Anyptr(PitchUp));
-  st.enter("\\", Anyptr(RollLeft));
-  st.enter("/", Anyptr(RollRight));
-  st.enter("|", Anyptr(Reverse));
-  st.enter("$", Anyptr(RollHorizontal));
-  st.enter("[", Anyptr(Push));
-  st.enter("]", Anyptr(Pop));
-  st.enter("%", Anyptr(CutBranch));
-  st.enter("@md", Anyptr(MultiplyDefaultDistance));
-  st.enter("@ma", Anyptr(MultiplyDefaultTurnAngle));
-  st.enter("@mw", Anyptr(MultiplyWidth));
-  st.enter("!", Anyptr(ChangeWidth));
-  st.enter("'", Anyptr(ChangeColor));
-  st.enter("@Tx", Anyptr(ChangeTexture));
-  st.enter("{", Anyptr(StartPolygon));
-  st.enter(".", Anyptr(PolygonVertex));
-  st.enter("G", Anyptr(PolygonMove));
-  st.enter("}", Anyptr(EndPolygon));
-  st.enter("t", Anyptr(Tropism));
-  st.enter("@Gs", Anyptr(GeneralisedCylinderStart));
-  st.enter("@Gc", Anyptr(GeneralisedCylinderControlPoint));
-  st.enter("@Ge", Anyptr(GeneralisedCylinderEnd));
-  st.enter("@Gr", Anyptr(GeneralisedCylinderTangents));
-  st.enter("@Gt", Anyptr(GeneralisedCylinderTangentLengths));
+  SymbolTable<ActionFunc> symbolTable{};
+
+  symbolTable.enter(DRAW_OBJECT_START, DrawObject);
+  symbolTable.enter("f", Move);
+  symbolTable.enter("z", MoveHalf);
+  symbolTable.enter("F", Draw);
+  symbolTable.enter("Fl", Draw);
+  symbolTable.enter("Fr", Draw);
+  symbolTable.enter("Z", DrawHalf);
+  symbolTable.enter("+", TurnLeft);
+  symbolTable.enter("-", TurnRight);
+  symbolTable.enter("&", PitchDown);
+  symbolTable.enter("^", PitchUp);
+  symbolTable.enter("\\", RollLeft);
+  symbolTable.enter("/", RollRight);
+  symbolTable.enter("|", Reverse);
+  symbolTable.enter("$", RollHorizontal);
+  symbolTable.enter("[", Push);
+  symbolTable.enter("]", Pop);
+  symbolTable.enter("%", CutBranch);
+  symbolTable.enter("@md", MultiplyDefaultDistance);
+  symbolTable.enter("@ma", MultiplyDefaultTurnAngle);
+  symbolTable.enter("@mw", MultiplyWidth);
+  symbolTable.enter("!", ChangeWidth);
+  symbolTable.enter("'", ChangeColor);
+  symbolTable.enter("@Tx", ChangeTexture);
+  symbolTable.enter("{", StartPolygon);
+  symbolTable.enter(".", PolygonVertex);
+  symbolTable.enter("G", PolygonMove);
+  symbolTable.enter("}", EndPolygon);
+  symbolTable.enter("t", Tropism);
+  symbolTable.enter("@Gs", GeneralisedCylinderStart);
+  symbolTable.enter("@Gc", GeneralisedCylinderControlPoint);
+  symbolTable.enter("@Ge", GeneralisedCylinderEnd);
+  symbolTable.enter("@Gr", GeneralisedCylinderTangents);
+  symbolTable.enter("@Gt", GeneralisedCylinderTangentLengths);
+
+  return symbolTable;
+}
+
+[[nodiscard]] auto GetModuleName(const Module& mod) -> std::string
+{
+  if (const auto moduleName = mod.GetName().str(); moduleName[0] != DRAW_OBJECT_START_CHAR)
+  {
+    return moduleName;
+  }
+
+  return DRAW_OBJECT_START;
+}
+
+[[nodiscard]] auto GetActionArgsArray(const Module& mod) -> std::pair<int, ArgsArray>
+{
+  int numArgs = 0;
+  ArgsArray args{};
+
+  for (auto i = 0U; i < MAX_ARGS; ++i)
+  {
+    if (not mod.GetFloat(args[i], i))
+    {
+      break;
+    }
+    ++numArgs;
+  }
+
+  return {numArgs, args};
 }
 
 } // namespace
@@ -100,9 +129,6 @@ void Interpret(const List<Module>& moduleList,
                const float width,
                const float distance)
 {
-  SymbolTable<Anyptr> action;
-  SetupActions(action);
-
   Turtle turtle(turn, width);
   turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
   turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X
@@ -113,41 +139,28 @@ void Interpret(const List<Module>& moduleList,
 
   generator.Prelude(turtle);
 
-  auto modList = ConstListIterator<Module>{moduleList};
-  for (const auto* mod = modList.first(); mod; mod = modList.next())
+  const auto actionSymbolTable = GetActionSymbolTable();
+  auto modList                 = ConstListIterator<Module>{moduleList};
+
+  for (const auto* mod = modList.first(); mod != nullptr; mod = modList.next())
   {
-    std::string modName(mod->name());
-    if (modName[0] == DRAW_OBJECT_START_CHAR)
+    // TODO(glk) - Make failed lookup an exception.
+    ActionFunc actionFunc;
+    if (not actionSymbolTable.lookup(GetModuleName(*mod), actionFunc))
     {
-      modName = DRAW_OBJECT_START;
-    }
-    Anyptr p;
-    if (not action.lookup(modName.c_str(), p))
-    {
-      PDebug(PD_INTERPRET, cerr << "Unknown action for " << *mod << "\n");
+      PDebug(PD_INTERPRET, std::cerr << "Unknown action for " << *mod << "\n");
       continue;
     }
 
     // Fetch defined parameters
-    int numArgs = 0;
-    ArgsArray args{};
-    for (auto i = 0U; i < MAX_ARGS; ++i)
-    {
-      if (not mod->getfloat(args[i], i))
-      {
-        break;
-      }
-      ++numArgs;
-    }
+    const auto [numArgs, args] = GetActionArgsArray(*mod);
 
-    Actionfunc f = reinterpret_cast<Actionfunc>(p);
-    (*f)(modList, turtle, generator, numArgs, args);
+    actionFunc(modList, turtle, generator, numArgs, args);
 
-    PDebug(PD_INTERPRET, cerr << turtle);
+    PDebug(PD_INTERPRET, std::cerr << turtle);
   }
 
   generator.Postscript(turtle);
 }
 
-
-}; // namespace LSys
+} // namespace LSys

@@ -39,6 +39,8 @@
 
 #include "SymbolTable.h"
 
+#include <string>
+
 namespace LSys
 {
 
@@ -49,7 +51,7 @@ public:
   explicit Name(int id);
   operator int() const { return index; }
   operator const char*() const { return reverse_map[index]; }
-  const char* str() const { return reverse_map[index]; }
+  std::string str() const { return reverse_map[index]; }
 
 private:
   static SymbolTable<int>* map;
@@ -68,7 +70,7 @@ inline bool operator==(const Name& a, const Name& b)
   return static_cast<int>(a) == static_cast<int>(b);
 }
 
-inline int operator!=(const Name& a, const Name& b)
+inline bool operator!=(const Name& a, const Name& b)
 {
   return static_cast<int>(a) != static_cast<int>(b);
 }

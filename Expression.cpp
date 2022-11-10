@@ -343,7 +343,7 @@ Expression::Expression(const Name& name, List<Expression>* const funcArgs)
     PDebug(PD_EXPRESSION,
            cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << endl);
 
-    op            = LSYS_NAME;
+    op                          = LSYS_NAME;
     m_expressionValue.name.id   = name;
     m_expressionValue.name.args = nullptr;
   }
@@ -353,7 +353,7 @@ Expression::Expression(const Name& name, List<Expression>* const funcArgs)
            cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name << *funcArgs
                 << endl);
 
-    op            = LSYS_FUNCTION;
+    op                          = LSYS_FUNCTION;
     m_expressionValue.name.id   = name;
     m_expressionValue.name.args = funcArgs;
   }
@@ -417,7 +417,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       {
         SetupFunctions();
       }
-      if (funcTab->lookup(GetFuncName(), anyPtr))
+      if (funcTab->lookup(GetFuncName().str(), anyPtr))
       {
         const auto func = reinterpret_cast<Exprfunc>(anyPtr);
         return (*func)(symbolTable, *GetFuncArgs());
@@ -426,7 +426,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       return Value();
 
     case LSYS_NAME:
-      if (symbolTable.lookup(GetVarName(), value))
+      if (symbolTable.lookup(GetVarName().str(), value))
       {
         return value;
       }
@@ -539,7 +539,7 @@ auto Bind(const List<Expression>* const formals,
     }
     const Value v = rp->Evaluate(symbolTable);
     PDebug(PD_EXPRESSION, cerr << "Binding " << lp->GetName() << "= " << v << "\n");
-    symbolTable.enter(lp->GetName(), v);
+    symbolTable.enter(lp->GetName().str(), v);
   }
 
   return true;
@@ -619,12 +619,12 @@ auto GetValue(const SymbolTable<Value>& symbolTable,
 
 auto GetFloat(const SymbolTable<Value>& symbolTable,
               const List<Expression>& expressionList,
-              float& val,
+              float& fltValue,
               const unsigned int n) -> bool
 {
-  if (Value v; GetValue(symbolTable, expressionList, v, n))
+  if (Value value; GetValue(symbolTable, expressionList, value, n))
   {
-    return v.GetFloatValue(val);
+    return value.GetFloatValue(fltValue);
   }
   return false;
 }

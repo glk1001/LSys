@@ -96,12 +96,12 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
   PDebug(PD_PRODUCTION, cerr << "\t" << *input->center << " matches? " << *m << '\n');
 
   // Test the predecessor module itself
-  if (input->center->conforms(*m) == false)
+  if (input->center->Conforms(*m) == false)
     return false;
 
   // Bind formal parameters of the predecessor
   // Should test return value to ensure binding occurred
-  input->center->bind(*m, st);
+  input->center->Bind(*m, st);
 
   // Now match context-sensitive surroundings, if any.
 
@@ -124,16 +124,16 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
       for (int brackets = 0; value != 0; value = li_value.previous())
       {
         // Skip over ignored modules
-        if (value->ignore())
+        if (value->Ignore())
           continue;
         // Skip over ], and increase bracket level.
-        if (value->name() == RBRACKET)
+        if (value->GetName() == RIGHT_BRACKET)
         { // ]
           brackets++;
           continue;
         }
         // Skip over [, and decrease bracket level iff > 0
-        if (value->name() == LBRACKET)
+        if (value->GetName() == LEFT_BRACKET)
         { // [
           if (brackets > 0)
             brackets--;
@@ -152,10 +152,10 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
       PDebug(PD_PRODUCTION, cerr << "\t" << *formal << " matches? " << *value << '\n');
 
       // See if the formal and value modules conform
-      if (formal->conforms(*value) == false)
+      if (formal->Conforms(*value) == false)
         return false;
       // Bind formal arguments
-      formal->bind(*value, st);
+      formal->Bind(*value, st);
     }
 
     // If the formal parameter list is non-0, context matching failed
@@ -180,24 +180,24 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
       // Find the next potentially matching module; skip over
       //	bracketed substrings, e.g. A < B matches A[anything]B
       //	as well as modules which should be ignored.
-      if (formal->name() == LBRACKET)
+      if (formal->GetName() == LEFT_BRACKET)
       { // [
         // Must find a matching [; skip only ignored modules
-        while (value && value->ignore())
+        while (value && value->Ignore())
           value = li_value.next();
       }
-      else if (formal->name() == RBRACKET)
+      else if (formal->GetName() == RIGHT_BRACKET)
       { // ]
         // Must find a matching ]; skip anything else including
         //  bracketed substrings.
         for (int brackets = 0; value; value = li_value.next())
         {
-          if (value->name() == RBRACKET)
+          if (value->GetName() == RIGHT_BRACKET)
           { // ]
             if (brackets-- == 0)
               break;
           }
-          else if (value->name() == LBRACKET) // [
+          else if (value->GetName() == LEFT_BRACKET) // [
             brackets++;
         }
       }
@@ -209,14 +209,14 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
         for (int brackets = 0; value != 0; value = li_value.next())
         {
           // Skip over ignored modules
-          if (value->ignore())
+          if (value->Ignore())
             continue;
-          if (value->name() == LBRACKET)
+          if (value->GetName() == LEFT_BRACKET)
           { // [
             brackets++;
             continue;
           }
-          if (value->name() == RBRACKET)
+          if (value->GetName() == RIGHT_BRACKET)
           { // ]
             if (brackets > 0)
               brackets--;
@@ -243,10 +243,10 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
       PDebug(PD_PRODUCTION, cerr << "\t" << *formal << " matches? " << *value << '\n');
 
       // See if the formal and value modules conform
-      if (formal->conforms(*value) == false)
+      if (formal->Conforms(*value) == false)
         return false;
       // Bind formal arguments
-      formal->bind(*value, st);
+      formal->Bind(*value, st);
     }
 
     // If the formal parameter list is non-0, context matching failed
@@ -318,7 +318,7 @@ List<Module>* Production::produce(const Module* predecessor, SymbolTable<Value>&
   ConstListIterator<Module> li(*mlist);
   for (const Module* m = li.first(); m; m = li.next())
   {
-    Module* new_m = m->instantiate(st);
+    Module* new_m = m->Instantiate(st);
     ml->append(new_m);
   }
 

@@ -205,14 +205,14 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
                                   const int numArgs,
                                   const ArgsArray& args)
 {
-  const std::string objName    = mod.name().str() + 1; // skip '~'
-  const Vector contactPoint    = this->LastPosition();
-  const float width            = turtle.CurrentWidth();
-  const float distance         = turtle.DefaultDistance();
-  const int frontColor         = turtle.CurrentColor().m_color.index;
-  const int backColor          = turtle.CurrentBackColor().m_color.index;
-  const int frontTexture       = turtle.CurrentTexture();
-  const int backTexture        = turtle.CurrentTexture();
+  const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
+  const auto contactPoint = this->LastPosition();
+  const auto width        = turtle.CurrentWidth();
+  const auto distance     = turtle.DefaultDistance();
+  const auto frontColor   = turtle.CurrentColor().m_color.index;
+  const auto backColor    = turtle.CurrentBackColor().m_color.index;
+  const auto frontTexture = turtle.CurrentTexture();
+  const auto backTexture  = turtle.CurrentTexture();
 
   groupNum++;
   *out << "Start_Object_Group " << groupNum << '\n';

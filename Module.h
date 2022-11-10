@@ -46,33 +46,33 @@ namespace LSys
 class Module
 {
 public:
-  Module(const Name&, List<Expression>* elist, bool ignore = false);
-  Module(Module&);
+  Module(const Name&, List<Expression>* expressionList, bool ignoreFlag = false);
+  Module(const Module&);
   ~Module();
 
-  // Call empty() before deallocating a module if it
-  // has been used as the argument to a copy constructor.
-  void empty();
+  // Call Empty before deallocating a module if it has previously
+  // been used as the argument to a copy constructor.
+  void Empty();
 
-  Name name() const { return Name(tag); }
+  Name GetName() const { return Name(m_tag); }
 
-  bool bind(const Module& values, SymbolTable<Value>&) const;
-  bool conforms(const Module&) const;
-  bool ignore() const { return ignoreflag ? true : false; }
-  Module* instantiate(SymbolTable<Value>&) const;
-  bool getfloat(float&, unsigned int n = 0) const;
+  bool Bind(const Module& values, SymbolTable<Value>& symbolTable) const;
+  bool Conforms(const Module& mod) const;
+  bool Ignore() const { return m_ignoreFlag; }
+  Module* Instantiate(SymbolTable<Value>& symbolTable) const;
+  bool GetFloat(float&, unsigned int n = 0) const;
 
   friend std::ostream& operator<<(std::ostream&, const Module&);
 
 private:
-  int tag; // Module name
-  char ignoreflag; // Should module be ignored in context?
-  char emptyflag; // Should tag & param be deleted?
-  List<Expression>* param; // Expressions bound to module
+  int m_tag; // Module name
+  bool m_ignoreFlag; // Should module be ignored in context?
+  bool m_emptyFlag = false; // Should tag and param be deleted?
+  List<Expression>* m_param; // Expressions bound to module
 };
 
 // These Names are used in context matching to ascend/descend tree levels.
-extern Name LBRACKET;
-extern Name RBRACKET;
+inline const Name LEFT_BRACKET{"["};
+inline const Name RIGHT_BRACKET{"]"};
 
 } // namespace LSys

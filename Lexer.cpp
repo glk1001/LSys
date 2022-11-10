@@ -799,7 +799,7 @@ YY_RULE_SETUP
 {
                 lexcol += strlen(yytext);
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -809,7 +809,7 @@ YY_RULE_SETUP
 {
                 lexcol += strlen(yytext);
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -818,7 +818,7 @@ YY_RULE_SETUP
 #line 91 "lex.l"
 { lexcol++;
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -828,7 +828,7 @@ YY_RULE_SETUP
 {
                 lexcol++;
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -838,7 +838,7 @@ YY_RULE_SETUP
 {
                 lexcol += strlen(yytext);
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: expression name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: expression GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -917,7 +917,7 @@ YY_RULE_SETUP
 {
                 lexcol++;
                 save_name(yytext);
-                PDebug(PD_LEXER, fprintf(stderr, "lex: name -> %s\n", yytext));
+                PDebug(PD_LEXER, fprintf(stderr, "lex: GetName -> %s\n", yytext));
                 return LSys::LSYS_NAME;
               }
 	YY_BREAK
@@ -1973,7 +1973,7 @@ void lex_popstate(void)
   int type;
 
   if (lexstack <= 0) {
-    fprintf(stderr, "lex_popstate: stack of start states empty!\n");
+    fprintf(stderr, "lex_popstate: stack of start states Empty!\n");
     exit(1);
   }
 

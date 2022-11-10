@@ -42,8 +42,6 @@ class SymbolTable
 public:
   bool enter(const std::string& name, const T&);
   bool lookup(const std::string& name, T&) const;
-  bool enter(const char* name, const T& v) { return this->enter(std::string(name), v); }
-  bool lookup(const char* name, T& v) const { return this->lookup(std::string(name), v); }
   friend std::ostream& operator<< <T>(std::ostream&, const SymbolTable<T>&);
 
 private:
