@@ -1,5 +1,4 @@
-/* Module.c - methods for handling L-system modules.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -17,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Module.c,v $
+ * $Log: Module.c,v $
  * Revision 1.3  91/03/20  10:35:38  leech
  * Bug fix in module printing.
  *
@@ -25,7 +24,6 @@
  * First public release.
  *
  */
-//static char RCSid[]= "$Id: Module.c,v 1.3 91/03/20 10:35:38 leech Exp $";
 
 #include "Module.h"
 
@@ -36,28 +34,24 @@
 
 #include <iostream>
 
-using std::cerr;
-using std::endl;
-
-
 namespace LSys
 {
 
-Module::Module(const Name& name, List<Expression>* expressionList, const bool ignoreFlag)
+Module::Module(const Name& name, List<Expression>* const expressionList, const bool ignoreFlag)
   : m_tag(name), m_ignoreFlag{ignoreFlag}, m_param{expressionList}
 {
-  PDebug(PD_MODULE, cerr << "Creating module " << *this << " @ " << this << "\n");
+  PDebug(PD_MODULE, std::cerr << "Creating module " << *this << " @ " << this << "\n");
 }
 
 Module::Module(const Module& mod)
-  : m_tag(mod.m_tag), m_ignoreFlag{mod.m_ignoreFlag}, m_emptyFlag{false}, m_param{mod.m_param}
+  : m_tag(mod.m_tag), m_ignoreFlag{mod.m_ignoreFlag}, m_param{mod.m_param}
 {
-  PDebug(PD_MODULE, cerr << "Copying module " << *this << "\n");
+  PDebug(PD_MODULE, std::cerr << "Copying module " << *this << "\n");
 }
 
 Module::~Module()
 {
-  PDebug(PD_MODULE, cerr << "Deleting module @ " << this << "\n");
+  PDebug(PD_MODULE, std::cerr << "Deleting module @ " << this << "\n");
 
   if (not m_emptyFlag)
   {
@@ -67,7 +61,7 @@ Module::~Module()
 
 // Don't delete parameter list when destructor called, even if it's
 //  dynamically allocated.
-void Module::Empty()
+auto Module::Empty() -> void
 {
   m_emptyFlag = true;
 }
@@ -75,13 +69,14 @@ void Module::Empty()
 // Bind symbolic names of the module to values in module 'values'
 //  using symbol table st for evaluation and binding. The two
 //  modules should conform() for this method to succeed.
-bool Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const
+auto Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> bool
 {
-  PDebug(PD_MODULE, cerr << "Module::Bind: formals= " << *this << " values= " << values << endl);
+  PDebug(PD_MODULE,
+         std::cerr << "Module::Bind: formals= " << *this << " values= " << values << "\n");
 
   if (not LSys::Bind(m_param, values.m_param, symbolTable))
   {
-    cerr << "failure binding module " << values << " to " << *this << endl;
+    std::cerr << "failure binding module " << values << " to " << *this << "\n";
     return false;
   }
 
@@ -91,7 +86,7 @@ bool Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const
 // Check if module 'm' is conformant with the module, e.g.,
 //  that they have the same name and their expression lists are
 //  conformant.
-bool Module::Conforms(const Module& mod) const
+auto Module::Conforms(const Module& mod) const -> bool
 {
   if (m_tag != mod.m_tag)
   {
@@ -103,42 +98,43 @@ bool Module::Conforms(const Module& mod) const
 
 // Instantiate the module; that is, return a copy with all of the
 //  module's expressions evaluated in the context of the symbol table.
-Module* Module::Instantiate(SymbolTable<Value>& symbolTable) const
+auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*
 {
-  List<Expression>* el = LSys::Instantiate(m_param, symbolTable);
-  Module* new_m        = new Module{Name(m_tag), el, m_ignoreFlag};
+  auto* const exprList  = LSys::Instantiate(m_param, symbolTable);
+  auto* const newModule = new Module{Name(m_tag), exprList, m_ignoreFlag};
 
   PDebug(PD_MODULE,
-         cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *new_m << " @ "
-              << new_m << "\n");
-  PDebug(PD_MODULE, cerr << "        old elist: " << *el << "\n");
+         std::cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *newModule
+                   << " @ " << newModule << "\n");
+  PDebug(PD_MODULE, std::cerr << "        old elist: " << *exprList << "\n");
 
-  return new_m;
+  return newModule;
 }
 
-
-// Return the n'th (0 base) parameter of module in f, if available.
+// Return the nth (0 base) parameter of module in f, if available.
 // Returns true on success, false if module does not have enough parameters
 //  or the parameter is not a number.
-bool Module::GetFloat(float& fltValue, unsigned int n) const
+auto Module::GetFloat(float& fltValue, const unsigned int n) const -> bool
 {
-  if (m_param == 0)
+  if (nullptr == m_param)
   {
     return false;
   }
 
   // An empty symbol table used to ensure the argument is a bound value.
-  static const SymbolTable<Value> symbolTable{};
-  return LSys::GetFloat(symbolTable, *m_param, fltValue, n);
+  static const auto s_SYMBOL_TABLE = SymbolTable<Value>{};
+  return LSys::GetFloat(s_SYMBOL_TABLE, *m_param, fltValue, n);
 }
 
-std::ostream& operator<<(std::ostream& o, const Module& mod)
+auto operator<<(std::ostream& out, const Module& mod) -> std::ostream&
 {
-  o << Name(mod.m_tag);
-  if (mod.m_param != NULL && mod.m_param->size() > 0)
-    o << *mod.m_param;
+  out << Name{mod.m_tag};
+  if ((mod.m_param != nullptr) and (mod.m_param->size() > 0))
+  {
+    out << *mod.m_param;
+  }
 
-  return o;
+  return out;
 }
 
 } // namespace LSys

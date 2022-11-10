@@ -1,7 +1,4 @@
-/* Module.h - class definition for L-system modules.
- *
- * $Id: Module.h,v 1.4 92/06/22 00:25:23 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Module.h,v $
+ * $Log: Module.h,v $
  * Revision 1.4  92/06/22  00:25:23  leech
  * *** empty log message ***
  *
@@ -46,23 +43,27 @@ namespace LSys
 class Module
 {
 public:
-  Module(const Name&, List<Expression>* expressionList, bool ignoreFlag = false);
-  Module(const Module&);
+  Module(const Name& name, List<Expression>* expressionList, bool ignoreFlag = false);
+  Module(const Module& mod);
+  Module(Module&&) = delete;
   ~Module();
+
+  auto operator=(const Module&) -> Module& = delete;
+  auto operator=(Module&&) -> Module&      = delete;
 
   // Call Empty before deallocating a module if it has previously
   // been used as the argument to a copy constructor.
-  void Empty();
+  auto Empty() -> void;
 
-  Name GetName() const { return Name(m_tag); }
+  [[nodiscard]] auto GetName() const -> Name { return Name(m_tag); }
 
-  bool Bind(const Module& values, SymbolTable<Value>& symbolTable) const;
-  bool Conforms(const Module& mod) const;
-  bool Ignore() const { return m_ignoreFlag; }
-  Module* Instantiate(SymbolTable<Value>& symbolTable) const;
-  bool GetFloat(float&, unsigned int n = 0) const;
+  auto Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> bool;
+  [[nodiscard]] auto Conforms(const Module& mod) const -> bool;
+  [[nodiscard]] auto Ignore() const -> bool { return m_ignoreFlag; }
+  [[nodiscard]] auto Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*;
+  [[nodiscard]] auto GetFloat(float& fltValue, unsigned int n = 0) const -> bool;
 
-  friend std::ostream& operator<<(std::ostream&, const Module&);
+  friend auto operator<<(std::ostream& out, const Module& mod) -> std::ostream&;
 
 private:
   int m_tag; // Module name
