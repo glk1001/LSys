@@ -20,20 +20,20 @@ const int precision = 5;
 
 void GenericGenerator::SetHeader(const std::string& str)
 {
-  *out << "Start_Comment\n";
-  *out << '\n';
+  *m_output << "Start_Comment\n";
+  *m_output << '\n';
 
-  *out << str << '\n';
+  *m_output << str << '\n';
 
-  *out << "End_Comment\n";
-  *out << "\n\n";
+  *m_output << "End_Comment\n";
+  *m_output << "\n\n";
 }
 
 
 void GenericGenerator::Prelude(const Turtle& t)
 {
-  Generator::Prelude(t);
-  *out << fixed << setprecision(precision);
+  IGenerator::Prelude(t);
+  *m_output << fixed << setprecision(precision);
   groupNum = 0;
 }
 
@@ -42,11 +42,11 @@ void GenericGenerator::Postscript(const Turtle& t)
 {
   this->OutputBounds(t);
 
-  *out << "\n\n";
-  *out << "RADEND"
-       << "\n";
+  *m_output << "\n\n";
+  *m_output << "RADEND"
+            << "\n";
 
-  Generator::Postscript(t);
+  IGenerator::Postscript(t);
 }
 
 
@@ -78,21 +78,21 @@ void GenericGenerator::OutputBounds(const Turtle& t)
   const Vector startPoint(0, 0, 0);
 
   // Output start point
-  *boundsOutput << "start" << '\n';
-  *boundsOutput << "  ";
-  OutputVec(*boundsOutput, startPoint);
-  *boundsOutput << '\n';
-  *boundsOutput << "\n";
+  *m_boundsOutput << "start" << '\n';
+  *m_boundsOutput << "  ";
+  OutputVec(*m_boundsOutput, startPoint);
+  *m_boundsOutput << '\n';
+  *m_boundsOutput << "\n";
 
   // Output bounds
-  *boundsOutput << "bounds" << '\n';
-  *boundsOutput << "  min: " << setw(12) << Maths::Round(bndsMin[0], precision) << " " << setw(12)
-                << Maths::Round(bndsMin[1], precision) << " " << setw(12)
-                << Maths::Round(bndsMin[2], precision) << '\n';
-  *boundsOutput << "  max: " << setw(12) << Maths::Round(bndsMax[0], precision) << " " << setw(12)
-                << Maths::Round(bndsMax[1], precision) << " " << setw(12)
-                << Maths::Round(bndsMax[2], precision) << '\n';
-  *boundsOutput << "\n\n";
+  *m_boundsOutput << "bounds" << '\n';
+  *m_boundsOutput << "  min: " << setw(12) << Maths::Round(bndsMin[0], precision) << " " << setw(12)
+                  << Maths::Round(bndsMin[1], precision) << " " << setw(12)
+                  << Maths::Round(bndsMin[2], precision) << '\n';
+  *m_boundsOutput << "  max: " << setw(12) << Maths::Round(bndsMax[0], precision) << " " << setw(12)
+                  << Maths::Round(bndsMax[1], precision) << " " << setw(12)
+                  << Maths::Round(bndsMax[2], precision) << '\n';
+  *m_boundsOutput << "\n\n";
 }
 
 
@@ -112,91 +112,91 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
   //const float width      = turtle.CurrentWidth();
 
   groupNum++;
-  *out << "Start_Object_Group " << groupNum << '\n';
-  *out << " "
-       << "FrontMaterial: " << frontColor << '\n';
-  *out << " "
-       << "FrontTexture: " << frontTexture << '\n';
-  *out << " "
-       << "BackMaterial: " << backColor << '\n';
-  *out << " "
-       << "BackTexture: " << backTexture << '\n';
-  *out << '\n';
+  *m_output << "Start_Object_Group " << groupNum << '\n';
+  *m_output << " "
+            << "FrontMaterial: " << frontColor << '\n';
+  *m_output << " "
+            << "FrontTexture: " << frontTexture << '\n';
+  *m_output << " "
+            << "BackMaterial: " << backColor << '\n';
+  *m_output << " "
+            << "BackTexture: " << backTexture << '\n';
+  *m_output << '\n';
 
-  *out << "  "
-       << "polygon" << '\n';
+  *m_output << "  "
+            << "polygon" << '\n';
   int n = 0;
   for (const Vector* vec = pi.first(); vec != NULL; vec = pi.next())
     n++;
-  *out << "  "
-       << "vertices: " << n << '\n';
+  *m_output << "  "
+            << "vertices: " << n << '\n';
   for (const Vector* vec = pi.first(); vec != NULL; vec = pi.next())
   {
-    *out << "  "
-         << "  ";
-    OutputVec(*out, *vec);
-    *out << '\n';
+    *m_output << "  "
+              << "  ";
+    OutputVec(*m_output, *vec);
+    *m_output << '\n';
   }
-  *out << "\n";
+  *m_output << "\n";
 
-  *out << "End_Object_Group " << groupNum << '\n';
-  *out << "\n\n";
+  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "\n\n";
 }
 
 
 void GenericGenerator::LineTo(const Turtle& t)
 {
-  const Vector start      = this->LastPosition();
+  const Vector start      = this->GetLastPosition();
   const Vector end        = t.Location();
   const int frontColor    = t.CurrentColor().m_color.index;
   const int backColor     = t.CurrentBackColor().m_color.index;
   const int frontTexture  = t.CurrentTexture();
   const int backTexture   = t.CurrentTexture();
   const float lineLength  = Distance(start, end);
-  const float startRadius = (0.5F * this->LastWidth() * lineLength) / 100.0F;
+  const float startRadius = (0.5F * this->GetLastWidth() * lineLength) / 100.0F;
   const float endRadius   = (0.5F * t.CurrentWidth() * lineLength) / 100.0F;
 
   groupNum++;
-  *out << "Start_Object_Group " << groupNum << '\n';
-  *out << " "
-       << "FrontMaterial: " << frontColor << '\n';
-  *out << " "
-       << "FrontTexture: " << frontTexture << '\n';
-  *out << " "
-       << "BackMaterial: " << backColor << '\n';
-  *out << " "
-       << "BackTexture: " << backTexture << '\n';
-  *out << '\n';
+  *m_output << "Start_Object_Group " << groupNum << '\n';
+  *m_output << " "
+            << "FrontMaterial: " << frontColor << '\n';
+  *m_output << " "
+            << "FrontTexture: " << frontTexture << '\n';
+  *m_output << " "
+            << "BackMaterial: " << backColor << '\n';
+  *m_output << " "
+            << "BackTexture: " << backTexture << '\n';
+  *m_output << '\n';
 
-  *out << "  "
-       << "cone" << '\n';
-  *out << "  "
-       << "  ";
-  OutputVec(*out, start);
-  *out << '\n';
-  *out << "  "
-       << "  ";
-  OutputVec(*out, end);
-  *out << '\n';
-  *out << "  "
-       << "  " << Maths::Round(startRadius, precision) << " " << Maths::Round(endRadius, precision)
-       << '\n';
-  *out << '\n';
+  *m_output << "  "
+            << "cone" << '\n';
+  *m_output << "  "
+            << "  ";
+  OutputVec(*m_output, start);
+  *m_output << '\n';
+  *m_output << "  "
+            << "  ";
+  OutputVec(*m_output, end);
+  *m_output << '\n';
+  *m_output << "  "
+            << "  " << Maths::Round(startRadius, precision) << " "
+            << Maths::Round(endRadius, precision) << '\n';
+  *m_output << '\n';
 
-  *out << "  "
-       << "sphere" << '\n';
-  *out << "  "
-       << "  ";
-  OutputVec(*out, end);
-  *out << '\n';
-  *out << "  "
-       << "  " << Maths::Round(endRadius, precision) << '\n';
-  *out << '\n';
+  *m_output << "  "
+            << "sphere" << '\n';
+  *m_output << "  "
+            << "  ";
+  OutputVec(*m_output, end);
+  *m_output << '\n';
+  *m_output << "  "
+            << "  " << Maths::Round(endRadius, precision) << '\n';
+  *m_output << '\n';
 
-  *out << "End_Object_Group " << groupNum << '\n';
-  *out << "\n\n";
+  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "\n\n";
 
-  Generator::LineTo(t);
+  IGenerator::LineTo(t);
 }
 
 
@@ -206,7 +206,7 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
                                   const ArgsArray& args)
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
-  const auto contactPoint = this->LastPosition();
+  const auto contactPoint = this->GetLastPosition();
   const auto width        = turtle.CurrentWidth();
   const auto distance     = turtle.DefaultDistance();
   const auto frontColor   = turtle.CurrentColor().m_color.index;
@@ -215,52 +215,52 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
   const auto backTexture  = turtle.CurrentTexture();
 
   groupNum++;
-  *out << "Start_Object_Group " << groupNum << '\n';
-  *out << " "
-       << "FrontMaterial: " << frontColor << '\n';
-  *out << " "
-       << "FrontTexture: " << frontTexture << '\n';
-  *out << " "
-       << "BackMaterial: " << backColor << '\n';
-  *out << " "
-       << "BackTexture: " << backTexture << '\n';
-  *out << '\n';
+  *m_output << "Start_Object_Group " << groupNum << '\n';
+  *m_output << " "
+            << "FrontMaterial: " << frontColor << '\n';
+  *m_output << " "
+            << "FrontTexture: " << frontTexture << '\n';
+  *m_output << " "
+            << "BackMaterial: " << backColor << '\n';
+  *m_output << " "
+            << "BackTexture: " << backTexture << '\n';
+  *m_output << '\n';
 
-  *out << " "
-       << "object" << '\n';
-  *out << " "
-       << "  Name: " << objName << '\n';
-  *out << " "
-       << "  LineWidth: " << Maths::Round(width, precision) << '\n';
-  *out << " "
-       << "  LineDistance: " << Maths::Round(distance, precision) << '\n';
-  *out << " "
-       << "  ContactPoint: ";
-  OutputVec(*out, contactPoint);
-  *out << '\n';
-  *out << " "
-       << "  Heading: ";
-  OutputVec(*out, turtle.CurrentHeading());
-  *out << '\n';
-  *out << " "
-       << "  Left: ";
-  OutputVec(*out, turtle.CurrentLeft());
-  *out << '\n';
-  *out << " "
-       << "  Up:";
-  OutputVec(*out, turtle.CurrentUp());
-  *out << '\n';
-  *out << " "
-       << "  nargs: " << numArgs << '\n';
+  *m_output << " "
+            << "object" << '\n';
+  *m_output << " "
+            << "  Name: " << objName << '\n';
+  *m_output << " "
+            << "  LineWidth: " << Maths::Round(width, precision) << '\n';
+  *m_output << " "
+            << "  LineDistance: " << Maths::Round(distance, precision) << '\n';
+  *m_output << " "
+            << "  ContactPoint: ";
+  OutputVec(*m_output, contactPoint);
+  *m_output << '\n';
+  *m_output << " "
+            << "  Heading: ";
+  OutputVec(*m_output, turtle.CurrentHeading());
+  *m_output << '\n';
+  *m_output << " "
+            << "  Left: ";
+  OutputVec(*m_output, turtle.CurrentLeft());
+  *m_output << '\n';
+  *m_output << " "
+            << "  Up:";
+  OutputVec(*m_output, turtle.CurrentUp());
+  *m_output << '\n';
+  *m_output << " "
+            << "  nargs: " << numArgs << '\n';
   for (auto i = 0U; i < static_cast<uint32_t>(numArgs); i++)
   {
-    *out << "  "
-         << "    " << args[i] << '\n';
+    *m_output << "  "
+              << "    " << args[i] << '\n';
   }
-  *out << '\n';
+  *m_output << '\n';
 
-  *out << "End_Object_Group " << groupNum << '\n';
-  *out << "\n\n";
+  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "\n\n";
 }
 
 

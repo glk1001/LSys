@@ -33,7 +33,7 @@
 #include "Actions.h"
 #include "Consts.h"
 #include "Expression.h"
-#include "Generator.h"
+#include "IGenerator.h"
 #include "Module.h"
 #include "SymbolTable.h"
 #include "Turtle.h"
@@ -124,7 +124,7 @@ namespace
 // Interpret a bound Left-system, producing output on the specified stream.
 // Default values for line width, movement, and turn angles are specified.
 void Interpret(const List<Module>& moduleList,
-               Generator& generator,
+               IGenerator& generator,
                const float turn,
                const float width,
                const float distance)

@@ -29,7 +29,7 @@
 
 #include "Consts.h"
 #include "Expression.h"
-#include "Generator.h"
+#include "IGenerator.h"
 #include "Module.h"
 #include "Polygon.h"
 #include "Turtle.h"
@@ -96,7 +96,7 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
 }
 
 // Set line width only if changed too much
-auto SetLineWidth(const Turtle& turtle, Generator& generator) noexcept -> void
+auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
 {
   static constexpr auto EPSILON = 1e-6F;
   static float s_lastLineWidth  = -1.0F;
@@ -120,7 +120,7 @@ auto SetLineWidth(const Turtle& turtle, Generator& generator) noexcept -> void
 }
 
 // Set color only if changed
-auto SetColor(const Turtle& turtle, Generator& generator) noexcept -> void
+auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
 {
   static Color s_lastcolor(-1);
 
@@ -141,7 +141,7 @@ auto SetColor(const Turtle& turtle, Generator& generator) noexcept -> void
 }
 
 // Set texture only if changed
-auto SetTexture(const Turtle& turtle, Generator& generator) noexcept -> void
+auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
 {
   static int s_lastTexture(-1);
 
@@ -164,7 +164,7 @@ auto SetTexture(const Turtle& turtle, Generator& generator) noexcept -> void
 // f(l) Move without drawing
 auto MoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -185,7 +185,7 @@ auto MoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // z Move half standard distance without drawing
 auto MoveHalfImpl(const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
-                  Generator& generator,
+                  IGenerator& generator,
                   [[maybe_unused]] const int numArgs,
                   [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -199,7 +199,7 @@ auto MoveHalfImpl(const ConstListIterator<Module>& moduleIter,
 // Fr(l), Fl(l) - Right and CurrentLeft edges respectively
 auto DrawImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -226,7 +226,7 @@ auto DrawImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // Z Draw half standard distance while drawing
 auto DrawHalfImpl(const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
-                  Generator& generator,
+                  IGenerator& generator,
                   [[maybe_unused]] const int numArgs,
                   [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -239,7 +239,7 @@ auto DrawHalfImpl(const ConstListIterator<Module>& moduleIter,
 // -(t) Turn right: negative rotation about Z
 auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   [[maybe_unused]] const Generator& generator,
+                   [[maybe_unused]] const IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -258,7 +258,7 @@ auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // +(t) Turn left; positive rotation about Z
 auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
-                  [[maybe_unused]] const Generator& generator,
+                  [[maybe_unused]] const IGenerator& generator,
                   const int numArgs,
                   const ArgsArray& args) noexcept -> void
 {
@@ -277,7 +277,7 @@ auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // ^(t) Pitch up; negative rotation about Y
 auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 [[maybe_unused]] const Generator& generator,
+                 [[maybe_unused]] const IGenerator& generator,
                  const int numArgs,
                  const ArgsArray& args) noexcept -> void
 {
@@ -296,7 +296,7 @@ auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // &(t) Pitch down; positive rotation about Y
 auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   [[maybe_unused]] const Generator& generator,
+                   [[maybe_unused]] const IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -315,7 +315,7 @@ auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // /(t) Roll right; positive rotation about X
 auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   [[maybe_unused]] const Generator& generator,
+                   [[maybe_unused]] const IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -334,7 +334,7 @@ auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // \(t) Roll left; negative rotation about X
 auto RollLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
-                  [[maybe_unused]] const Generator& generator,
+                  [[maybe_unused]] const IGenerator& generator,
                   const int numArgs,
                   const ArgsArray& args) noexcept -> void
 {
@@ -353,7 +353,7 @@ auto RollLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // |  Turn around
 auto ReverseImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 [[maybe_unused]] const Generator& generator,
+                 [[maybe_unused]] const IGenerator& generator,
                  [[maybe_unused]] const int numArgs,
                  [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -365,7 +365,7 @@ auto ReverseImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // [  Push turtle state
 auto PushImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              [[maybe_unused]] const Generator& generator,
+              [[maybe_unused]] const IGenerator& generator,
               [[maybe_unused]] const int numArgs,
               [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -377,7 +377,7 @@ auto PushImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 // ]	Pop turtle state
 auto PopImpl(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             Generator& generator,
+             IGenerator& generator,
              [[maybe_unused]] const int numArgs,
              [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -407,7 +407,7 @@ auto PopImpl(ConstListIterator<Module>& moduleIter,
 // $	Roll to horizontal plane (pg. 57)
 auto RollHorizontalImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                         Turtle& turtle,
-                        [[maybe_unused]] const Generator& generator,
+                        [[maybe_unused]] const IGenerator& generator,
                         [[maybe_unused]] const int numArgs,
                         [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -419,7 +419,7 @@ auto RollHorizontalImpl([[maybe_unused]] const ConstListIterator<Module>& module
 // {	Start a new polygon
 auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                       const Turtle& turtle,
-                      Generator& generator,
+                      IGenerator& generator,
                       [[maybe_unused]] const int numArgs,
                       [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -444,7 +444,7 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
 // .	Add a vertex to the current polygon
 auto PolygonVertexImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                        const Turtle& turtle,
-                       [[maybe_unused]] const Generator& generator,
+                       [[maybe_unused]] const IGenerator& generator,
                        [[maybe_unused]] const int numArgs,
                        [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -477,7 +477,7 @@ auto PolygonVertexImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
 // other effects.
 auto PolygonMoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                      Turtle& turtle,
-                     [[maybe_unused]] const Generator& generator,
+                     [[maybe_unused]] const IGenerator& generator,
                      const int numArgs,
                      const ArgsArray& args) noexcept -> void
 {
@@ -494,7 +494,7 @@ auto PolygonMoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIte
 // }	Close the current polygon
 auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                     const Turtle& turtle,
-                    Generator& generator,
+                    IGenerator& generator,
                     [[maybe_unused]] const int numArgs,
                     [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -527,7 +527,7 @@ auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter
 // @md(f) Multiply DefaultDistance by f
 auto MultiplyDefaultDistanceImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                                  Turtle& turtle,
-                                 [[maybe_unused]] const Generator& generator,
+                                 [[maybe_unused]] const IGenerator& generator,
                                  const int numArgs,
                                  const ArgsArray& args) noexcept -> void
 {
@@ -547,7 +547,7 @@ auto MultiplyDefaultDistanceImpl([[maybe_unused]] const ConstListIterator<Module
 // @ma(f) Multiply DefaultTurnAngle by f
 auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                                   Turtle& turtle,
-                                  [[maybe_unused]] const Generator& generator,
+                                  [[maybe_unused]] const IGenerator& generator,
                                   const int numArgs,
                                   const ArgsArray& args) noexcept -> void
 {
@@ -567,7 +567,7 @@ auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Modul
 // @mw(f) Multiply width by f
 auto MultiplyWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                        Turtle& turtle,
-                       Generator& generator,
+                       IGenerator& generator,
                        const int numArgs,
                        const ArgsArray& args) noexcept -> void
 {
@@ -589,7 +589,7 @@ auto MultiplyWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
 // !(d) Set line width
 auto ChangeWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                      Turtle& turtle,
-                     Generator& generator,
+                     IGenerator& generator,
                      const int numArgs,
                      const ArgsArray& args) noexcept -> void
 {
@@ -612,7 +612,7 @@ auto ChangeWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIte
 // '(r,g,b) Set RGB color
 auto ChangeColorImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                      Turtle& turtle,
-                     Generator& generator,
+                     IGenerator& generator,
                      const int numArgs,
                      const ArgsArray& args) noexcept -> void
 {
@@ -641,7 +641,7 @@ auto ChangeColorImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIte
 // @Tx(n)	Change texture index
 auto ChangeTextureImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                        Turtle& turtle,
-                       Generator& generator,
+                       IGenerator& generator,
                        [[maybe_unused]] const int numArgs,
                        const ArgsArray& args) noexcept -> void
 {
@@ -657,7 +657,7 @@ auto ChangeTextureImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
 // Should leave graphics mode before drawing object.
 auto DrawObjectImpl(const ConstListIterator<Module>& moduleIter,
                     const Turtle& turtle,
-                    Generator& generator,
+                    IGenerator& generator,
                     const int numArgs,
                     const ArgsArray& args) noexcept -> void
 {
@@ -677,7 +677,7 @@ auto DrawObjectImpl(const ConstListIterator<Module>& moduleIter,
 // matching in Production::matches()
 auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
                    [[maybe_unused]] const Turtle& turtle,
-                   [[maybe_unused]] const Generator& generator,
+                   [[maybe_unused]] const IGenerator& generator,
                    [[maybe_unused]] const int numArgs,
                    [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -724,7 +724,7 @@ auto TropismError() noexcept -> void
 
 auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 [[maybe_unused]] const Generator& generator,
+                 [[maybe_unused]] const IGenerator& generator,
                  const int numArgs,
                  const ArgsArray& args) noexcept -> void
 {
@@ -767,7 +767,7 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
 auto Move(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          Generator& generator,
+          IGenerator& generator,
           const int numArgs,
           const ArgsArray& args) noexcept -> void
 {
@@ -776,7 +776,7 @@ auto Move(ConstListIterator<Module>& moduleIter,
 
 auto MoveHalf(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -785,7 +785,7 @@ auto MoveHalf(ConstListIterator<Module>& moduleIter,
 
 auto Draw(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          Generator& generator,
+          IGenerator& generator,
           const int numArgs,
           const ArgsArray& args) noexcept -> void
 {
@@ -794,7 +794,7 @@ auto Draw(ConstListIterator<Module>& moduleIter,
 
 auto DrawHalf(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -803,7 +803,7 @@ auto DrawHalf(ConstListIterator<Module>& moduleIter,
 
 auto DrawObject(ConstListIterator<Module>& moduleIter,
                 const Turtle& turtle,
-                Generator& generator,
+                IGenerator& generator,
                 const int numArgs,
                 const ArgsArray& args) noexcept -> void
 {
@@ -812,7 +812,7 @@ auto DrawObject(ConstListIterator<Module>& moduleIter,
 
 auto GeneralisedCylinderStart([[maybe_unused]] ConstListIterator<Module>& moduleIter,
                               [[maybe_unused]] Turtle& turtle,
-                              [[maybe_unused]] Generator& generator,
+                              [[maybe_unused]] IGenerator& generator,
                               [[maybe_unused]] const int numArgs,
                               [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -821,7 +821,7 @@ auto GeneralisedCylinderStart([[maybe_unused]] ConstListIterator<Module>& module
 
 auto GeneralisedCylinderControlPoint([[maybe_unused]] ConstListIterator<Module>& moduleIter,
                                      [[maybe_unused]] Turtle& turtle,
-                                     [[maybe_unused]] Generator& generator,
+                                     [[maybe_unused]] IGenerator& generator,
                                      [[maybe_unused]] const int numArgs,
                                      [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -830,7 +830,7 @@ auto GeneralisedCylinderControlPoint([[maybe_unused]] ConstListIterator<Module>&
 
 auto GeneralisedCylinderEnd([[maybe_unused]] ConstListIterator<Module>& moduleIter,
                             [[maybe_unused]] Turtle& turtle,
-                            [[maybe_unused]] Generator& generator,
+                            [[maybe_unused]] IGenerator& generator,
                             [[maybe_unused]] const int numArgs,
                             [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -839,7 +839,7 @@ auto GeneralisedCylinderEnd([[maybe_unused]] ConstListIterator<Module>& moduleIt
 
 auto GeneralisedCylinderTangents([[maybe_unused]] ConstListIterator<Module>& moduleIter,
                                  [[maybe_unused]] Turtle& turtle,
-                                 [[maybe_unused]] Generator& generator,
+                                 [[maybe_unused]] IGenerator& generator,
                                  [[maybe_unused]] const int numArgs,
                                  [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -848,7 +848,7 @@ auto GeneralisedCylinderTangents([[maybe_unused]] ConstListIterator<Module>& mod
 
 auto GeneralisedCylinderTangentLengths([[maybe_unused]] ConstListIterator<Module>& moduleIter,
                                        [[maybe_unused]] Turtle& turtle,
-                                       [[maybe_unused]] Generator& generator,
+                                       [[maybe_unused]] IGenerator& generator,
                                        [[maybe_unused]] const int numArgs,
                                        [[maybe_unused]] const ArgsArray& args) noexcept -> void
 {
@@ -857,7 +857,7 @@ auto GeneralisedCylinderTangentLengths([[maybe_unused]] ConstListIterator<Module
 
 auto TurnRight(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                const int numArgs,
                const ArgsArray& args) noexcept -> void
 {
@@ -866,7 +866,7 @@ auto TurnRight(ConstListIterator<Module>& moduleIter,
 
 auto TurnLeft(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              const Generator& generator,
+              const IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -875,7 +875,7 @@ auto TurnLeft(ConstListIterator<Module>& moduleIter,
 
 auto PitchUp(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              const int numArgs,
              const ArgsArray& args) noexcept -> void
 {
@@ -884,7 +884,7 @@ auto PitchUp(ConstListIterator<Module>& moduleIter,
 
 auto PitchDown(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                const int numArgs,
                const ArgsArray& args) noexcept -> void
 {
@@ -893,7 +893,7 @@ auto PitchDown(ConstListIterator<Module>& moduleIter,
 
 auto RollRight(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                const int numArgs,
                const ArgsArray& args) noexcept -> void
 {
@@ -902,7 +902,7 @@ auto RollRight(ConstListIterator<Module>& moduleIter,
 
 auto RollLeft(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              const Generator& generator,
+              const IGenerator& generator,
               const int numArgs,
               const ArgsArray& args) noexcept -> void
 {
@@ -911,7 +911,7 @@ auto RollLeft(ConstListIterator<Module>& moduleIter,
 
 auto Reverse(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              const int numArgs,
              const ArgsArray& args) noexcept -> void
 {
@@ -920,7 +920,7 @@ auto Reverse(ConstListIterator<Module>& moduleIter,
 
 auto RollHorizontal(ConstListIterator<Module>& moduleIter,
                     Turtle& turtle,
-                    const Generator& generator,
+                    const IGenerator& generator,
                     const int numArgs,
                     const ArgsArray& args) noexcept -> void
 {
@@ -929,7 +929,7 @@ auto RollHorizontal(ConstListIterator<Module>& moduleIter,
 
 auto Push(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          const Generator& generator,
+          const IGenerator& generator,
           const int numArgs,
           const ArgsArray& args) noexcept -> void
 {
@@ -938,7 +938,7 @@ auto Push(ConstListIterator<Module>& moduleIter,
 
 auto Pop(ConstListIterator<Module>& moduleIter,
          Turtle& turtle,
-         Generator& generator,
+         IGenerator& generator,
          const int numArgs,
          const ArgsArray& args) noexcept -> void
 {
@@ -947,7 +947,7 @@ auto Pop(ConstListIterator<Module>& moduleIter,
 
 auto CutBranch(ConstListIterator<Module>& moduleIter,
                const Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                const int numArgs,
                const ArgsArray& args) noexcept -> void
 {
@@ -956,7 +956,7 @@ auto CutBranch(ConstListIterator<Module>& moduleIter,
 
 auto MultiplyDefaultDistance(ConstListIterator<Module>& moduleIter,
                              Turtle& turtle,
-                             const Generator& generator,
+                             const IGenerator& generator,
                              const int numArgs,
                              const ArgsArray& args) noexcept -> void
 {
@@ -965,7 +965,7 @@ auto MultiplyDefaultDistance(ConstListIterator<Module>& moduleIter,
 
 auto MultiplyDefaultTurnAngle(ConstListIterator<Module>& moduleIter,
                               Turtle& turtle,
-                              const Generator& generator,
+                              const IGenerator& generator,
                               const int numArgs,
                               const ArgsArray& args) noexcept -> void
 {
@@ -974,7 +974,7 @@ auto MultiplyDefaultTurnAngle(ConstListIterator<Module>& moduleIter,
 
 auto MultiplyWidth(ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   Generator& generator,
+                   IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -983,7 +983,7 @@ auto MultiplyWidth(ConstListIterator<Module>& moduleIter,
 
 auto ChangeWidth(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 Generator& generator,
+                 IGenerator& generator,
                  const int numArgs,
                  const ArgsArray& args) noexcept -> void
 {
@@ -992,7 +992,7 @@ auto ChangeWidth(ConstListIterator<Module>& moduleIter,
 
 auto ChangeColor(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 Generator& generator,
+                 IGenerator& generator,
                  const int numArgs,
                  const ArgsArray& args) noexcept -> void
 {
@@ -1001,7 +1001,7 @@ auto ChangeColor(ConstListIterator<Module>& moduleIter,
 
 auto ChangeTexture(ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   Generator& generator,
+                   IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -1010,7 +1010,7 @@ auto ChangeTexture(ConstListIterator<Module>& moduleIter,
 
 auto StartPolygon(ConstListIterator<Module>& moduleIter,
                   const Turtle& turtle,
-                  Generator& generator,
+                  IGenerator& generator,
                   const int numArgs,
                   const ArgsArray& args) noexcept -> void
 {
@@ -1019,7 +1019,7 @@ auto StartPolygon(ConstListIterator<Module>& moduleIter,
 
 auto PolygonVertex(ConstListIterator<Module>& moduleIter,
                    const Turtle& turtle,
-                   const Generator& generator,
+                   const IGenerator& generator,
                    const int numArgs,
                    const ArgsArray& args) noexcept -> void
 {
@@ -1028,7 +1028,7 @@ auto PolygonVertex(ConstListIterator<Module>& moduleIter,
 
 auto PolygonMove(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 const Generator& generator,
+                 const IGenerator& generator,
                  const int numArgs,
                  const ArgsArray& args) noexcept -> void
 {
@@ -1037,7 +1037,7 @@ auto PolygonMove(ConstListIterator<Module>& moduleIter,
 
 auto EndPolygon(ConstListIterator<Module>& moduleIter,
                 const Turtle& turtle,
-                Generator& generator,
+                IGenerator& generator,
                 const int numArgs,
                 const ArgsArray& args) noexcept -> void
 {
@@ -1046,7 +1046,7 @@ auto EndPolygon(ConstListIterator<Module>& moduleIter,
 
 auto Tropism(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              const int numArgs,
              const ArgsArray& args) noexcept -> void
 {

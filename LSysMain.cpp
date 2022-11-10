@@ -1,5 +1,4 @@
-/* main.c - driver for parsing and producing L-systems.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -41,6 +40,7 @@
  */
 #include "CommandLineOptions.h"
 #include "GenericGenerator.h"
+#include "IGenerator.h"
 #include "Interpret.h"
 #include "LSysModel.h"
 #include "Parser.h"
@@ -52,8 +52,8 @@
 #include <iomanip>
 #include <string>
 
-using LSys::Generator;
 using LSys::GenericGenerator;
+using LSys::IGenerator;
 using LSys::LSysModel;
 using LSys::Module;
 using LSys::srand48;
@@ -371,7 +371,7 @@ int main(int argc, const char* argv[])
 
     // Construct an output generator and apply it to the final module
     // list to build a database.
-    Generator* g     = nullptr;
+    IGenerator* g    = nullptr;
     const char* type = "";
     switch (filetype)
     {

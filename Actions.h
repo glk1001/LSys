@@ -25,7 +25,7 @@
 #pragma once
 
 #include "Consts.h"
-#include "Generator.h"
+#include "IGenerator.h"
 #include "Module.h"
 #include "Turtle.h"
 
@@ -39,7 +39,7 @@ inline constexpr const char* DRAW_OBJECT_START = "~";
 
 using ActionFunc = std::function<void(ConstListIterator<Module>& moduleIter,
                                       Turtle& turtle,
-                                      Generator& generator,
+                                      IGenerator& generator,
                                       int numArgs,
                                       const ArgsArray& args)>;
 
@@ -49,192 +49,192 @@ auto Postscript(Turtle& turtle) noexcept -> void;
 
 auto Move(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          Generator& generator,
+          IGenerator& generator,
           int numArgs,
           const ArgsArray& args) noexcept -> void;
 auto MoveHalf(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               int numArgs,
               const ArgsArray& args) noexcept -> void;
 
 auto Draw(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          Generator& generator,
+          IGenerator& generator,
           int numArgs,
           const ArgsArray& args) noexcept -> void;
 auto DrawHalf(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              Generator& generator,
+              IGenerator& generator,
               int numArgs,
               const ArgsArray& args) noexcept -> void;
 
 auto DrawObject(ConstListIterator<Module>& moduleIter,
                 const Turtle& turtle,
-                Generator& generator,
+                IGenerator& generator,
                 int numArgs,
                 const ArgsArray& args) noexcept -> void;
 
 auto GeneralisedCylinderStart(ConstListIterator<Module>& moduleIter,
                               Turtle& turtle,
-                              Generator& generator,
+                              IGenerator& generator,
                               int numArgs,
                               const ArgsArray& args) noexcept -> void;
 auto GeneralisedCylinderControlPoint(ConstListIterator<Module>& moduleIter,
                                      Turtle& turtle,
-                                     Generator& generator,
+                                     IGenerator& generator,
                                      int numArgs,
                                      const ArgsArray& args) noexcept -> void;
 auto GeneralisedCylinderEnd(ConstListIterator<Module>& moduleIter,
                             Turtle& turtle,
-                            Generator& generator,
+                            IGenerator& generator,
                             int numArgs,
                             const ArgsArray& args) noexcept -> void;
 auto GeneralisedCylinderTangents(ConstListIterator<Module>& moduleIter,
                                  Turtle& turtle,
-                                 Generator& generator,
+                                 IGenerator& generator,
                                  int numArgs,
                                  const ArgsArray& args) noexcept -> void;
 auto GeneralisedCylinderTangentLengths(ConstListIterator<Module>& moduleIter,
                                        Turtle& turtle,
-                                       Generator& generator,
+                                       IGenerator& generator,
                                        int numArgs,
                                        const ArgsArray& args) noexcept -> void;
 
 auto TurnRight(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                int numArgs,
                const ArgsArray& args) noexcept -> void;
 auto TurnLeft(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              const Generator& generator,
+              const IGenerator& generator,
               int numArgs,
               const ArgsArray& args) noexcept -> void;
 auto PitchUp(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              int numArgs,
              const ArgsArray& args) noexcept -> void;
 auto PitchDown(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                int numArgs,
                const ArgsArray& args) noexcept -> void;
 auto RollRight(ConstListIterator<Module>& moduleIter,
                Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                int numArgs,
                const ArgsArray& args) noexcept -> void;
 auto RollLeft(ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
-              const Generator& generator,
+              const IGenerator& generator,
               int numArgs,
               const ArgsArray& args) noexcept -> void;
 auto Reverse(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              int numArgs,
              const ArgsArray& args) noexcept -> void;
 auto RollHorizontal(ConstListIterator<Module>& moduleIter,
                     Turtle& turtle,
-                    const Generator& generator,
+                    const IGenerator& generator,
                     int numArgs,
                     const ArgsArray& args) noexcept -> void;
 
 auto Push(ConstListIterator<Module>& moduleIter,
           Turtle& turtle,
-          const Generator& generator,
+          const IGenerator& generator,
           int numArgs,
           const ArgsArray& args) noexcept -> void;
 auto Pop(ConstListIterator<Module>& moduleIter,
          Turtle& turtle,
-         Generator& generator,
+         IGenerator& generator,
          int numArgs,
          const ArgsArray& args) noexcept -> void;
 auto CutBranch(ConstListIterator<Module>& moduleIter,
                const Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                int numArgs,
                const ArgsArray& args) noexcept -> void;
 
 auto MultiplyDefaultDistance(ConstListIterator<Module>& moduleIter,
                              Turtle& turtle,
-                             const Generator& generator,
+                             const IGenerator& generator,
                              int numArgs,
                              const ArgsArray& args) noexcept -> void;
 auto MultiplyDefaultTurnAngle(ConstListIterator<Module>& moduleIter,
                               Turtle& turtle,
-                              const Generator& generator,
+                              const IGenerator& generator,
                               int numArgs,
                               const ArgsArray& args) noexcept -> void;
 auto MultiplyWidth(ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   Generator& generator,
+                   IGenerator& generator,
                    int numArgs,
                    const ArgsArray& args) noexcept -> void;
 auto ChangeWidth(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 Generator& generator,
+                 IGenerator& generator,
                  int numArgs,
                  const ArgsArray& args) noexcept -> void;
 
 auto ChangeColor(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 Generator& generator,
+                 IGenerator& generator,
                  int numArgs,
                  const ArgsArray& args) noexcept -> void;
 auto ChangeTexture(ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
-                   Generator& generator,
+                   IGenerator& generator,
                    int numArgs,
                    const ArgsArray& args) noexcept -> void;
 
 auto StartPolygon(ConstListIterator<Module>& moduleIter,
                   const Turtle& turtle,
-                  Generator& generator,
+                  IGenerator& generator,
                   int numArgs,
                   const ArgsArray& args) noexcept -> void;
 auto PolygonVertex(ConstListIterator<Module>& moduleIter,
                    const Turtle& turtle,
-                   const Generator& generator,
+                   const IGenerator& generator,
                    int numArgs,
                    const ArgsArray& args) noexcept -> void;
 auto PolygonMove(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
-                 const Generator& generator,
+                 const IGenerator& generator,
                  int numArgs,
                  const ArgsArray& args) noexcept -> void;
 auto EndPolygon(ConstListIterator<Module>& moduleIter,
                 const Turtle& turtle,
-                Generator& generator,
+                IGenerator& generator,
                 int numArgs,
                 const ArgsArray& args) noexcept -> void;
 
 auto Tropism(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
-             const Generator& generator,
+             const IGenerator& generator,
              int numArgs,
              const ArgsArray& args) noexcept -> void;
 
 auto Flower(ConstListIterator<Module>& moduleIter,
             const Turtle& turtle,
-            const Generator& generator,
+            const IGenerator& generator,
             int numArgs,
             const ArgsArray& args) noexcept -> void;
 auto Leaf(ConstListIterator<Module>& moduleIter,
           const Turtle& turtle,
-          const Generator& generator,
+          const IGenerator& generator,
           int numArgs,
           const ArgsArray& args) noexcept -> void;
 auto Internode(ConstListIterator<Module>& moduleIter,
                const Turtle& turtle,
-               const Generator& generator,
+               const IGenerator& generator,
                int numArgs,
                const ArgsArray& args) noexcept -> void;
 auto FloweringApex(ConstListIterator<Module>& moduleIter,
                    const Turtle& turtle,
-                   const Generator& generator,
+                   const IGenerator& generator,
                    int numArgs,
                    const ArgsArray& args) noexcept -> void;
 

@@ -1,5 +1,4 @@
-/* Generator.c - methods for abstract database generator (do nothing)
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -25,9 +24,8 @@
  * First public release.
  *
  */
-//static char RCSid[]= "$Id: Generator.c,v 1.3 91/03/20 10:37:32 leech Exp Locker: leech $";
 
-#include "Generator.h"
+#include "IGenerator.h"
 
 #include "Turtle.h"
 #include "Vector.h"
@@ -35,51 +33,46 @@
 #include <cstdlib>
 #include <fstream>
 
-using std::cerr;
-using std::endl;
-
 namespace LSys
 {
 
-void Generator::OutputFailed()
+auto IGenerator::OutputFailed() -> void
 {
-  cerr << "Fatal error in output generator, aborting\n";
+  std::cerr << "Fatal error in output generator, aborting\n";
   std::exit(1);
 }
 
-void Generator::SetName(const std::string& name)
+auto IGenerator::Prelude(const Turtle& turtle) -> void
 {
-  objectName = name;
-}
-
-void Generator::Prelude(const Turtle& t)
-{
-  SetColor(t);
-  SetWidth(t);
-  if (out->bad())
+  SetColor(turtle);
+  SetWidth(turtle);
+  if (m_output->bad())
+  {
     OutputFailed();
+  }
 }
 
-void Generator::Postscript(const Turtle& t)
+auto IGenerator::Postscript([[maybe_unused]] const Turtle& turtle) -> void
 {
-  (void)t;
-  if (out->bad())
+  if (m_output->bad())
+  {
     OutputFailed();
-  out->close();
+  }
+  m_output->close();
 }
 
-void Generator::MoveTo(const Turtle& t)
+auto IGenerator::MoveTo(const Turtle& turtle) -> void
 {
-  lastPosition = t.Location();
-  lastWidth    = t.CurrentWidth();
-  lastMove     = true;
+  m_lastPosition = turtle.Location();
+  m_lastWidth    = turtle.CurrentWidth();
+  m_lastMove     = true;
 }
 
-void Generator::LineTo(const Turtle& t)
+auto IGenerator::LineTo(const Turtle& turtle) -> void
 {
-  lastPosition = t.Location();
-  lastWidth    = t.CurrentWidth();
-  lastMove     = false;
+  m_lastPosition = turtle.Location();
+  m_lastWidth    = turtle.CurrentWidth();
+  m_lastMove     = false;
 }
 
 } // namespace LSys

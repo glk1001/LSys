@@ -27,12 +27,12 @@
 
 #pragma once
 
-#include "Generator.h"
+#include "IGenerator.h"
 
 namespace LSys
 {
 
 extern void Interpret(
-    const List<Module>&, Generator&, float turn = 90, float width = 1, float distance = 1);
+    const List<Module>&, IGenerator&, float turn = 90, float width = 1, float distance = 1);
 
 } // namespace LSys

@@ -1,18 +1,18 @@
 #pragma once
 
 #include "Consts.h"
-#include "Generator.h"
+#include "IGenerator.h"
 
 #include <string>
 
 namespace LSys
 {
 
-class GenericGenerator : public Generator
+class GenericGenerator : public IGenerator
 {
 public:
   GenericGenerator(std::ofstream* output, std::ofstream* bndsOutput)
-    : Generator(output, bndsOutput), groupNum(0)
+    : IGenerator(output, bndsOutput), groupNum(0)
   {
   }
 
