@@ -20,28 +20,28 @@ include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 set(TARGET_NAME "LSys")
 
 add_executable(${TARGET_NAME}
-        Actions.cpp
-        CommandLineOptions.cpp
-        Consts.cpp
-        Expression.cpp
-        GenericGenerator.cpp
-        IGenerator.cpp
-        Interpret.cpp
-        Lexer.cpp
-        List.h
-        LSysMain.cpp
-        LSysModel.cpp
-        Module.cpp
-        Name.cpp
-        Options.cpp
-        Parser.cpp
-        Polygon.h
-        Production.cpp
-        SymbolTable.cpp
-        token.h
-        Turtle.cpp
-        Value.cpp
-        Vector.cpp
+        src/Actions.cpp
+        src/CommandLineOptions.cpp
+        src/Consts.cpp
+        src/Expression.cpp
+        src/GenericGenerator.cpp
+        src/IGenerator.cpp
+        src/Interpret.cpp
+        src/Lexer.cpp
+        src/List.h
+        src/LSysMain.cpp
+        src/LSysModel.cpp
+        src/Module.cpp
+        src/Name.cpp
+        src/Options.cpp
+        src/Parser.cpp
+        src/Polygon.h
+        src/Production.cpp
+        src/SymbolTable.cpp
+        src/token.h
+        src/Turtle.cpp
+        src/Value.cpp
+        src/Vector.cpp
         )
 
 target_include_directories(${TARGET_NAME}
