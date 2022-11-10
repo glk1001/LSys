@@ -1429,7 +1429,7 @@ case 69:
 case 70:
 #line 420 "lsys.y"
 { PDebug(PD_NAME, std::cerr << "Calling Name::Name(token @" << ((void *)lex_token()) << " = " << lex_token() << ')' << std::endl);
-		      yyval.name = Name{lex_token()};
+		      yyval.name = Name{lex_token()}.id();
 		    ;
     break;}
 }

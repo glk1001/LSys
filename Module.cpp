@@ -38,7 +38,7 @@ namespace LSys
 {
 
 Module::Module(const Name& name, List<Expression>* const expressionList, const bool ignoreFlag)
-  : m_tag(name), m_ignoreFlag{ignoreFlag}, m_param{expressionList}
+  : m_tag(name.id()), m_ignoreFlag{ignoreFlag}, m_param{expressionList}
 {
   PDebug(PD_MODULE, std::cerr << "Creating module " << *this << " @ " << this << "\n");
 }

@@ -1,7 +1,4 @@
-/* Name.h - class definition for space-efficient hashed names.
- *
- * $Id: Name.h,v 1.5 93/01/21 12:06:36 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Name.h,v $
+ * $Log: Name.h,v $
  * Revision 1.5  93/01/21  12:06:36  leech
  * Put workaround for g++ bug back in.
  *
@@ -47,34 +44,28 @@ namespace LSys
 class Name
 {
 public:
-  explicit Name(const char*);
+  explicit Name(const char* name);
   explicit Name(int id);
-  operator int() const { return index; }
-  operator const char*() const { return reverse_map[index]; }
-  std::string str() const { return reverse_map[index]; }
+
+  [[nodiscard]] auto str() const -> std::string { return s_reverseMap[m_index]; }
+  [[nodiscard]] auto id() const -> int { return m_index; }
 
 private:
-  static SymbolTable<int>* map;
-  static char** reverse_map;
-  static int next_index;
-  static uint32_t reverse_map_size;
-  int index;
+  static SymbolTable<int>* s_map;
+  static char** s_reverseMap;
+  static int s_nextIndex;
+  static uint32_t s_reverseMapSize;
+  int m_index;
+  friend auto operator==(const Name& a, const Name& b) -> bool;
 };
 
-inline Name::Name(int id) : index((id < 0 or id >= static_cast<int>(reverse_map_size)) ? 0 : id)
+inline Name::Name(const int id)
+  : m_index((id < 0) or (id >= static_cast<int>(s_reverseMapSize)) ? 0 : id)
 {
 }
 
-inline bool operator==(const Name& a, const Name& b)
-{
-  return static_cast<int>(a) == static_cast<int>(b);
-}
+inline auto operator==(const Name& a, const Name& b) -> bool = default;
 
-inline bool operator!=(const Name& a, const Name& b)
-{
-  return static_cast<int>(a) != static_cast<int>(b);
-}
-
-std::ostream& operator<<(std::ostream&, const Name&);
+std::ostream& operator<<(std::ostream& out, const Name& name);
 
 } // namespace LSys

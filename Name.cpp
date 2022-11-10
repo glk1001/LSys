@@ -17,7 +17,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Name.c,v $
+ * $Log: Name.c,v $
  * Revision 1.3  91/03/20  10:38:10  leech
  * Added debugging output.
  *
@@ -31,70 +31,65 @@
 
 #include "debug.h"
 
-#include <cassert>
 #include <cstring>
 #include <iostream>
-
-using std::cerr;
-using std::endl;
-
 
 namespace LSys
 {
 
+SymbolTable<int>* Name::s_map   = nullptr;
+char** Name::s_reverseMap       = nullptr;
+int Name::s_nextIndex           = 0;
+uint32_t Name::s_reverseMapSize = 0U;
 
-SymbolTable<int>* Name::map = 0;
-char** Name::reverse_map    = 0;
-int Name::next_index        = 0;
-uint32_t Name::reverse_map_size  = 0U;
+// Amount to extend name table by when it fills up.
+static constexpr auto MAP_INCR = 20;
 
-// Amount to extend name table by when it fills up
-const int map_incr = 20;
-
-
-Name::Name(const char* tag)
+Name::Name(const char* name)
 {
-  if (tag == nullptr)
-    tag = "";
+  if (nullptr == name)
+  {
+    name = "";
+  }
+  if (nullptr == s_map)
+  {
+    s_map = new SymbolTable<int>;
+  }
 
-  if (map == 0)
-    map = new SymbolTable<int>;
-
-  PDebug(PD_NAME, cerr << "Name(" << tag << std::flush << "= " << tag << ")\n");
+  PDebug(PD_NAME, std::cerr << "Name(" << name << std::flush << "= " << name << ")\n");
 
   // If the name already exists in the symbol table, use the assigned
   // hash value. Otherwise, enter it in the table with the next
   // sequential value.
-  if (map->lookup(tag, index) == false)
+  if (s_map->lookup(name, m_index))
   {
-    if (next_index == static_cast<int>(reverse_map_size))
-    {
-      // Allocate more space for the inverse map from IDs to strings
-      //GLK int size= reverse_map_size + map_incr;
-      char** s = new char*[reverse_map_size + map_incr];
-
-      for (auto i = 0U; i < reverse_map_size; ++i)
-      {
-        s[i] = reverse_map[i];
-      }
-      if (reverse_map != 0)
-      {
-        delete reverse_map;
-      }
-      reverse_map = s;
-      reverse_map_size += map_incr;
-    }
-    map->enter(tag, next_index);
-    reverse_map[next_index] = strdup(tag);
-    index                   = next_index++;
+    return;
   }
+
+  if (s_nextIndex == static_cast<int>(s_reverseMapSize))
+  {
+    // Allocate more space for the inverse map from IDs to strings
+    //GLK int size= reverse_map_size + map_incr;
+    auto** const strPtr = new char*[s_reverseMapSize + MAP_INCR];
+
+    for (auto i = 0U; i < s_reverseMapSize; ++i)
+    {
+      strPtr[i] = s_reverseMap[i];
+    }
+    delete s_reverseMap;
+    s_reverseMap = strPtr;
+    s_reverseMapSize += MAP_INCR;
+  }
+
+  s_map->enter(name, s_nextIndex);
+  s_reverseMap[s_nextIndex] = ::strdup(name);
+  m_index                   = s_nextIndex++;
 }
 
-std::ostream& operator<<(std::ostream& o, const Name& name)
+std::ostream& operator<<(std::ostream& out, const Name& name)
 {
-  return o << name.str();
+  return out << name.str();
   //  return o << "[id: " << int(n) << " name: " << (const char *)n << "]";
 }
 
-
-}; // namespace LSys
+} // namespace LSys
