@@ -35,7 +35,7 @@ add_executable(${TARGET_NAME}
         Name.cpp
         Options.cpp
         Parser.cpp
-        Polygon.cpp
+        Polygon.h
         Production.cpp
         SymbolTable.cpp
         token.h

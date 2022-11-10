@@ -1,7 +1,4 @@
-/* Polygon.h - class definition for polygons (lists of vectors)
- *
- * $Id: Polygon.h,v 1.2 90/10/12 18:48:10 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Polygon.h,v $
+ * $Log: Polygon.h,v $
  * Revision 1.2  90/10/12  18:48:10  leech
  * First public release.
  *
@@ -34,7 +31,7 @@ namespace LSys
 {
 
 // A polygon is just a list of vertices
-using Polygon = List<Vector>;
+using Polygon              = List<Vector>;
 using ConstPolygonIterator = ConstListIterator<Vector>;
 
 } // namespace LSys

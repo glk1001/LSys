@@ -1,7 +1,4 @@
-/* parser.h - global variables produced by L-system parser.
- *
- * $Id: parser.h,v 1.4 94/08/26 16:39:28 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	parser.h,v $
+ * $Log: parser.h,v $
  * Revision 1.4  94/08/26  16:39:28  leech
  * Declare yyparse() for benefit of main().
  *
@@ -46,8 +43,8 @@
 #define parserStart (parseInfo->start)
 
 // In lex.l, for setting input stream
-extern void set_parser_input(const char* ifile);
+void set_parser_input(const char* ifile);
 
 // In lsys.y, for setting parser state
-extern void set_parser_globals(LSys::LSysModel*);
-extern int yyparse(void);
+void set_parser_globals(LSys::LSysModel*);
+int yyparse(void);

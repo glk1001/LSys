@@ -1146,7 +1146,7 @@ case 16:
 { lex_popstate();
 		      Production *p = new Production(Name{yyvsp[-5].name}, yyvsp[-2].predecessor, yyvsp[-1].expression, yyvsp[0].successors);
 		      PDebug(PD_PARSER, std::cerr << "Parsed production: " << *p << std::endl);
-		      if (p->context_free())
+		      if (p->IsContextFree())
 			Context_free_rules.append(p);
 		      else
 			parserRules.append(p);

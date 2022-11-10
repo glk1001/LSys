@@ -1,8 +1,7 @@
 // GLK: New production is faulty!!
 
 
-/* Production.c - methods for L-system productions.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -20,12 +19,11 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Production.c,v $
+ * $Log: Production.c,v $
  * Revision 1.2  90/10/12  18:48:11  leech
  * First public release.
  *
  */
-//static char RCSid[]= "$Id: Production.c,v 1.2 90/10/12 18:48:11 leech Exp Locker: leech $";
 
 #include "Production.h"
 
@@ -38,167 +36,181 @@
 
 #include <cstdlib>
 
-using std::cerr;
-using std::endl;
-
-
 namespace LSys
 {
 
-
 Production::Production(const Name& name,
-                       Predecessor* lhs,
-                       const Expression* cond,
-                       const List<Successor>* rhs)
-  : prodname(name)
+                       Predecessor* const lhs,
+                       const Expression* const cond,
+                       const List<Successor>* const rhs)
+  : m_productionName{name}, m_condition{cond}
 {
   // Ensure that empty context lists are represented by 0 pointers
-  if (lhs->left && (lhs->left->size() == 0))
+  if ((lhs->left != nullptr) and (0 == lhs->left->size()))
   {
     delete lhs->left;
-    lhs->left = 0;
+    lhs->left = nullptr;
   }
-  if (lhs->right && lhs->right->size() == 0)
+  if ((lhs->right != nullptr) and (0 == lhs->right->size()))
   {
     delete lhs->right;
-    lhs->right = 0;
+    lhs->right = nullptr;
   }
 
-  input      = lhs;
-  condition  = cond;
-  successors = rhs;
+  m_input       = lhs;
+  m_successors  = rhs;
+  m_contextFree = (nullptr == lhs->left) and (nullptr == lhs->right);
 
-  if (lhs->left == 0 && lhs->right == 0)
-    cfree = true;
-  else
-    cfree = false;
-
-  PDebug(PD_PRODUCTION, cerr << "Production::Production: created " << *this << endl);
+  PDebug(PD_PRODUCTION, std::cerr << "Production::Production: created " << *this << "\n");
 }
-
 
 Production::~Production()
 {
-  delete input;
-  delete condition;
-  delete successors;
+  delete m_input;
+  delete m_condition;
+  delete m_successors;
 }
-
 
 // See if module m matches the left hand side of this production and
 //  satisfies the conditional expression attached to it. The list
 //  iterator must be set at m, as it provides context for context-sensitive
 //  productions. Neither the iterator nor the module are modified.
-bool Production::matches(const ListIterator<Module>& mi, const Module* m, SymbolTable<Value>& st)
+bool Production::Matches(const ListIterator<Module>& modIter,
+                         const Module* const mod,
+                         SymbolTable<Value>& symbolTable)
 {
   PDebug(PD_PRODUCTION,
-         cerr << "Production::matches: testing module " << *m << " against " << *this << endl);
-  PDebug(PD_PRODUCTION, cerr << "\t" << *input->center << " matches? " << *m << '\n');
+         std::cerr << "Production::Matches: testing module " << *mod << " against " << *this
+                   << "\n");
+  PDebug(PD_PRODUCTION, std::cerr << "\t" << *m_input->center << " matches? " << *mod << "\n");
 
   // Test the predecessor module itself
-  if (input->center->Conforms(*m) == false)
+  if (not m_input->center->Conforms(*mod))
+  {
     return false;
+  }
 
   // Bind formal parameters of the predecessor
   // Should test return value to ensure binding occurred
-  input->center->Bind(*m, st);
+  m_input->center->Bind(*mod, symbolTable);
 
   // Now match context-sensitive surroundings, if any.
 
   // Left context
-  if (input->left)
+  if (m_input->left != nullptr)
   {
-    PDebug(PD_PRODUCTION, cerr << "    [left context]\n");
+    PDebug(PD_PRODUCTION, std::cerr << "    [left context]\n");
     // Scan each list in reverse order
-    ListIterator<Module> li_formal(input->left);
-    ListIterator<Module> li_value = mi;
-    Module* formal;
-    Module* value;
-    for (formal = li_formal.last(), value = li_value.previous(); formal != 0 && value != 0;
-         formal = li_formal.previous(), value = li_value.previous())
+    auto listIterFormal = ListIterator<Module>{m_input->left};
+    auto listIterValue  = ListIterator<Module>{modIter};
+    const Module* formal;
+    const Module* value;
+    for (formal = listIterFormal.last(), value = listIterValue.previous();
+         (formal != nullptr) and (value != nullptr);
+         formal = listIterFormal.previous(), value = listIterValue.previous())
     {
 
-      // Find the next potentially matching module; skip over
-      //	ignored modules as well as bracketed substrings
-      //	(e.g. A < B matches A[anything]B)
-      for (int brackets = 0; value != 0; value = li_value.previous())
+      // Find the next potentially matching module; skip over ignored modules
+      // as well as bracketed substrings (e.g. A < B matches A[anything]B).
+      for (auto brackets = 0; value != nullptr; value = listIterValue.previous())
       {
         // Skip over ignored modules
         if (value->Ignore())
+        {
           continue;
+        }
         // Skip over ], and increase bracket level.
         if (value->GetName() == RIGHT_BRACKET)
         { // ]
-          brackets++;
+          ++brackets;
           continue;
         }
         // Skip over [, and decrease bracket level iff > 0
         if (value->GetName() == LEFT_BRACKET)
         { // [
           if (brackets > 0)
-            brackets--;
+          {
+            --brackets;
+          }
           continue;
         }
         // Found a potentially matching module
-        if (brackets == 0)
+        if (0 == brackets)
+        {
           break;
+        }
       }
 
       // If start of string was reached without finding a potentially
       //	matching module, context matching failed.
-      if (value == 0)
+      if (nullptr == value)
+      {
         return false;
+      }
 
-      PDebug(PD_PRODUCTION, cerr << "\t" << *formal << " matches? " << *value << '\n');
+      PDebug(PD_PRODUCTION, std::cerr << "\t" << *formal << " matches? " << *value << '\n');
 
       // See if the formal and value modules conform
-      if (formal->Conforms(*value) == false)
+      if (not formal->Conforms(*value))
+      {
         return false;
+      }
       // Bind formal arguments
-      formal->Bind(*value, st);
+      formal->Bind(*value, symbolTable);
     }
 
     // If the formal parameter list is non-0, context matching failed
     // This could be due to a nonconforming value module, or simply
     //  running out of value modules to test.
-    if (formal != 0)
+    if (formal != nullptr)
+    {
       return false;
+    }
   }
 
   // Right context
-  if (input->right)
+  if (m_input->right != nullptr)
   {
-    ListIterator<Module> li_formal(input->right), li_value = mi;
-    Module *formal, *value;
+    auto listIterFormal = ListIterator<Module>{m_input->right};
+    auto listIterValue  = ListIterator<Module>{modIter};
+    const Module* formal;
+    const Module* value;
 
-    PDebug(PD_PRODUCTION, cerr << "    [right context]\n");
+    PDebug(PD_PRODUCTION, std::cerr << "    [right context]\n");
     // Scan each list in reverse order
-    for (formal = li_formal.first(), value = li_value.next(); formal != 0 && value != 0;
-         formal = li_formal.next(), value = li_value.next())
+    for (formal = listIterFormal.first(), value = listIterValue.next();
+         (formal != nullptr) and (value != nullptr);
+         formal = listIterFormal.next(), value = listIterValue.next())
     {
-
       // Find the next potentially matching module; skip over
       //	bracketed substrings, e.g. A < B matches A[anything]B
       //	as well as modules which should be ignored.
       if (formal->GetName() == LEFT_BRACKET)
       { // [
         // Must find a matching [; skip only ignored modules
-        while (value && value->Ignore())
-          value = li_value.next();
+        while ((value != nullptr) and value->Ignore())
+        {
+          value = listIterValue.next();
+        }
       }
       else if (formal->GetName() == RIGHT_BRACKET)
       { // ]
         // Must find a matching ]; skip anything else including
         //  bracketed substrings.
-        for (int brackets = 0; value; value = li_value.next())
+        for (auto brackets = 0; value != nullptr; value = listIterValue.next())
         {
           if (value->GetName() == RIGHT_BRACKET)
           { // ]
-            if (brackets-- == 0)
+            if (0 == brackets)
+            {
               break;
+            }
+            --brackets;
           }
-          else if (value->GetName() == LEFT_BRACKET) // [
-            brackets++;
+          else if (value->GetName() == LEFT_BRACKET)
+          { // [
+            ++brackets;
+          }
         }
       }
       else
@@ -206,20 +218,24 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
         // Find the next potentially matching module; skip over
         //  ignored modules as well as bracketed substrings,
         //  (e.g. A > B matches A[anything]B)
-        for (int brackets = 0; value != 0; value = li_value.next())
+        for (auto brackets = 0; value != nullptr; value = listIterValue.next())
         {
           // Skip over ignored modules
           if (value->Ignore())
+          {
             continue;
+          }
           if (value->GetName() == LEFT_BRACKET)
           { // [
-            brackets++;
+            ++brackets;
             continue;
           }
           if (value->GetName() == RIGHT_BRACKET)
           { // ]
             if (brackets > 0)
-              brackets--;
+            {
+              --brackets;
+            }
             else
             {
               // This is a case like B > C against A[B]C; it
@@ -230,150 +246,160 @@ bool Production::matches(const ListIterator<Module>& mi, const Module* m, Symbol
             continue;
           }
           // Found a potentially matching module
-          if (brackets == 0)
+          if (0 == brackets)
+          {
             break;
+          }
         }
       }
 
       // If start of string was reached without finding a potentially
       //	matching module, context matching failed.
-      if (value == 0)
+      if (nullptr == value)
+      {
         return false;
+      }
 
-      PDebug(PD_PRODUCTION, cerr << "\t" << *formal << " matches? " << *value << '\n');
+      PDebug(PD_PRODUCTION, std::cerr << "\t" << *formal << " Matches? " << *value << '\n');
 
       // See if the formal and value modules conform
-      if (formal->Conforms(*value) == false)
+      if (not formal->Conforms(*value))
+      {
         return false;
+      }
       // Bind formal arguments
-      formal->Bind(*value, st);
+      formal->Bind(*value, symbolTable);
     }
 
     // If the formal parameter list is non-0, context matching failed
     // This could be due to a nonconforming value module, or simply
     //  running out of value modules to test.
-    if (formal != 0)
+    if (formal != nullptr)
+    {
       return false;
+    }
   }
 
   // Finally, evaluate the optional conditional expression with the
   //	bound formals; return its boolean value if it evaluated to an
   //	integer, false otherwise.
-  if (!condition)
-    return true;
-  else
+  if (nullptr == m_condition)
   {
-    Value v = condition->Evaluate(st);
-    PDebug(PD_PRODUCTION, cerr << "    [condition] -> " << v << endl);
-    int i;
-    if (v.GetIntValue(i) == true)
-      return i ? true : false;
-    else
-      return false;
+    return true;
   }
-}
 
+  const auto value = m_condition->Evaluate(symbolTable);
+  PDebug(PD_PRODUCTION, std::cerr << "    [condition] -> " << value << "\n");
+  if (int i; value.GetIntValue(i))
+  {
+    return i != 0;
+  }
+  return false;
+}
 
 // Given a module which matches() the left hand side of this
 //  production, apply the production and return the resulting
 //  module list.
-List<Module>* Production::produce(const Module* predecessor, SymbolTable<Value>& st)
+auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& symbolTable)
+    -> List<Module>*
 {
-  List<Module>* ml = new List<Module>;
+  auto* const moduleList = new List<Module>;
 
   // If no successors for this production, die (could return an empty list
   //	or return a copy of the predecessor).
-  if (successors->size() == 0)
+  if (0 == m_successors->size())
   {
-    cerr << "Error in Production::produce: production has no successors:\n" << *this << endl;
+    std::cerr << "Error in Production::Produce: production has no successors:\n" << *this << "\n";
     std::exit(1);
   }
 
   // Pick one of the successors of the production at random.
-  const auto random_var       = static_cast<float>(drand48());
-  auto cumulative_probability = 0.0F;
+  const auto randomVar       = static_cast<float>(drand48());
+  auto cumulativeProbability = 0.0F;
 
-  const List<Module>* mlist;
+  const List<Module>* modList;
   const Successor* succ;
-  ConstListIterator<Successor> si(*successors);
-  for (mlist = 0, succ = si.first(); succ != 0; succ = si.next())
+  auto successorIter = ConstListIterator<Successor>{*m_successors};
+  for (modList = nullptr, succ = successorIter.first(); succ != nullptr;
+       succ = successorIter.next())
   {
-    cumulative_probability += succ->probability;
-    if (random_var <= cumulative_probability)
+    cumulativeProbability += succ->m_probability;
+    if (randomVar <= cumulativeProbability)
     {
-      mlist = succ->mlist;
+      modList = succ->m_moduleList;
       break;
     }
   }
 
   // If no successor was chosen, complain and return an empty list
-  if (mlist == 0)
+  if (nullptr == modList)
   {
-    cerr << "Error in Production::produce: no successor was chosen:\n" << *this << endl;
-    return ml;
+    std::cerr << "Error in Production::Produce: no successor was chosen:\n" << *this << "\n";
+    return moduleList;
   }
 
-  // For each module in the successor side, instantiate it and
-  //	add to the list.
-  ConstListIterator<Module> li(*mlist);
-  for (const Module* m = li.first(); m; m = li.next())
+  // For each module in the successor side, instantiate it and add to the list.
+  auto modIter = ConstListIterator<Module>{*modList};
+  for (const auto* mod = modIter.first(); mod != nullptr; mod = modIter.next())
   {
-    Module* new_m = m->Instantiate(st);
-    ml->append(new_m);
+    Module* const newModule = mod->Instantiate(symbolTable);
+    moduleList->append(newModule);
   }
 
   PDebug(PD_PRODUCTION,
-         cerr << "Production::produce:\n"
-              << "Production is:  " << *this << '\n'
-              << "Predecessor is: " << *predecessor << '\n'
-              << "Result is:      " << *ml << endl);
+         std::cerr << "Production::Produce:\n"
+                   << "Production is:  " << *this << "\n"
+                   << "Predecessor is: " << *predecessor << "\n"
+                   << "Result is:      " << *moduleList << "\n");
 
-  return ml;
+  return moduleList;
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Successor& s)
+auto operator<<(std::ostream& out, const Successor& successor) -> std::ostream&
 {
-  o << "\t-> ";
-  if (s.probability < 1.0F)
+  out << "\t-> ";
+  if (successor.m_probability < 1.0F)
   {
-    o << '(' << s.probability << ") ";
+    out << '(' << successor.m_probability << ") ";
   }
-  o << *s.mlist;
+  out << *successor.m_moduleList;
 
-  return o;
+  return out;
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Predecessor& c)
+auto operator<<(std::ostream& out, const Predecessor& predecessor) -> std::ostream&
 {
-  if (c.left != NULL)
-    o << *c.left << " < ";
-  // Should always be non-NULL
-  if (c.center != NULL)
-    o << *c.center;
-  if (c.right != NULL)
-    o << " > " << *c.right;
+  if (predecessor.left != nullptr)
+  {
+    out << *predecessor.left << " < ";
+  }
+  // TODO(glk) - Should always be non-NULL
+  if (predecessor.center != nullptr)
+  {
+    out << *predecessor.center;
+  }
+  if (predecessor.right != nullptr)
+  {
+    out << " > " << *predecessor.right;
+  }
 
-  return o;
+  return out;
 }
 
-
-std::ostream& operator<<(std::ostream& o, const Production& p)
+auto operator<<(std::ostream& out, const Production& production) -> std::ostream&
 {
-  o << "( " << p.prodname << " : " << *p.input;
-  if (p.cfree)
+  out << "( " << production.m_productionName << " : " << *production.m_input;
+  if (production.m_contextFree)
   {
-    o << " (CF) ";
+    out << " (CF) ";
   }
-  if (p.condition)
+  if (production.m_condition != nullptr)
   {
-    o << " : " << *p.condition;
+    out << " : " << *production.m_condition;
   }
-  o << *p.successors;
+  out << *production.m_successors;
 
-  return o;
+  return out;
 }
 
-
-}; // namespace LSys
+} // namespace LSys

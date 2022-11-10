@@ -60,7 +60,7 @@ List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
     Production* prod;
     for (prod = prodIter.first(); prod != nullptr; prod = prodIter.next())
     {
-      if (prod->matches(modIter, mod, *symbolTable))
+      if (prod->Matches(modIter, mod, *symbolTable))
       {
         PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *prod << "\n");
         break;
@@ -69,7 +69,7 @@ List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
     // If we found one, replace the module by its successor.
     if (prod != nullptr)
     {
-      List<Module>* const result = prod->produce(mod, *symbolTable);
+      auto* const result = prod->Produce(mod, *symbolTable);
       PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
       newModuleList->append(result);
       delete result;

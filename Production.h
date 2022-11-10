@@ -1,7 +1,4 @@
-/* Production.h - class definition for L-system productions.
- *
- * $Id: Production.h,v 1.3 91/03/20 10:39:45 leech Exp Locker: leech $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Production.h,v $
+ * $Log: Production.h,v $
  * Revision 1.3  91/03/20  10:39:45  leech
  * Support for G++.
  *
@@ -42,14 +39,14 @@ namespace LSys
 // so it's declared public.
 struct Predecessor
 {
-  List<Module>* left;
-  Module* center;
-  List<Module>* right;
-
-  Predecessor(List<Module>* l = 0, Module* c = 0, List<Module>* r = 0)
+  explicit Predecessor(List<Module>* const l = nullptr,
+                       Module* const c       = nullptr,
+                       List<Module>* const r = nullptr)
     : left(l), center(c), right(r)
   {
   }
+  Predecessor(const Predecessor&) = delete;
+  Predecessor(Predecessor&&)      = delete;
   ~Predecessor()
   {
     delete left;
@@ -57,9 +54,15 @@ struct Predecessor
     delete right;
   }
 
-  friend std::ostream& operator<<(std::ostream&, const Predecessor&);
-};
+  auto operator=(const Predecessor&) -> Predecessor& = delete;
+  auto operator=(Predecessor&&) -> Predecessor&      = delete;
 
+  friend auto operator<<(std::ostream& out, const Predecessor& predecessor) -> std::ostream&;
+
+  List<Module>* left;
+  Module* center;
+  List<Module>* right;
+};
 
 // A Successor is the right-hand side of a production; it contains
 //  a probability of choosing this production and a list of modules
@@ -69,37 +72,55 @@ struct Predecessor
 class Successor
 {
 public:
-  Successor(const List<Module>* m, float p = 1) : probability(p), mlist(m) {}
-  ~Successor() { delete mlist; }
+  explicit Successor(const List<Module>* const moduleList, const float probability = 1.0F)
+    : m_probability(probability), m_moduleList(moduleList)
+  {
+  }
+  Successor(const Successor&) = delete;
+  Successor(Successor&&)      = delete;
+  ~Successor() { delete m_moduleList; }
+
+  auto operator=(const Successor&) -> Successor& = delete;
+  auto operator=(Successor&&) -> Successor&      = delete;
 
   friend class Production;
-  friend std::ostream& operator<<(std::ostream&, const Successor&);
+  friend auto operator<<(std::ostream& out, const Successor& successor) -> std::ostream&;
 
 private:
-  float probability;
-  const List<Module>* mlist;
+  float m_probability;
+  const List<Module>* m_moduleList;
 };
-
 
 // A Production is applied to a Module to produce a new list of Modules.
 // The production may be context-sensitive to surrounding Modules.
 class Production
 {
 public:
-  Production(const Name&, Predecessor* lhs, const Expression* cond, const List<Successor>* rhs);
+  Production(const Name& name,
+             Predecessor* lhs,
+             const Expression* cond,
+             const List<Successor>* rhs);
+  Production(const Production&) = delete;
+  Production(Production&&)      = delete;
   ~Production();
-  bool context_free() const { return cfree; }
-  bool matches(const ListIterator<Module>&, const Module*, SymbolTable<Value>&);
-  List<Module>* produce(const Module* predecessor, SymbolTable<Value>&);
 
-  friend std::ostream& operator<<(std::ostream&, const Production&);
+  auto operator=(const Production&) -> Production& = delete;
+  auto operator=(Production&&) -> Production&      = delete;
+
+  auto IsContextFree() const -> bool { return m_contextFree; }
+  auto Matches(const ListIterator<Module>& modIter,
+               const Module* mod,
+               SymbolTable<Value>& symbolTable) -> bool;
+  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable) -> List<Module>*;
+
+  friend auto operator<<(std::ostream& out, const Production& production) -> std::ostream&;
 
 private:
-  Name prodname;
-  bool cfree; // Is the production context-free?
-  const Predecessor* input;
-  const Expression* condition;
-  const List<Successor>* successors;
+  Name m_productionName;
+  bool m_contextFree; // Is the production context-free?
+  const Predecessor* m_input;
+  const Expression* m_condition;
+  const List<Successor>* m_successors;
 };
 
 } // namespace LSys
