@@ -14,26 +14,26 @@ class CommandLineOptionBase;
 class CommandLineOptions
 {
 public:
-  enum OptionReturnCode
+  enum class OptionReturnCode
   {
-    ok = 0,
-    shortCircuitOption,
-    endOfOptions,
-    badShortOption,
-    badLongOption,
-    ambiguousOption,
-    argumentRequired,
-    notEnoughPositionParams,
-    tooManyPositionParams
+    OK = 0,
+    SHORT_CIRCUIT_OPTION,
+    END_OF_OPTIONS,
+    BAD_SHORT_OPTION,
+    BAD_LONG_OPTION,
+    AMBIGUOUS_OPTION,
+    ARGUMENT_REQUIRED,
+    NOT_ENOUGH_POSITIONAL_PARAMS,
+    TOO_MANY_POSITIONAL_PARAMS,
   };
-  enum OptionTypes
+  enum class OptionTypes
   {
-    noArgs = 0,
-    noArgsShortCircuitOption,
-    optionalArg,
-    requiredArg,
-    zeroOrMoreArgs,
-    oneOrMoreArgs
+    NO_ARGS = 0,
+    NO_ARGS_SHORT_CIRCUIT_OPTION,
+    OPTIONAL_ARG,
+    REQUIRED_ARG,
+    ZERO_OR_MORE_ARGS,
+    ONE_OR_MORE_ARGS,
   };
 
   CommandLineOptions(bool use_f_flag = true);
@@ -53,16 +53,16 @@ public:
   char LastShortOption() const;
   const char* LastLongOption() const;
   void Usage(std::ostream&, const char* positionalParamsDescription);
-  static const char optTypeChar[oneOrMoreArgs + 1];
-  static char OptTypeChar(OptionTypes t) { return optTypeChar[t]; }
+  static const char optTypeChar[static_cast<size_t>(OptionTypes::ONE_OR_MORE_ARGS) + 1];
+  static char OptTypeChar(OptionTypes t) { return optTypeChar[static_cast<size_t>(t)]; }
 
 private:
   Options* rawOptions;
   std::vector<CommandLineOptionBase*> cmdOptions{};
-  const char** optionDefinitions = nullptr;
-  const char** optionDescriptions = nullptr;
-  int minNumPositional = 0;
-  int maxNumPositional = 0;
+  const char** optionDefinitions             = nullptr;
+  const char** optionDescriptions            = nullptr;
+  int minNumPositional                       = 0;
+  int maxNumPositional                       = 0;
   std::vector<std::string>* positionalParams = nullptr;
   char lastShortOption{};
   const char* lastLongOption = nullptr;

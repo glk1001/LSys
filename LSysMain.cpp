@@ -16,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	main.c,v $
+ * $Log: main.c,v $
  * Revision 1.7  94/08/26  16:37:44  leech
  * Move yyparse() declaration to parser.h.
  *
@@ -56,69 +56,56 @@ using LSys::GenericGenerator;
 using LSys::IGenerator;
 using LSys::LSysModel;
 using LSys::Module;
-using LSys::srand48;
 using LSys::SymbolTable;
 using LSys::Value;
-using std::cerr;
-using std::cout;
-using std::endl;
-using std::ofstream;
-using std::ostringstream;
-using std::string;
-using std::vector;
 using Utilities::CommandLineOptions;
 
-#define noArgs CommandLineOptions::noArgs
-#define optionalArg CommandLineOptions::optionalArg
-#define requiredArg CommandLineOptions::requiredArg
-#define zeroOrMoreArgs CommandLineOptions::zeroOrMoreArgs
-#define oneOrMoreArgs CommandLineOptions::oneOrMoreArgs
-
+using enum Utilities::CommandLineOptions::OptionTypes;
+using enum Utilities::CommandLineOptions::OptionReturnCode;
 
 #if YYDEBUG != 0
-extern int yydebug; /*  nonzero means print parse trace	*/
+extern int yydebug; // nonzero means print parse trace
 #endif
 int ParseDebug = 1;
 
 namespace
 {
 
-void out_of_memory()
+auto OutOfMemory() -> void
 {
-  cerr << "FATAL: no free memory!" << endl;
+  std::cerr << "FATAL: no free memory!\n";
   std::exit(1);
 }
 
 // Return a copy of a filename stripped of its trailing
 // extension (.[^.]*), if any.
-const char* BaseFilename(const char* s)
+[[nodiscard]] auto BaseFilename(const char* const filename) -> const char*
 {
-  char* c = strdup(s);
-  char* p = strrchr(c, '.');
-  if (p != NULL)
+  char* const filenameCopy = ::strdup(filename);
+  if (char* const ptr = ::strrchr(filenameCopy, '.'); ptr != nullptr)
   {
-    *p = '\0';
+    *ptr = '\0';
   }
-  return c;
+  return filenameCopy;
 }
 
-ofstream* OpenOutputFile(const char* filename)
+[[nodiscard]] auto OpenOutputFile(const char* const filename) -> std::ofstream*
 {
-  ofstream* f = new ofstream(filename);
-  if (f->bad())
+  auto* const out = new std::ofstream(filename);
+  if (out->bad())
   {
-    cerr << "Error opening output file " << filename << ", aborting." << endl;
+    std::cerr << "Error opening output file " << filename << ", aborting.\n";
     std::exit(1);
   }
-  return f;
+  return out;
 }
 
 // Set the output stream for the generated database to the specified
 // file. If the name has no extension, add one based on the output
 // format.
-ofstream* SetOutputFilename(const char* ofile)
+[[nodiscard]] auto SetOutputFilename(const char* const filename) -> std::ofstream*
 {
-  return OpenOutputFile(ofile);
+  return OpenOutputFile(filename);
 }
 
 /***
@@ -156,81 +143,104 @@ ofstream* SetOutputFilename(const char* ofile)
   ***/
 
 // Set override values for symbol table.
-void SetSymbolTableValues(
-    SymbolTable<Value>* st, int maxgen, float delta, float width, float distance)
+auto SetSymbolTableValues(SymbolTable<Value>* const symbolTable,
+                          const int maxGen,
+                          const float delta,
+                          const float width,
+                          const float distance) -> void
 {
-  if (maxgen > 0)
-    st->enter("maxgen", Value(maxgen));
-  if (delta > 0)
-    st->enter("delta", Value(delta));
-  if (width > 0)
-    st->enter("width", Value(width));
-  if (distance > 0)
-    st->enter("distance", Value(distance));
+  if (maxGen > 0)
+  {
+    symbolTable->enter("maxgen", Value(maxGen));
+  }
+  if (delta > 0.0F)
+  {
+    symbolTable->enter("delta", Value(delta));
+  }
+  if (width > 0.0F)
+  {
+    symbolTable->enter("width", Value(width));
+  }
+  if (distance > 0.0F)
+  {
+    symbolTable->enter("distance", Value(distance));
+  }
 }
 
 // Look up defaults in the symbol table, if not overridden by specified
 // arguments.
-void SetDefaults(
-    const SymbolTable<Value>& st, int* maxgen, float* delta, float* width, float* distance)
+auto SetDefaults(const SymbolTable<Value>& symbolTable,
+                 int* const maxGen,
+                 float* const delta,
+                 float* const width,
+                 float* const distance) -> void
 {
-  Value v;
-  if (*maxgen < 0)
+  if (*maxGen < 0)
   {
-    if (st.lookup("maxgen", v))
+    if (Value value; not symbolTable.lookup("maxgen", value))
     {
-      if (int i; v.GetIntValue(i))
-        *maxgen = i;
+      *maxGen = 0; // Default: just do sanity checking
+    }
+    else
+    {
+      if (auto i = 0; value.GetIntValue(i))
+      {
+        *maxGen = i;
+      }
       else
       {
-        cerr << "Invalid GetFloatValue specified for maxgen: " << v << endl;
-        exit(1);
+        std::cerr << "Invalid GetFloatValue specified for maxgen: " << value << "\n";
+        ::exit(1);
       }
     }
-    else
-      *maxgen = 0; // Default: just do sanity checking
   }
 
-  if (*delta < 0)
+  if (*delta < 0.0F)
   {
-    if (st.lookup("delta", v))
+    if (Value value; not symbolTable.lookup("delta", value))
     {
-      if (!v.GetFloatValue(*delta))
-      {
-        cerr << "Invalid GetFloatValue specified for delta: " << v << endl;
-        exit(1);
-      }
+      *delta = 90.0F; // Default: turn at right angles
     }
     else
-      *delta = 90; // Default: turn at right angles
+    {
+      if (!value.GetFloatValue(*delta))
+      {
+        std::cerr << "Invalid GetFloatValue specified for delta: " << value << "\n";
+        ::exit(1);
+      }
+    }
   }
 
-  if (*width < 0)
+  if (*width < 0.0F)
   {
-    if (st.lookup("width", v))
+    if (Value value; not symbolTable.lookup("width", value))
     {
-      if (!v.GetFloatValue(*width))
-      {
-        cerr << "Invalid GetFloatValue specified for width: " << v << endl;
-        exit(1);
-      }
+      *width = 1.0F; // Default line aspect ratio (1/100)
     }
     else
-      *width = 1; // Default line aspect ratio (1/100)
+    {
+      if (!value.GetFloatValue(*width))
+      {
+        std::cerr << "Invalid GetFloatValue specified for width: " << value << "\n";
+        ::exit(1);
+      }
+    }
   }
 
-  if (*distance < 0)
+  if (*distance < 0.0F)
   {
-    if (st.lookup("distance", v))
+    if (Value value; not symbolTable.lookup("distance", value))
     {
-      if (!v.GetFloatValue(*distance))
-      {
-        cerr << "Invalid GetFloatValue specified for distance: " << v << endl;
-        exit(1);
-      }
+      *distance = 1.0F; // Default standard distance
     }
     else
-      *distance = 1; // Default standard distance
+    {
+      if (!value.GetFloatValue(*distance))
+      {
+        std::cerr << "Invalid GetFloatValue specified for distance: " << value << "\n";
+        ::exit(1);
+      }
+    }
   }
 }
 
@@ -244,170 +254,176 @@ int main(int argc, const char* argv[])
 #if YYDEBUG != 0
     //      yydebug= 1;
 #endif
-    ParseDebug = 0;
+    ::ParseDebug = 0;
 
-    bool help1                 = false;
-    bool help2                 = false;
-    int maxgen                 = -1; // Default # of generations to produce
-    float width                = -1; // Default line width
-    float delta                = -90; // Default turn angle
-    float distance             = -1; // Default line distance
-    int seed                   = -1; // Default seed for random numbers: -1 means use time
-    bool display               = false; // Display module list at each generation?
-    bool stats                 = false; // Compute statistics
-    const char* outputFilename = 0;
-    const char* boundsFilename = "bounds.txt";
-    enum FileType
-    {
-      generic
-    };
-    FileType filetype = generic;
-    string inputFilename;
-    vector<string> positionalParams;
+    auto help1                 = false;
+    auto help2                 = false;
+    auto maxGen                = -1; // Default # of generations to produce
+    auto width                 = -1.0F; // Default line width
+    auto delta                 = -90.0F; // Default turn angle
+    auto distance              = -1.0F; // Default line distance
+    auto seed                  = -1L; // Default seed for random numbers: -1 means use time
+    auto display               = false; // Display module list at each generation?
+    auto stats                 = false; // Compute statistics
+    const auto* outputFilename = "";
+    const auto* boundsFilename = "bounds.txt";
 
-    CommandLineOptions cmdOpts;
-    const string helpDescr     = "displays help for this program";
-    const string maxgenDescr   = "sets the number of generations to produce";
-    const string deltaDescr    = "sets the default turn angle";
-    const string distanceDescr = "sets the default line length";
-    const string widthDescr    = "sets the default line width";
-    const string seedDescr     = "sets the seed GetFloatValue";
-    const string displayDescr  = "displays the L-systems produced at each generation";
-    const string statsDescr    = "displays module statistics for each generation";
-    const string outputDescr   = "output filename";
-    const string boundsDescr   = "bounds filename";
+    static constexpr const auto* HELP_DESCR     = "displays help for this program";
+    static constexpr const auto* MAX_GEN_DESCR  = "sets the number of generations to produce";
+    static constexpr const auto* DELTA_DESCR    = "sets the default turn angle";
+    static constexpr const auto* DISTANCE_DESCR = "sets the default line length";
+    static constexpr const auto* WIDTH_DESCR    = "sets the default line width";
+    static constexpr const auto* SEED_DESCR     = "sets the seed GetFloatValue";
+    static constexpr const auto* DISPLAY_DESCR  = "displays the L-systems for each generation";
+    static constexpr const auto* STATS_DESCR    = "displays module statistics for each generation";
+    static constexpr const auto* OUTPUT_DESCR   = "output filename";
+    static constexpr const auto* BOUNDS_DESCR   = "bounds filename";
 
-    cmdOpts.Add('?', "", helpDescr, noArgs, &help1);
-    cmdOpts.Add('H', "help", helpDescr, noArgs, &help2);
-    cmdOpts.Add('m', "maxgen <int>", maxgenDescr, requiredArg, &maxgen);
-    cmdOpts.Add('d', "delta <int>", deltaDescr, requiredArg, &delta);
-    cmdOpts.Add(' ', "distance <int>", distanceDescr, requiredArg, &distance);
-    cmdOpts.Add('w', "width <int>", widthDescr, requiredArg, &width);
-    cmdOpts.Add('s', "seed <int>", seedDescr, requiredArg, &seed);
-    cmdOpts.Add(' ', "display", displayDescr, noArgs, &display);
-    cmdOpts.Add(' ', "stats", statsDescr, noArgs, &stats);
-    cmdOpts.Add('o', "output <string>", outputDescr, requiredArg, &outputFilename);
-    cmdOpts.Add('b', "bounds <string>", boundsDescr, requiredArg, &boundsFilename);
+    CommandLineOptions cmdOpts{};
+    cmdOpts.Add('?', "", HELP_DESCR, NO_ARGS, &help1);
+    cmdOpts.Add('H', "help", HELP_DESCR, NO_ARGS, &help2);
+    cmdOpts.Add('m', "maxgen <int>", MAX_GEN_DESCR, REQUIRED_ARG, &maxGen);
+    cmdOpts.Add('d', "delta <int>", DELTA_DESCR, REQUIRED_ARG, &delta);
+    cmdOpts.Add(' ', "distance <int>", DISTANCE_DESCR, REQUIRED_ARG, &distance);
+    cmdOpts.Add('w', "width <int>", WIDTH_DESCR, REQUIRED_ARG, &width);
+    cmdOpts.Add('s', "seed <int>", SEED_DESCR, REQUIRED_ARG, &seed);
+    cmdOpts.Add(' ', "display", DISPLAY_DESCR, NO_ARGS, &display);
+    cmdOpts.Add(' ', "stats", STATS_DESCR, NO_ARGS, &stats);
+    cmdOpts.Add('o', "output <string>", OUTPUT_DESCR, REQUIRED_ARG, &outputFilename);
+    cmdOpts.Add('b', "bounds <string>", BOUNDS_DESCR, REQUIRED_ARG, &boundsFilename);
     //  cmdOpts.Add(' ', "generic", noArgs, &generic);
 
+    std::vector<std::string> positionalParams{};
     cmdOpts.SetPositional(1, 1, &positionalParams);
 
-    CommandLineOptions::OptionReturnCode retCode = cmdOpts.ProcessOptions(argc, argv);
-
-    if (retCode != CommandLineOptions::ok)
+    if (const CommandLineOptions::OptionReturnCode retCode = cmdOpts.ProcessOptions(argc, argv);
+        retCode != OK)
     {
-      cerr << "\n";
-      cmdOpts.Usage(cerr, "input file...");
+      std::cerr << "\n";
+      cmdOpts.Usage(std::cerr, "input file...");
       return 1;
     }
-    if (help1 || help2)
+    if (help1 or help2)
     {
-      cmdOpts.Usage(cerr, "input file...");
+      cmdOpts.Usage(std::cerr, "input file...");
       return 1;
     }
-    if (outputFilename == 0)
+    if (nullptr == outputFilename)
     {
-      cerr << "Must supply -o (output filename) option\n\n";
-      cmdOpts.Usage(cerr, "input file...");
+      std::cerr << "Must supply -o (output filename) option\n\n";
+      cmdOpts.Usage(std::cerr, "input file...");
+      return 1;
     }
-    inputFilename = positionalParams[0];
+    const auto inputFilename = positionalParams[0];
 
-
-    std::set_new_handler(out_of_memory);
+    std::set_new_handler(OutOfMemory);
 
     // Initialize random number generator
-    srand48((seed != -1) ? seed : time(0));
+    ::srand48((seed != -1) ? seed : ::time(nullptr));
 
-    LSysModel* model = new LSysModel;
+    auto* model = new LSysModel;
 
-    SetSymbolTableValues(model->symbolTable, maxgen, delta, width, distance);
+    SetSymbolTableValues(model->symbolTable, maxGen, delta, width, distance);
 
-    set_parser_globals(model);
-    set_parser_input(inputFilename.c_str());
-    ofstream* outputF    = SetOutputFilename(outputFilename);
-    ofstream* outputBnds = OpenOutputFile(boundsFilename);
+    ::set_parser_globals(model);
+    ::set_parser_input(inputFilename.c_str());
+    std::ofstream* outputF    = SetOutputFilename(outputFilename);
+    std::ofstream* outputBnds = OpenOutputFile(boundsFilename);
 
     //      yydebug = 1;
-    yyparse(); // Parse input file
+    ::yyparse(); // Parse input file
 
-    if (model->start)
+    if (model->start != nullptr)
     {
-      PDebug(PD_MAIN, cerr << "Starting module list: " << *model->start << endl);
+      PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->start << "\n");
     }
     else
     {
-      PDebug(PD_MAIN, cerr << "No starting module list" << endl);
+      PDebug(PD_MAIN, std::cerr << "No starting module list\n");
     }
     //    PDebug(PD_SYMBOL, cerr << "\nSymbol Table:\n" << *model->symbolTable);
-    PDebug(PD_PRODUCTION, cerr << "\nProductions:\n" << *model->rules << endl);
+    PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << *model->rules << "\n");
 
-    if (!model->start)
+    if (model->start == nullptr)
     {
-      cerr << "No starting point found!" << endl;
+      std::cerr << "No starting point found!\n";
       std::exit(1);
     }
 
-    SetDefaults(*model->symbolTable, &maxgen, &delta, &width, &distance);
+    SetDefaults(*model->symbolTable, &maxGen, &delta, &width, &distance);
 
     if (display)
-      cout << "Gen0 : " << *model->start << endl;
+    {
+      std::cout << "Gen0 : " << *model->start << "\n";
+    }
 
     // For each generation, apply appropriate productions
     // in parallel to all modules.
     if (stats)
-      cerr << endl;
+    {
+      std::cerr << "\n";
+    }
     LSys::List<Module>* oldModuleList = model->start;
-    for (int gen = 1; gen <= maxgen; gen++)
+    for (int gen = 1; gen <= maxGen; ++gen)
     {
       LSys::List<Module>* newModuleList = model->Generate(oldModuleList);
       if (display)
-        cout << "Gen" << gen << ": " << *newModuleList << endl;
+      {
+        std::cout << "Gen" << gen << ": " << *newModuleList << "\n";
+      }
       if (stats)
-        cerr << "Gen" << std::setw(3) << gen << ": # modules= " << std::setw(5)
-             << newModuleList->size() << endl;
+      {
+        std::cerr << "Gen" << std::setw(3) << gen << ": # modules= " << std::setw(5)
+                  << newModuleList->size() << "\n";
+      }
       //////////    delete oldModuleList;
       oldModuleList = newModuleList;
     }
 
-    // Construct an output generator and apply it to the final module
-    // list to build a database.
-    IGenerator* g    = nullptr;
-    const char* type = "";
+    // Construct an output generator and apply it to the final module list
+    // to build a database.
+    enum class FileType
+    {
+      GENERIC
+    };
+    const auto filetype   = FileType::GENERIC;
+    IGenerator* generator = nullptr;
+    const char* type      = "";
     switch (filetype)
     {
-      case generic:
-        type = "generic";
-        g    = new GenericGenerator(outputF, outputBnds);
+      case FileType::GENERIC:
+        type      = "generic";
+        generator = new GenericGenerator(outputF, outputBnds);
         break;
       default:
         break;
     }
 
-    ostringstream strStream;
+    auto strStream = std::ostringstream{};
     strStream << "  Input file = " << inputFilename << "\n";
     strStream << "  Output file = " << outputFilename << "\n";
     strStream << "  Bounds file = " << boundsFilename << "\n";
     strStream << "  Seed = " << seed << "\n";
-    strStream << "  Maxgen = " << maxgen << "\n";
+    strStream << "  Maxgen = " << maxGen << "\n";
     strStream << "  Width = " << width << "\n";
     strStream << "  Delta = " << delta << "\n";
     strStream << "  Distance = " << distance << "\n";
 
-    cerr << "\n";
-    cerr << "Generating " << type << " database..."
-         << "\n";
-    cerr << strStream.str();
-    cerr << "\n";
+    std::cerr << "\n";
+    std::cerr << "Generating " << type << " database..."
+              << "\n";
+    std::cerr << strStream.str();
+    std::cerr << "\n";
 
-    g->SetName(BaseFilename(outputFilename));
-    g->SetHeader(strStream.str());
-    Interpret(*oldModuleList, *g, delta, width, distance);
+    generator->SetName(BaseFilename(outputFilename));
+    generator->SetHeader(strStream.str());
+    Interpret(*oldModuleList, *generator, delta, width, distance);
 
     delete outputF;
     delete outputBnds;
-    delete g;
+    delete generator;
 
-    PDebug(PD_MAIN, cerr << "About to exit" << endl);
+    PDebug(PD_MAIN, std::cerr << "About to exit\n");
     return 0;
   }
   catch (const std::exception& e)

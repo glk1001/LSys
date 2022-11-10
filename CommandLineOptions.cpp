@@ -37,22 +37,22 @@ CommandLineOptionBase* CommandLineOptionBase::Clone() const
 }
 
 
-const char CommandLineOptions::optTypeChar[oneOrMoreArgs + 1] = {
-    '|', /* noArgs */
-    '|', /* noArgsShortCircuitOption */
-    '?', /* optionalArg */
-    ':', /* requiredArg */
-    '*', /* zeroOrMoreArgs */
-    '+' /* oneOrMoreArgs */
+const char CommandLineOptions::optTypeChar[static_cast<size_t>(OptionTypes::ONE_OR_MORE_ARGS) + 1] =
+    {
+        '|', /* noArgs */
+        '|', /* noArgsShortCircuitOption */
+        '?', /* optionalArg */
+        ':', /* requiredArg */
+        '*', /* zeroOrMoreArgs */
+        '+' /* oneOrMoreArgs */
 };
 
 
-CommandLineOptions::CommandLineOptions(const bool use_f_flag)
-  : rawOptions{new Options}
+CommandLineOptions::CommandLineOptions(const bool use_f_flag) : rawOptions{new Options}
 {
   if (use_f_flag)
   {
-    this->Add(CommandLineOptionBase('f', "control <string>", "", optionalArg));
+    this->Add(CommandLineOptionBase('f', "control <string>", "", OptionTypes::OPTIONAL_ARG));
   }
 }
 
@@ -184,17 +184,17 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
         break;
 
       case Options::BadChar: // bad option ("-%c", *optArg)
-        return badShortOption;
+        return OptionReturnCode::BAD_SHORT_OPTION;
 
       case Options::BadKeyword: // bad long-option ("--%s", optArg)
         lastLongOption = optArg;
-        return badLongOption;
+        return OptionReturnCode::BAD_LONG_OPTION;
 
       case Options::Ambiguous: // ambiguous long-option ("--%s", optArg)
-        return ambiguousOption;
+        return OptionReturnCode::AMBIGUOUS_OPTION;
 
       case Options::ArgRequired:
-        return argumentRequired;
+        return OptionReturnCode::ARGUMENT_REQUIRED;
 
       case Options::Positional:
         // Push positional arguments to the front
@@ -207,8 +207,8 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
           if (string(longOpt) == cmdOptions[i]->LongOpt())
           {
             cmdOptions[i]->SetValue(optArg);
-            if (cmdOptions[i]->OptType() == noArgsShortCircuitOption)
-              return shortCircuitOption;
+            if (cmdOptions[i]->OptType() == OptionTypes::NO_ARGS_SHORT_CIRCUIT_OPTION)
+              return OptionReturnCode::SHORT_CIRCUIT_OPTION;
           }
         }
         break;
@@ -219,8 +219,8 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
           if (optChar == cmdOptions[i]->OptChar())
           {
             cmdOptions[i]->SetValue(optArg);
-            if (cmdOptions[i]->OptType() == noArgsShortCircuitOption)
-              return shortCircuitOption;
+            if (cmdOptions[i]->OptType() == OptionTypes::NO_ARGS_SHORT_CIRCUIT_OPTION)
+              return OptionReturnCode::SHORT_CIRCUIT_OPTION;
           }
         }
         break;
@@ -245,7 +245,7 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
            << "Expecting at least " << minNumPositional << " param"
            << ((minNumPositional == 1) ? "" : "s") << "." << endl;
     }
-    return notEnoughPositionParams;
+    return OptionReturnCode::NOT_ENOUGH_POSITIONAL_PARAMS;
   }
   if (numPositional > maxNumPositional)
   {
@@ -255,10 +255,10 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
            << "Expecting no more than " << maxNumPositional << " param"
            << ((maxNumPositional == 1) ? "" : "s") << "." << endl;
     }
-    return tooManyPositionParams;
+    return OptionReturnCode::TOO_MANY_POSITIONAL_PARAMS;
   }
 
-  return ok;
+  return OptionReturnCode::OK;
 }
 
 
