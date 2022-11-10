@@ -1,7 +1,4 @@
-/* Expression.h - class definition for arithmetic expressions.
- *
- * $Id: Expression.h,v 1.5 95/05/24 17:13:21 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -40,19 +37,26 @@
 #include "Name.h"
 #include "Value.h"
 
+#include <array>
+
 namespace LSys
 {
 
 class Expression
 {
 public:
-  Expression(int o, Expression* lop, Expression* rop);
-  explicit Expression(const Name&, List<Expression>* funcArgs = nullptr);
+  Expression(int operation, Expression* lop, Expression* rop);
+  explicit Expression(const Name& name, List<Expression>* funcArgs = nullptr);
   explicit Expression(const Value&);
+  Expression(const Expression&) = default;
+  Expression(Expression&&)      = default;
   ~Expression();
 
+  auto operator=(const Expression&) -> Expression& = default;
+  auto operator=(Expression&&) -> Expression&      = default;
+
   // Access methods
-  [[nodiscard]] auto GetType() const -> int { return op; }
+  [[nodiscard]] auto GetType() const -> int { return m_operation; }
   [[nodiscard]] auto GetName() const -> Name;
 
   // Evaluation methods
@@ -69,19 +73,23 @@ public:
   friend std::ostream& operator<<(std::ostream&, const Expression&);
 
 private:
-  int op;
+  int m_operation;
+
   struct ExpressionValue
   {
     struct Name
     {
-      int id; // Name id
-      List<Expression>* args; // Function arguments
+      int id{};
+      List<Expression>* funcArgs{};
     };
     Name name;
     Value value; // Ensure union is big enough for a Value
-    Expression* args[2]; // Child expressions
+    std::array<Expression*, 2> args{}; // Child expressions
   };
   ExpressionValue m_expressionValue;
+  [[nodiscard]] static auto GetExpressionValue(const Name& name, List<Expression>* funcArgs)
+      -> ExpressionValue;
+
   [[nodiscard]] auto GetVarName() const -> Name { return Name{m_expressionValue.name.id}; }
   [[nodiscard]] auto GetValue() const -> Value { return m_expressionValue.value; }
   [[nodiscard]] auto GetLChild() const -> Expression* { return m_expressionValue.args[0]; }
@@ -89,7 +97,7 @@ private:
   [[nodiscard]] auto GetFuncName() const -> Name { return Name(m_expressionValue.name.id); }
   [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*
   {
-    return m_expressionValue.name.args;
+    return m_expressionValue.name.funcArgs;
   }
 };
 
@@ -106,7 +114,7 @@ private:
                             unsigned int n = 0) -> bool;
 [[nodiscard]] auto GetValue(const SymbolTable<Value>& symbolTable,
                             const List<Expression>& expressionList,
-                            Value& val,
+                            Value& value,
                             unsigned int n = 0) -> bool;
 
 } // namespace LSys

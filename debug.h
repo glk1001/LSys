@@ -1,7 +1,4 @@
-/* debug.h - debugging macros usable in C or C++.
-   *
-   * $Id: debug.h,v 1.3 91/03/20 10:40:46 leech Exp Locker: leech $
-   *
+/*
    * Copyright (C) 1990, Jonathan P. Leech
    *
    * This software may be freely copied, modified, and redistributed,
@@ -30,7 +27,6 @@
 
 #pragma once
 
-/* Debugging macros for lsys program; includeable by either C or C++ source */
 extern int ParseDebug;
 
 #define PD_EXPRESSION 0x1
@@ -39,7 +35,6 @@ extern int ParseDebug;
 #define PD_MODULE 0x8
 #define PD_PARSER 0x10
 #define PD_PRODUCTION 0x20
-#define PD_SYMBOL 0x40
 #define PD_INTERPRET 0x80
 #define PD_NAME 0x200
 

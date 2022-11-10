@@ -1,5 +1,4 @@
-/* Expression.c - methods to evaluate arithmetic expressions.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -31,7 +30,6 @@
  * First public release.
  *
  */
-//static char RCSid[]= "$Id: Expression.c,v 1.5 95/05/24 17:12:51 leech Exp $";
 
 #include "Expression.h"
 
@@ -44,21 +42,17 @@
 
 #include <cmath>
 #include <ctime>
-
-using std::cerr;
-using std::endl;
-
+#include <functional>
 
 namespace LSys
 {
 
+namespace {
 
-#define EXPRFUNC(name) \
-  Value name(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
-typedef EXPRFUNC((*Exprfunc));
+using ExprFunc =
+    std::function<Value(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)>;
 
-
-[[nodiscard]] auto expr_sin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprSin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
@@ -68,8 +62,7 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_cos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprCos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
@@ -79,8 +72,7 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_tan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprTan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
@@ -90,9 +82,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_asin(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprASin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -101,9 +92,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_acos(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprACos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -112,9 +102,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_atan(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprATan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -123,9 +112,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_atan2(const SymbolTable<Value>& symbolTable,
-                              List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprATan2(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
   auto x = 0.0F;
   auto y = 0.0F;
@@ -136,9 +124,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
 // Returns type of argument
-[[nodiscard]] auto expr_abs(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprAbs(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto v = Value{}; GetValue(symbolTable, expressionList, v))
@@ -148,10 +135,9 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
 // Always returns int
-[[nodiscard]] auto expr_ceil(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprCeil(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -160,10 +146,9 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
 // Always returns int
-[[nodiscard]] auto expr_floor(const SymbolTable<Value>& symbolTable,
-                              List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprFloor(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -172,8 +157,7 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_exp(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprExp(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
@@ -183,8 +167,7 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_log(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+[[nodiscard]] auto ExprLog(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
     -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
@@ -194,9 +177,8 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
-[[nodiscard]] auto expr_log10(const SymbolTable<Value>& symbolTable,
-                              List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprLog10(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -205,12 +187,11 @@ typedef EXPRFUNC((*Exprfunc));
   return Value();
 }
 
-
 // Return a uniformly distributed random number;
 //  rand()  returns [0,1)
 //  rand(n) returns [0,n)   (floating point)
-[[nodiscard]] auto expr_rand(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprRand(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -222,14 +203,14 @@ typedef EXPRFUNC((*Exprfunc));
 // Reseed the random number generator and return the seed;
 //  srand() sets the seed to the current time, while
 //  srand(value) sets it to the specified value.
-[[nodiscard]] auto expr_srand(const SymbolTable<Value>& symbolTable,
-                              List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprSRand(const SymbolTable<Value>& symbolTable,
+                             List<Expression>& expressionList) -> Value
 {
-  auto seed = 0L;
+  int64_t seed;
   // Should have getint()
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    seed = static_cast<long>(x);
+    seed = static_cast<int64_t>(x);
   }
   else
   {
@@ -241,38 +222,38 @@ typedef EXPRFUNC((*Exprfunc));
 }
 
 // The function table for function terms in expressions
-static SymbolTable<Anyptr>* funcTab = nullptr;
+static SymbolTable<ExprFunc>* funcTab = nullptr;
 
-static auto SetupFunctions() -> void
+auto SetupFunctions() -> void
 {
   if (funcTab != nullptr)
   {
     return;
   }
 
-  funcTab = new SymbolTable<Anyptr>;
-  funcTab->enter("sin", Anyptr(expr_sin));
-  funcTab->enter("cos", Anyptr(expr_cos));
-  funcTab->enter("tan", Anyptr(expr_tan));
-  funcTab->enter("asin", Anyptr(expr_asin));
-  funcTab->enter("acos", Anyptr(expr_acos));
-  funcTab->enter("atan", Anyptr(expr_atan));
-  funcTab->enter("atan2", Anyptr(expr_atan2));
-  funcTab->enter("abs", Anyptr(expr_abs));
-  funcTab->enter("ceil", Anyptr(expr_ceil));
-  funcTab->enter("floor", Anyptr(expr_floor));
-  funcTab->enter("exp", Anyptr(expr_exp));
-  funcTab->enter("log", Anyptr(expr_log));
-  funcTab->enter("log10", Anyptr(expr_log10));
-  funcTab->enter("rand", Anyptr(expr_rand));
-  funcTab->enter("srand", Anyptr(expr_srand));
+  funcTab = new SymbolTable<ExprFunc>;
+  funcTab->enter("sin", ExprSin);
+  funcTab->enter("cos", ExprCos);
+  funcTab->enter("tan", ExprTan);
+  funcTab->enter("asin", ExprASin);
+  funcTab->enter("acos", ExprACos);
+  funcTab->enter("atan", ExprATan);
+  funcTab->enter("atan2", ExprATan2);
+  funcTab->enter("abs", ExprAbs);
+  funcTab->enter("ceil", ExprCeil);
+  funcTab->enter("floor", ExprFloor);
+  funcTab->enter("exp", ExprExp);
+  funcTab->enter("log", ExprLog);
+  funcTab->enter("log10", ExprLog10);
+  funcTab->enter("rand", ExprRand);
+  funcTab->enter("srand", ExprSRand);
 }
 
-[[nodiscard]] auto GetOpName(const int op) -> const char*
+[[nodiscard]] auto GetOpName(const int operation) -> const char*
 {
   static char str[] = " ";
 
-  switch (op)
+  switch (operation)
   {
     case LSYS_UMINUS:
       return "-";
@@ -293,102 +274,117 @@ static auto SetupFunctions() -> void
     case LSYS_GE:
       return ">=";
     default:
-      str[0] = static_cast<char>(op);
+      str[0] = static_cast<char>(operation);
       return str;
   }
 }
 
-std::ostream& operator<<(std::ostream& o, const Expression& expression)
+} // namespace
+
+std::ostream& operator<<(std::ostream& oStream, const Expression& expression)
 {
-  switch (expression.op)
+  switch (expression.m_operation)
   {
     case LSYS_NAME:
-      o << expression.GetVarName();
+      oStream << expression.GetVarName();
       break;
     case LSYS_FUNCTION:
-      o << expression.GetFuncName() << *expression.GetFuncArgs();
+      oStream << expression.GetFuncName() << *expression.GetFuncArgs();
       break;
     case LSYS_VALUE:
-      o << expression.GetValue();
+      oStream << expression.GetValue();
       break;
     case LSYS_UMINUS:
     case '!':
     case '~':
-      o << GetOpName(expression.op) << *expression.GetLChild();
+      oStream << GetOpName(expression.m_operation) << *expression.GetLChild();
       break;
     default:
-      o << '(' << *expression.GetLChild() << GetOpName(expression.op) << *expression.GetRChild()
-        << ')';
+      oStream << '(' << *expression.GetLChild() << GetOpName(expression.m_operation)
+              << *expression.GetRChild() << ')';
       break;
   }
-  return o;
+  return oStream;
 }
 
-Expression::Expression(const int o, Expression* const lop, Expression* const rop) : op{o}
+Expression::Expression(const int operation, Expression* const lop, Expression* const rop)
+  : m_operation{operation}
 {
   PDebug(PD_EXPRESSION,
-         cerr << "Creating expression w/op " << o << "='" << static_cast<char>(o) << "'"
-              << " &lhs= " << lop << " &rhs= " << rop << "\n");
+         std::cerr << "Creating expression w/op " << operation << "='"
+                   << static_cast<char>(operation) << "'"
+                   << " &lhs= " << lop << " &rhs= " << rop << "\n");
 
   m_expressionValue.args[0] = lop;
   m_expressionValue.args[1] = rop;
 }
 
-// Create a function call node, or a named variable node if there are
-//  no arguments.
+// Create a function call node, or a named variable node if there are no arguments.
 Expression::Expression(const Name& name, List<Expression>* const funcArgs)
+  : m_operation{nullptr == funcArgs ? LSYS_NAME : LSYS_FUNCTION},
+    m_expressionValue{GetExpressionValue(name, funcArgs)}
+{
+}
+
+auto Expression::GetExpressionValue(const Name& name, List<Expression>* const funcArgs)
+    -> ExpressionValue
 {
   if (nullptr == funcArgs)
   {
     PDebug(PD_EXPRESSION,
-           cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << endl);
+           std::cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << "\n");
 
-    op                          = LSYS_NAME;
-    m_expressionValue.name.id   = name;
-    m_expressionValue.name.args = nullptr;
+    return {
+        .name  = {.id = name, .funcArgs = nullptr},
+        .value = {},
+        .args  = {},
+    };
   }
-  else
-  {
-    PDebug(PD_EXPRESSION,
-           cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name << *funcArgs
-                << endl);
 
-    op                          = LSYS_FUNCTION;
-    m_expressionValue.name.id   = name;
-    m_expressionValue.name.args = funcArgs;
-  }
+  PDebug(PD_EXPRESSION,
+         std::cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name
+                   << *funcArgs << "\n");
+
+  return {
+      .name  = {.id = name, .funcArgs = funcArgs},
+      .value = {},
+      .args  = {},
+  };
 }
 
-
-// Create a value node
-Expression::Expression(const Value& value) : op{LSYS_VALUE}
+// Create a value node.
+Expression::Expression(const Value& value)
+  : m_operation{LSYS_VALUE},
+    m_expressionValue{
+        .name  = {},
+        .value = value,
+        .args  = {},
+    }
 {
   PDebug(PD_EXPRESSION,
-         cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << endl);
-
-  m_expressionValue.value = value;
+         std::cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << "\n");
 }
 
 Expression::~Expression()
 {
-  switch (op)
+  switch (m_operation)
   {
     case LSYS_NAME:
-      PDebug(PD_EXPRESSION, cerr << "Deleting expression::GetName (not dynamic)" << endl);
+      PDebug(PD_EXPRESSION, std::cerr << "Deleting expression::GetName (not dynamic)\n");
       break;
     case LSYS_FUNCTION:
       PDebug(PD_EXPRESSION,
-             cerr << "Deleting expression::function " << GetVarName() << "args @ " << GetFuncArgs()
-                  << endl);
+             std::cerr << "Deleting expression::function " << GetVarName() << "args @ "
+                       << GetFuncArgs() << "\n");
       delete GetFuncArgs();
       break;
     case LSYS_VALUE:
-      PDebug(PD_EXPRESSION, cerr << "Deleting expression::GetValue (not dynamic)" << endl);
+      PDebug(PD_EXPRESSION, std::cerr << "Deleting expression::GetValue (not dynamic)\n");
       break;
     default:
       PDebug(PD_EXPRESSION,
-             cerr << "Deleting expression::op= " << op << " kids @ " << GetLChild() << " @ "
-                  << GetRChild() << "\n");
+             std::cerr << "Deleting expression::op= " << m_operation << " kids @ " << GetLChild()
+                       << " @ " << GetRChild() << "\n");
       delete GetLChild();
       delete GetRChild();
       break;
@@ -398,40 +394,34 @@ Expression::~Expression()
 auto Expression::GetName() const -> Name
 {
   static const Name s_BOGUS{"[Not a Name]"};
-  return (op == LSYS_NAME) ? GetVarName() : s_BOGUS;
+  return (m_operation == LSYS_NAME) ? GetVarName() : s_BOGUS;
 }
 
 
 auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 {
-  Value value;
-  Anyptr anyPtr;
-
-  switch (op)
+  switch (m_operation)
   {
     case LSYS_VALUE:
       return GetValue();
 
     case LSYS_FUNCTION:
-      if (nullptr == funcTab)
+      SetupFunctions();
+      if (ExprFunc exprFunc; funcTab->lookup(GetFuncName().str(), exprFunc))
       {
-        SetupFunctions();
+        return exprFunc(symbolTable, *GetFuncArgs());
       }
-      if (funcTab->lookup(GetFuncName().str(), anyPtr))
-      {
-        const auto func = reinterpret_cast<Exprfunc>(anyPtr);
-        return (*func)(symbolTable, *GetFuncArgs());
-      }
-      cerr << "Unimplemented function '" << GetFuncName() << "'\n";
-      return Value();
+      std::cerr << "Unimplemented function '" << GetFuncName() << "'\n";
+      return Value{};
 
     case LSYS_NAME:
-      if (symbolTable.lookup(GetVarName().str(), value))
+      if (Value value; symbolTable.lookup(GetVarName().str(), value))
       {
         return value;
       }
-      cerr << "Fatal error in Expression::Evaluate: no bound variable '" << GetVarName() << "'\n";
-      return Value();
+      std::cerr << "Fatal error in Expression::Evaluate: no bound variable '" << GetVarName()
+                << "'\n";
+      return Value{};
 
     // Unary operators
 
@@ -493,9 +483,9 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 
     // Shouldn't get here
     default:
-      cerr << "Fatal error in Expression::Evaluate: unrecognized operator '"
-           << static_cast<char>(op) << "'= " << op << "\n";
-      return Value();
+      std::cerr << "Fatal error in Expression::Evaluate: unrecognized operator '"
+                << static_cast<char>(m_operation) << "'= " << m_operation << "\n";
+      return Value{};
   }
 }
 
@@ -515,31 +505,32 @@ auto Bind(const List<Expression>* const formals,
 
   if (not Conforms(formals, values))
   {
-    cerr << "Bind: formal and GetValue lists are not the same length\n";
+    std::cerr << "Bind: formal and GetValue lists are not the same length\n";
     return false;
   }
 
   auto left  = ConstListIterator<Expression>{*formals};
   auto right = ConstListIterator<Expression>{*values};
-  const Expression* lp;
-  const Expression* rp;
+  const Expression* leftPtr;
+  const Expression* rightPtr;
 
-  for (lp = left.first(), rp = right.first(); (lp != nullptr) and (rp != nullptr);
-       lp = left.next(), rp = right.next())
+  for (leftPtr = left.first(), rightPtr = right.first();
+       (leftPtr != nullptr) and (rightPtr != nullptr);
+       leftPtr = left.next(), rightPtr = right.next())
   {
-    if (lp->GetType() != LSYS_NAME)
+    if (leftPtr->GetType() != LSYS_NAME)
     {
-      cerr << "Bind: left expression " << *lp << " is not a formal\n";
+      std::cerr << "Bind: left expression " << *leftPtr << " is not a formal\n";
       return false;
     }
-    if (rp->GetType() != LSYS_VALUE)
+    if (rightPtr->GetType() != LSYS_VALUE)
     {
-      cerr << "Bind: right expression " << *rp << " is not a GetValue\n";
+      std::cerr << "Bind: right expression " << *rightPtr << " is not a GetValue\n";
       return false;
     }
-    const Value v = rp->Evaluate(symbolTable);
-    PDebug(PD_EXPRESSION, cerr << "Binding " << lp->GetName() << "= " << v << "\n");
-    symbolTable.enter(lp->GetName().str(), v);
+    const Value v = rightPtr->Evaluate(symbolTable);
+    PDebug(PD_EXPRESSION, std::cerr << "Binding " << leftPtr->GetName() << "= " << v << "\n");
+    symbolTable.enter(leftPtr->GetName().str(), v);
   }
 
   return true;
@@ -565,19 +556,19 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
     return nullptr;
   }
 
-  auto* const new_el = new List<Expression>;
-  auto ei            = ConstListIterator<Expression>{*before};
+  auto* const newExprList = new List<Expression>;
+  auto exprIter           = ConstListIterator<Expression>{*before};
 
-  for (const auto* e = ei.first(); e != nullptr; e = ei.next())
+  for (const auto* expr = exprIter.first(); expr != nullptr; expr = exprIter.next())
   {
-    auto* const new_e = new Expression(e->Evaluate(symbolTable));
-    new_el->append(new_e);
+    auto* const newExpr = new Expression(expr->Evaluate(symbolTable));
+    newExprList->append(newExpr);
   }
 
-  return new_el;
+  return newExprList;
 }
 
-// Return the n'th (0 base) value in the list, if available.
+// Return the nth (0 base) value in the list, if available.
 // Evaluates the expression against specified symbol table; if the
 // the expression must be a bound value, supply an empty symbol table.
 // Returns true on success, false if the list does not have enough
@@ -586,33 +577,33 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
 // but that's a pain with the template method used.
 auto GetValue(const SymbolTable<Value>& symbolTable,
               const List<Expression>& expressionList,
-              Value& val,
-              unsigned int n) -> bool
+              Value& value,
+              const unsigned int n) -> bool
 {
-  // Ensure there are enough parameters
+  // Ensure there are the right number of parameters.
   if (n >= expressionList.size())
   {
     return false;
   }
 
-  auto ei = ConstListIterator<Expression>{expressionList};
+  auto exprIter = ConstListIterator<Expression>{expressionList};
 
-  // Fetch the n'th expression in the list
-  const Expression* e = nullptr;
-  for (e = ei.first(); n > 0; --n)
+  // Fetch the nth expression in the list.
+  const auto* expr = exprIter.first();
+  for (auto i = 0U; i < n; ++i)
   {
-    e = ei.next();
+    expr = exprIter.next();
   }
 
   // Should be an assertion
-  if (nullptr == e)
+  if (nullptr == expr)
   {
     return false;
   }
 
   // Evaluate the expression. Since all expressions should have reduced
   //   to bound values by now, an empty symbol table is used.
-  val = e->Evaluate(symbolTable);
+  value = expr->Evaluate(symbolTable);
 
   return true;
 }
