@@ -1,7 +1,4 @@
-/* LSysModel.h - object encapsulating a generatable plant model
- *
- * $Id: PlantModel.h,v 1.1 91/10/10 19:54:36 leech Exp $
- *
+/*
  * Copyright (C) 1991, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,17 +16,18 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	PlantModel.h,v $
+ * $Log: PlantModel.h,v $
  * Revision 1.1  91/10/10  19:54:36  leech
  * Initial revision
- *
  *
  */
 
 #pragma once
 
+#include "List.h"
 #include "Module.h"
 #include "Production.h"
+#include "SymbolTable.h"
 #include "Value.h"
 
 namespace LSys
@@ -37,14 +35,21 @@ namespace LSys
 
 struct LSysModel
 {
-  SymbolTable<Value>* ignoreTable; // Symbols ignored in context.
-  SymbolTable<Value>* symbolTable; // Variables and bound formal parameters.
-  List<Production>* rules; // Production list.
-  List<Module>* start; // Starting module list.
-
-  LSysModel();
+  LSysModel() = default;
+  LSysModel(const LSysModel&) = delete;
+  LSysModel(LSysModel&&) = delete;
   ~LSysModel();
-  List<Module>* Generate(List<Module>* old);
+
+  auto operator=(const LSysModel&) -> LSysModel& = delete;
+  auto operator=(LSysModel&&) -> LSysModel& = delete;
+
+  List<Module>* Generate(List<Module>* oldModuleList) const;
+
+  SymbolTable<Value>* ignoreTable = new SymbolTable<Value>; // Symbols ignored in context.
+  SymbolTable<Value>* symbolTable =
+      new SymbolTable<Value>; // Variables and bound formal parameters.
+  List<Production>* rules = new List<Production>; // Production list.
+  List<Module>* start     = nullptr; // Starting module list.
 };
 
 } // namespace LSys

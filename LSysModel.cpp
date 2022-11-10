@@ -1,7 +1,4 @@
-/* PlantModel.c - object encapsulating a generatable plant model
- *
- * $Id: PlantModel.c,v 1.1 91/10/10 19:53:58 leech Exp $
- *
+/*
  * Copyright (C) 1991, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	PlantModel.c,v $
+ * $Log: PlantModel.c,v $
  * Revision 1.1  91/10/10  19:53:58  leech
  * Initial revision
  *
@@ -32,27 +29,12 @@
 #include "Expression.h"
 #include "Module.h"
 #include "Production.h"
-#include "SymbolTable.h"
-#include "Value.h"
 #include "debug.h"
 
-using std::cerr;
-using std::endl;
-
+#include <iostream>
 
 namespace LSys
 {
-
-
-LSysModel::LSysModel()
-{
-  ignoreTable = new SymbolTable<Value>;
-  symbolTable = new SymbolTable<Value>;
-
-  rules = new List<Production>;
-  start = 0;
-}
-
 
 LSysModel::~LSysModel()
 {
@@ -62,48 +44,45 @@ LSysModel::~LSysModel()
   delete start;
 }
 
-
 // Apply the model to the specified list for one generation, generating a new list.
-List<Module>* LSysModel::Generate(List<Module>* oldModuleList)
+List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
 {
-  ListIterator<Production> pi(rules);
-  List<Module>* newModuleList = new List<Module>;
+  auto prodIter             = ListIterator<Production>{rules};
+  auto* const newModuleList = new List<Module>;
 
-  // For each input module
-  ListIterator<Module> mi(*oldModuleList);
-  for (Module* m = mi.first(); m != 0; m = mi.next())
+  auto modIter = ListIterator<Module>{*oldModuleList};
+  for (Module* mod = modIter.first(); mod != nullptr; mod = modIter.next())
   {
-    PDebug(PD_PRODUCTION, cerr << "Searching for matching production to " << *m << endl);
+    PDebug(PD_PRODUCTION, std::cerr << "Searching for matching production to " << *mod << "\n");
 
     // Find a matching production.
     // NOTE: This could be optimized a bunch.
-    Production* p;
-    for (p = pi.first(); p != 0; p = pi.next())
+    Production* prod;
+    for (prod = prodIter.first(); prod != nullptr; prod = prodIter.next())
     {
-      if (p->matches(mi, m, *symbolTable))
+      if (prod->matches(modIter, mod, *symbolTable))
       {
-        PDebug(PD_PRODUCTION, cerr << "\tmatched by: " << *p << endl);
+        PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *prod << "\n");
         break;
       }
     }
     // If we found one, replace the module by its successor.
-    if (p != 0)
+    if (prod != nullptr)
     {
-      List<Module>* result = p->produce(m, *symbolTable);
-      PDebug(PD_PRODUCTION, cerr << "\tapplied production yielding: " << *result << endl);
+      List<Module>* const result = prod->produce(mod, *symbolTable);
+      PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
       newModuleList->append(result);
       delete result;
     }
     else
     {
-      PDebug(PD_PRODUCTION, cerr << "\tno match found, passing production unchanged\n");
-      newModuleList->append(new Module(*m));
-      m->Empty();
+      PDebug(PD_PRODUCTION, std::cerr << "\tno match found, passing production unchanged\n");
+      newModuleList->append(new Module(*mod));
+      mod->Empty();
     }
   }
 
   return newModuleList;
 }
 
-
-}; // namespace LSys
+} // namespace LSys
