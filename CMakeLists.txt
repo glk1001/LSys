@@ -28,7 +28,7 @@ add_executable(${TARGET_NAME}
         IGenerator.cpp
         Interpret.cpp
         Lexer.cpp
-        List.cpp
+        List.h
         LSysMain.cpp
         LSysModel.cpp
         Module.cpp
