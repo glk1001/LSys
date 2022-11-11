@@ -232,21 +232,21 @@ auto SetupFunctions() -> void
   }
 
   funcTab = new SymbolTable<ExprFunc>;
-  funcTab->enter("sin", ExprSin);
-  funcTab->enter("cos", ExprCos);
-  funcTab->enter("tan", ExprTan);
-  funcTab->enter("asin", ExprASin);
-  funcTab->enter("acos", ExprACos);
-  funcTab->enter("atan", ExprATan);
-  funcTab->enter("atan2", ExprATan2);
-  funcTab->enter("abs", ExprAbs);
-  funcTab->enter("ceil", ExprCeil);
-  funcTab->enter("floor", ExprFloor);
-  funcTab->enter("exp", ExprExp);
-  funcTab->enter("log", ExprLog);
-  funcTab->enter("log10", ExprLog10);
-  funcTab->enter("rand", ExprRand);
-  funcTab->enter("srand", ExprSRand);
+  funcTab->Enter("sin", ExprSin);
+  funcTab->Enter("cos", ExprCos);
+  funcTab->Enter("tan", ExprTan);
+  funcTab->Enter("asin", ExprASin);
+  funcTab->Enter("acos", ExprACos);
+  funcTab->Enter("atan", ExprATan);
+  funcTab->Enter("atan2", ExprATan2);
+  funcTab->Enter("abs", ExprAbs);
+  funcTab->Enter("ceil", ExprCeil);
+  funcTab->Enter("floor", ExprFloor);
+  funcTab->Enter("exp", ExprExp);
+  funcTab->Enter("log", ExprLog);
+  funcTab->Enter("log10", ExprLog10);
+  funcTab->Enter("rand", ExprRand);
+  funcTab->Enter("srand", ExprSRand);
 }
 
 [[nodiscard]] auto GetOpName(const int operation) -> const char*
@@ -407,7 +407,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 
     case LSYS_FUNCTION:
       SetupFunctions();
-      if (ExprFunc exprFunc; funcTab->lookup(GetFuncName().str(), exprFunc))
+      if (ExprFunc exprFunc; funcTab->Lookup(GetFuncName().str(), exprFunc))
       {
         return exprFunc(symbolTable, *GetFuncArgs());
       }
@@ -415,7 +415,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       return Value{};
 
     case LSYS_NAME:
-      if (Value value; symbolTable.lookup(GetVarName().str(), value))
+      if (Value value; symbolTable.Lookup(GetVarName().str(), value))
       {
         return value;
       }
@@ -530,7 +530,7 @@ auto Bind(const List<Expression>* const formals,
     }
     const Value v = rightPtr->Evaluate(symbolTable);
     PDebug(PD_EXPRESSION, std::cerr << "Binding " << leftPtr->GetName() << "= " << v << "\n");
-    symbolTable.enter(leftPtr->GetName().str(), v);
+    symbolTable.Enter(leftPtr->GetName().str(), v);
   }
 
   return true;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace LSys
 {
 
 inline double drand48()
 {
-  return float(rand()) / float(RAND_MAX);
+  return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
 }
 
 inline void srand48(unsigned int seed)

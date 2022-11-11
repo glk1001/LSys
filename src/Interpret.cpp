@@ -50,40 +50,40 @@ namespace
 {
   SymbolTable<ActionFunc> symbolTable{};
 
-  symbolTable.enter(DRAW_OBJECT_START, DrawObject);
-  symbolTable.enter("f", Move);
-  symbolTable.enter("z", MoveHalf);
-  symbolTable.enter("F", Draw);
-  symbolTable.enter("Fl", Draw);
-  symbolTable.enter("Fr", Draw);
-  symbolTable.enter("Z", DrawHalf);
-  symbolTable.enter("+", TurnLeft);
-  symbolTable.enter("-", TurnRight);
-  symbolTable.enter("&", PitchDown);
-  symbolTable.enter("^", PitchUp);
-  symbolTable.enter("\\", RollLeft);
-  symbolTable.enter("/", RollRight);
-  symbolTable.enter("|", Reverse);
-  symbolTable.enter("$", RollHorizontal);
-  symbolTable.enter("[", Push);
-  symbolTable.enter("]", Pop);
-  symbolTable.enter("%", CutBranch);
-  symbolTable.enter("@md", MultiplyDefaultDistance);
-  symbolTable.enter("@ma", MultiplyDefaultTurnAngle);
-  symbolTable.enter("@mw", MultiplyWidth);
-  symbolTable.enter("!", ChangeWidth);
-  symbolTable.enter("'", ChangeColor);
-  symbolTable.enter("@Tx", ChangeTexture);
-  symbolTable.enter("{", StartPolygon);
-  symbolTable.enter(".", PolygonVertex);
-  symbolTable.enter("G", PolygonMove);
-  symbolTable.enter("}", EndPolygon);
-  symbolTable.enter("t", Tropism);
-  symbolTable.enter("@Gs", GeneralisedCylinderStart);
-  symbolTable.enter("@Gc", GeneralisedCylinderControlPoint);
-  symbolTable.enter("@Ge", GeneralisedCylinderEnd);
-  symbolTable.enter("@Gr", GeneralisedCylinderTangents);
-  symbolTable.enter("@Gt", GeneralisedCylinderTangentLengths);
+  symbolTable.Enter(DRAW_OBJECT_START, DrawObject);
+  symbolTable.Enter("f", Move);
+  symbolTable.Enter("z", MoveHalf);
+  symbolTable.Enter("F", Draw);
+  symbolTable.Enter("Fl", Draw);
+  symbolTable.Enter("Fr", Draw);
+  symbolTable.Enter("Z", DrawHalf);
+  symbolTable.Enter("+", TurnLeft);
+  symbolTable.Enter("-", TurnRight);
+  symbolTable.Enter("&", PitchDown);
+  symbolTable.Enter("^", PitchUp);
+  symbolTable.Enter("\\", RollLeft);
+  symbolTable.Enter("/", RollRight);
+  symbolTable.Enter("|", Reverse);
+  symbolTable.Enter("$", RollHorizontal);
+  symbolTable.Enter("[", Push);
+  symbolTable.Enter("]", Pop);
+  symbolTable.Enter("%", CutBranch);
+  symbolTable.Enter("@md", MultiplyDefaultDistance);
+  symbolTable.Enter("@ma", MultiplyDefaultTurnAngle);
+  symbolTable.Enter("@mw", MultiplyWidth);
+  symbolTable.Enter("!", ChangeWidth);
+  symbolTable.Enter("'", ChangeColor);
+  symbolTable.Enter("@Tx", ChangeTexture);
+  symbolTable.Enter("{", StartPolygon);
+  symbolTable.Enter(".", PolygonVertex);
+  symbolTable.Enter("G", PolygonMove);
+  symbolTable.Enter("}", EndPolygon);
+  symbolTable.Enter("t", Tropism);
+  symbolTable.Enter("@Gs", GeneralisedCylinderStart);
+  symbolTable.Enter("@Gc", GeneralisedCylinderControlPoint);
+  symbolTable.Enter("@Ge", GeneralisedCylinderEnd);
+  symbolTable.Enter("@Gr", GeneralisedCylinderTangents);
+  symbolTable.Enter("@Gt", GeneralisedCylinderTangentLengths);
 
   return symbolTable;
 }
@@ -143,7 +143,7 @@ auto Interpret(const List<Module>& moduleList,
   {
     // TODO(glk) - Make failed lookup an exception.
     ActionFunc actionFunc;
-    if (not actionSymbolTable.lookup(GetModuleName(*mod), actionFunc))
+    if (not actionSymbolTable.Lookup(GetModuleName(*mod), actionFunc))
     {
       PDebug(PD_INTERPRET, std::cerr << "Unknown action for " << *mod << "\n");
       continue;

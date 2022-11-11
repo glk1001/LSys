@@ -1,77 +1,65 @@
 #pragma once
 
-#include <iostream>
 #include <map>
 #include <string>
 
 namespace LSys
 {
 
-typedef void (*Anyptr)();
-
-template<typename T>
-class Symbol;
-template<typename T>
-std::ostream& operator<<(std::ostream&, const Symbol<T>&);
-
 template<typename T>
 class Symbol
 {
 public:
-  Symbol(const std::string& name, const T& v) : tag(name), value(v) {}
-  ~Symbol() {}
-  const std::string& Name() const { return tag; }
-  void SetName(const std::string& name) { tag = name; }
-  const T& Value() const { return value; }
-  void SetValue(const T& v) { value = v; }
-  friend std::ostream& operator<< <T>(std::ostream&, const Symbol<T>&);
+  Symbol(const std::string& name, const T& value) : m_tag(name), m_value(value) {}
+
+  [[nodiscard]] auto GetName() const -> const std::string& { return m_tag; }
+  auto SetName(const std::string& name) -> void { m_tag = name; }
+  [[nodiscard]] auto GetValue() const -> const T& { return m_value; }
+  auto SetValue(const T& value) -> void { m_value = value; }
 
 private:
-  std::string tag;
-  T value;
+  std::string m_tag;
+  T m_value;
 };
-
-template<typename T>
-class SymbolTable;
-template<typename T>
-std::ostream& operator<<(std::ostream&, const SymbolTable<T>&);
 
 template<typename T>
 class SymbolTable
 {
 public:
-  bool enter(const std::string& name, const T&);
-  bool lookup(const std::string& name, T&) const;
-  friend std::ostream& operator<< <T>(std::ostream&, const SymbolTable<T>&);
+  auto Enter(const std::string& name, const T& value) -> bool;
+  [[nodiscard]] auto Lookup(const std::string& name, T& value) const -> bool;
 
 private:
-  typedef typename std::map<std::string, Symbol<T>> SymbolTableMap;
-  SymbolTableMap symTable;
+  using SymbolTableMap = typename std::map<std::string, Symbol<T>>;
+  SymbolTableMap m_symbolTable;
 };
 
 template<typename T>
-bool SymbolTable<T>::enter(const std::string& name, const T& v)
+auto SymbolTable<T>::Enter(const std::string& name, const T& value) -> bool
 {
-  typename SymbolTableMap::iterator iter = symTable.find(name);
-  if (iter == symTable.end())
+  const auto iter = m_symbolTable.find(name);
+
+  if (iter == m_symbolTable.end())
   {
-    Symbol<T> sym(name, v);
-    symTable.insert(typename SymbolTableMap::value_type(name, sym));
+    const auto symbol = Symbol<T>{name, value};
+    m_symbolTable.insert(typename SymbolTableMap::value_type(name, symbol));
     return true;
   }
-  iter->second.SetValue(v);
+
+  iter->second.SetValue(value);
   return false;
 }
 
 template<typename T>
-bool SymbolTable<T>::lookup(const std::string& name, T& v) const
+auto SymbolTable<T>::Lookup(const std::string& name, T& value) const -> bool
 {
-  typename SymbolTableMap::const_iterator iter = symTable.find(name);
-  if (iter == symTable.end())
+  const auto iter = m_symbolTable.find(name);
+  if (iter == m_symbolTable.end())
   {
     return false;
   }
-  v = iter->second.Value();
+
+  value = iter->second.GetValue();
   return true;
 }
 

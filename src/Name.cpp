@@ -61,7 +61,7 @@ Name::Name(const char* name)
   // If the name already exists in the symbol table, use the assigned
   // hash value. Otherwise, enter it in the table with the next
   // sequential value.
-  if (s_map->lookup(name, m_index))
+  if (s_map->Lookup(name, m_index))
   {
     return;
   }
@@ -81,7 +81,7 @@ Name::Name(const char* name)
     s_reverseMapSize += MAP_INCR;
   }
 
-  s_map->enter(name, s_nextIndex);
+  s_map->Enter(name, s_nextIndex);
   s_reverseMap[s_nextIndex] = ::strdup(name);
   m_index                   = s_nextIndex++;
 }

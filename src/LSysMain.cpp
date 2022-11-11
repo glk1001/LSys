@@ -151,19 +151,19 @@ auto SetSymbolTableValues(SymbolTable<Value>* const symbolTable,
 {
   if (maxGen > 0)
   {
-    symbolTable->enter("maxgen", Value(maxGen));
+    symbolTable->Enter("maxgen", Value(maxGen));
   }
   if (delta > 0.0F)
   {
-    symbolTable->enter("delta", Value(delta));
+    symbolTable->Enter("delta", Value(delta));
   }
   if (width > 0.0F)
   {
-    symbolTable->enter("width", Value(width));
+    symbolTable->Enter("width", Value(width));
   }
   if (distance > 0.0F)
   {
-    symbolTable->enter("distance", Value(distance));
+    symbolTable->Enter("distance", Value(distance));
   }
 }
 
@@ -177,7 +177,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
 {
   if (*maxGen < 0)
   {
-    if (Value value; not symbolTable.lookup("maxgen", value))
+    if (Value value; not symbolTable.Lookup("maxgen", value))
     {
       *maxGen = 0; // Default: just do sanity checking
     }
@@ -197,7 +197,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
 
   if (*delta < 0.0F)
   {
-    if (Value value; not symbolTable.lookup("delta", value))
+    if (Value value; not symbolTable.Lookup("delta", value))
     {
       *delta = 90.0F; // Default: turn at right angles
     }
@@ -213,7 +213,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
 
   if (*width < 0.0F)
   {
-    if (Value value; not symbolTable.lookup("width", value))
+    if (Value value; not symbolTable.Lookup("width", value))
     {
       *width = 1.0F; // Default line aspect ratio (1/100)
     }
@@ -229,7 +229,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
 
   if (*distance < 0.0F)
   {
-    if (Value value; not symbolTable.lookup("distance", value))
+    if (Value value; not symbolTable.Lookup("distance", value))
     {
       *distance = 1.0F; // Default standard distance
     }
