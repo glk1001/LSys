@@ -130,7 +130,7 @@ using ExprFunc =
 {
   if (auto v = Value{}; GetValue(symbolTable, expressionList, v))
   {
-    return v.abs();
+    return v.Abs();
   }
   return Value();
 }

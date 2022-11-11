@@ -1,8 +1,4 @@
-/* Value.h - class definition for mixed int/float arithmetic in Expressions
- *  with runtime typing.
- *
- * $Id: Value.h,v 1.5 95/05/24 17:14:50 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -20,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Value.h,v $
+ * $Log: Value.h,v $
  * Revision 1.5  95/05/24  17:14:50  leech
  * Fix for const-correctness.
  *
@@ -43,11 +39,11 @@
 namespace LSys
 {
 
-enum ValueType
+enum class ValueType
 {
-  intType,
-  floatType,
-  undefinedType
+  INT,
+  FLOAT,
+  UNDEFINED
 };
 
 class Value
@@ -59,40 +55,40 @@ public:
   explicit Value(float value);
   explicit Value(double value);
 
-  Value operator-() const;
-  Value operator~() const;
-  Value operator!() const;
-  Value abs() const;
-  Value operator&(const Value&) const;
-  Value operator|(const Value&) const;
-  Value operator&&(const Value&) const;
-  Value operator||(const Value&) const;
-  Value operator==(const Value&) const;
-  Value operator!=(const Value&) const;
-  Value operator<(const Value&) const;
-  Value operator<=(const Value&) const;
-  Value operator>=(const Value&) const;
-  Value operator>(const Value&) const;
-  Value operator+(const Value&) const;
-  Value operator-(const Value&) const;
-  Value operator*(const Value&) const;
-  Value operator/(const Value&) const;
-  Value operator%(const Value&) const;
-  Value operator^(const Value&) const;
+  [[nodiscard]] auto operator-() const -> Value;
+  [[nodiscard]] auto operator~() const -> Value;
+  [[nodiscard]] auto operator!() const -> Value;
+  [[nodiscard]] auto Abs() const -> Value;
+  [[nodiscard]] auto operator&(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator|(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator&&(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator||(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator==(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator!=(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator<(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator<=(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator>=(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator>(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator+(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator-(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator*(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator/(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator%(const Value& otherValue) const -> Value;
+  [[nodiscard]] auto operator^(const Value& otherValue) const -> Value;
 
-  bool GetIntValue(int& value) const;
-  bool GetFloatValue(float& value) const;
+  [[nodiscard]] auto GetIntValue(int& intValue) const -> bool;
+  [[nodiscard]] auto GetFloatValue(float& fltValue) const -> bool;
 
-  friend std::ostream& operator<<(std::ostream&, const Value&);
+  friend auto operator<<(std::ostream& out, const Value& value) -> std::ostream&;
 
 private:
-  ValueType type;
+  ValueType m_type;
   union
   {
-    int ival;
-    float fval;
-  } val;
-  enum Optype
+    int intVal;
+    float fltVal;
+  } m_val;
+  enum class OpType
   {
     II,
     IF,
@@ -100,7 +96,7 @@ private:
     FF,
     UNDEF
   };
-  Optype binary_optype(const Value&) const;
+  OpType GetBinaryOpType(const Value& value) const;
 };
 
 } // namespace LSys

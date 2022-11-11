@@ -1,6 +1,4 @@
-/* Value.c - methods for mixed int/float arithmetic in Expressions
- *  with runtime typing.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -18,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Value.c,v $
+ * $Log: Value.c,v $
  * Revision 1.6  95/05/24  17:14:48  leech
  * Fix for const-correctness.
  *
@@ -37,475 +35,481 @@
  * First public release.
  *
  */
-//static char RCSid[] = "$Id: Value.c,v 1.6 95/05/24 17:14:48 leech Exp $";
 
 #include "Value.h"
 
 #include <cmath>
 #include <iostream>
 
-using std::cerr;
-using std::endl;
-
-
 namespace LSys
 {
 
-// If not initialized to a value, has an undefined value
-Value::Value() : type{undefinedType}, val{}
+Value::Value() : m_type{ValueType::UNDEFINED}, m_val{}
 {
 }
 
-Value::Value(const bool value) : type{intType}
+Value::Value(const bool value) : m_type{ValueType::INT}
 {
-  val.ival = value != 0;
+  m_val.intVal = value ? 1 : 0;
 }
 
-Value::Value(const int value) : type{intType}
+Value::Value(const int value) : m_type{ValueType::INT}
 {
-  val.ival = value;
+  m_val.intVal = value;
 }
 
-Value::Value(const float value) : type{floatType}
+Value::Value(const float value) : m_type{ValueType::FLOAT}
 {
-  val.fval = value;
+  m_val.fltVal = value;
 }
 
-Value::Value(const double value) : type{floatType}
+Value::Value(const double value) : m_type{ValueType::FLOAT}
 {
-  val.fval = static_cast<float>(value);
+  m_val.fltVal = static_cast<float>(value);
 }
 
-Value::Optype Value::binary_optype(const Value& value) const
+auto Value::GetBinaryOpType(const Value& value) const -> OpType
 {
-  if (type == intType)
+  if (m_type == ValueType::INT)
   {
-    if (value.type == intType)
-      return II;
-    else if (value.type == floatType)
-      return IF;
+    if (value.m_type == ValueType::INT)
+    {
+      return OpType::II;
+    }
+    if (value.m_type == ValueType::FLOAT)
+    {
+      return OpType::IF;
+    }
   }
-  else if (type == floatType)
+  else if (m_type == ValueType::FLOAT)
   {
-    if (value.type == intType)
-      return FI;
-    else if (value.type == floatType)
-      return FF;
+    if (value.m_type == ValueType::INT)
+    {
+      return OpType::FI;
+    }
+    if (value.m_type == ValueType::FLOAT)
+    {
+      return OpType::FF;
+    }
   }
-  return UNDEF;
+  return OpType::UNDEF;
 }
 
 // Unary negation
-Value Value::operator-() const
+auto Value::operator-() const -> Value
 {
-  switch (type)
+  switch (m_type)
   {
-    case intType:
-      return Value(-val.ival);
-    case floatType:
-      return Value(-val.fval);
-    case undefinedType:
+    case ValueType::INT:
+      return Value(-m_val.intVal);
+    case ValueType::FLOAT:
+      return Value(-m_val.fltVal);
+    case ValueType::UNDEFINED:
     default:
       return *this;
   }
 }
 
 // Unary bitwise complement
-Value Value::operator~() const
+auto Value::operator~() const -> Value
 {
-  switch (type)
+  switch (m_type)
   {
-    case intType:
-      return Value(~val.ival);
-    case floatType:
-      cerr << "Value::operator~(): cannot complement non-integer GetFloatValue\n";
-      return Value();
-    case undefinedType:
+    case ValueType::INT:
+      return Value(~m_val.intVal);
+    case ValueType::FLOAT:
+      std::cerr << "Value::operator~(): cannot complement non-integer GetFloatValue\n";
+      return Value{};
+    case ValueType::UNDEFINED:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Unary logical complement
-Value Value::operator!() const
+auto Value::operator!() const -> Value
 {
-  switch (type)
+  switch (m_type)
   {
-    case intType:
-      return Value(!val.ival);
-    case floatType:
-      cerr << "Value::operator!(): cannot complement non-integer GetFloatValue\n";
-      return Value();
-    case undefinedType:
+    case ValueType::INT:
+      return Value{0 == m_val.intVal};
+    case ValueType::FLOAT:
+      std::cerr << "Value::operator!(): cannot complement non-integer GetFloatValue\n";
+      return Value{};
+    case ValueType::UNDEFINED:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Absolute value
-Value Value::abs() const
+auto Value::Abs() const -> Value
 {
-  switch (type)
+  switch (m_type)
   {
-    case intType:
-      return Value(val.ival > 0 ? val.ival : -val.ival);
-    case floatType:
-      return Value(std::fabs(val.fval));
-    case undefinedType:
+    case ValueType::INT:
+      return Value{m_val.intVal > 0 ? m_val.intVal : -m_val.intVal};
+    case ValueType::FLOAT:
+      return Value{std::fabs(m_val.fltVal)};
+    case ValueType::UNDEFINED:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Binary bitwise AND
-Value Value::operator&(const Value& value) const
+auto Value::operator&(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival & value.val.ival);
-    case IF:
-    case FI:
-    case FF:
-      cerr << "Value::operator&(): cannot bitwise AND non-integer values" << endl;
-      return Value();
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal & otherValue.m_val.intVal);
+    case OpType::IF:
+    case OpType::FI:
+    case OpType::FF:
+      std::cerr << "Value::operator&(): cannot bitwise AND non-integer values\n";
+      return Value{};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Binary bitwise OR
-Value Value::operator|(const Value& value) const
+auto Value::operator|(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival | value.val.ival);
-    case IF:
-    case FI:
-    case FF:
-      cerr << "Value::operator|(): cannot bitwise OR non-integer values" << endl;
-      return Value();
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal | otherValue.m_val.intVal);
+    case OpType::IF:
+    case OpType::FI:
+    case OpType::FF:
+      std::cerr << "Value::operator|(): cannot bitwise OR non-integer values\n";
+      return Value{};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Binary logical AND
-Value Value::operator&&(const Value& value) const
+auto Value::operator&&(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival && value.val.ival);
-    case IF:
-    case FI:
-    case FF:
-      cerr << "Value::operator&&(): cannot logical AND non-integer values" << endl;
-      return Value();
-    case UNDEF:
+    case OpType::II:
+      return Value{(m_val.intVal != 0) and (otherValue.m_val.intVal != 0)};
+    case OpType::IF:
+    case OpType::FI:
+    case OpType::FF:
+      std::cerr << "Value::operator&&(): cannot logical AND non-integer values\n";
+      return Value{};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Binary logical OR
-Value Value::operator||(const Value& value) const
+auto Value::operator||(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival || value.val.ival);
-    case IF:
-    case FI:
-    case FF:
-      cerr << "Value::operator||(): cannot logical OR non-integer values" << endl;
-      return Value();
-    case UNDEF:
+    case OpType::II:
+      return Value{(m_val.intVal != 0) or (otherValue.m_val.intVal != 0)};
+    case OpType::IF:
+    case OpType::FI:
+    case OpType::FF:
+      std::cerr << "Value::operator||(): cannot logical OR non-integer values\n";
+      return Value{};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Equality
-Value Value::operator==(const Value& value) const
+auto Value::operator==(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival == value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) == value.val.fval);
-    case FI:
-      return Value(val.fval == static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval == value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value{m_val.intVal == otherValue.m_val.intVal};
+    case OpType::IF:
+      return Value{static_cast<float>(m_val.intVal) == otherValue.m_val.fltVal};
+    case OpType::FI:
+      return Value{m_val.fltVal == static_cast<float>(otherValue.m_val.intVal)};
+    case OpType::FF:
+      return Value{m_val.fltVal == otherValue.m_val.fltVal};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Inequality
-Value Value::operator!=(const Value& value) const
+auto Value::operator!=(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival != value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) != value.val.fval);
-    case FI:
-      return Value(val.fval != static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval != value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal != otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) != otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal != static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal != otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Less-than
-Value Value::operator<(const Value& value) const
+auto Value::operator<(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival < value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) < value.val.fval);
-    case FI:
-      return Value(val.fval < static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval < value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal < otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) < otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal < static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal < otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Less-than or equal-to
-Value Value::operator<=(const Value& value) const
+auto Value::operator<=(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival <= value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) <= value.val.fval);
-    case FI:
-      return Value(val.fval <= static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval <= value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal <= otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) <= otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal <= static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal <= otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Greater-than or equal-to
-Value Value::operator>=(const Value& value) const
+auto Value::operator>=(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival >= value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) >= value.val.fval);
-    case FI:
-      return Value(val.fval >= static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval >= value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal >= otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) >= otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal >= static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal >= otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Greater-than
-Value Value::operator>(const Value& value) const
+auto Value::operator>(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival > value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) > value.val.fval);
-    case FI:
-      return Value(val.fval > static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval > value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal > otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) > otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal > static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal > otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Binary addition
-Value Value::operator+(const Value& value) const
+auto Value::operator+(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival + value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) + value.val.fval);
-    case FI:
-      return Value(val.fval + static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval + value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal + otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) + otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal + static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal + otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Subtraction
-Value Value::operator-(const Value& value) const
+auto Value::operator-(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival - value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) - value.val.fval);
-    case FI:
-      return Value(val.fval - static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval - value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal - otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) - otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal - static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal - otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Multiplication
-Value Value::operator*(const Value& value) const
+auto Value::operator*(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(val.ival * value.val.ival);
-    case IF:
-      return Value(static_cast<float>(val.ival) * value.val.fval);
-    case FI:
-      return Value(val.fval * static_cast<float>(value.val.ival));
-    case FF:
-      return Value(val.fval * value.val.fval);
-    case UNDEF:
+    case OpType::II:
+      return Value(m_val.intVal * otherValue.m_val.intVal);
+    case OpType::IF:
+      return Value(static_cast<float>(m_val.intVal) * otherValue.m_val.fltVal);
+    case OpType::FI:
+      return Value(m_val.fltVal * static_cast<float>(otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(m_val.fltVal * otherValue.m_val.fltVal);
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Division (checks for /0 and returns an undefined number)
 // Note that int / int -> float, unlike C rules
-Value Value::operator/(const Value& value) const
+auto Value::operator/(const Value& otherValue) const -> Value
 {
-  if (type == undefinedType || value.type == undefinedType)
+  if ((m_type == ValueType::UNDEFINED) or (otherValue.m_type == ValueType::UNDEFINED))
   {
-    return Value();
+    return Value{};
   }
 
-  auto divisor = (value.type == intType) ? static_cast<float>(value.val.ival) : value.val.fval;
+  const auto divisor = (otherValue.m_type == ValueType::INT)
+                           ? static_cast<float>(otherValue.m_val.intVal)
+                           : otherValue.m_val.fltVal;
   if (divisor == 0.0F)
   {
-    return Value();
+    return Value{};
   }
 
-  const auto dividend = (type == intType) ? static_cast<float>(val.ival) : val.fval;
+  const auto dividend =
+      (m_type == ValueType::INT) ? static_cast<float>(m_val.intVal) : m_val.fltVal;
 
   return Value(dividend / divisor);
 }
 
 // Modulo (checks for /0 and returns an undefined number)
-Value Value::operator%(const Value& value) const
+auto Value::operator%(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      if (value.val.ival == 0)
-        return Value();
-      else
-        return Value(val.ival % value.val.ival);
-    case IF:
-    case FI:
-    case FF:
-      cerr << "Value::operator%(): cannot compute modulo of non-integer values\n";
-      return Value();
-    case UNDEF:
+    case OpType::II:
+      if (0 == otherValue.m_val.intVal)
+      {
+        return Value{};
+      }
+      return Value{m_val.intVal % otherValue.m_val.intVal};
+    case OpType::IF:
+    case OpType::FI:
+    case OpType::FF:
+      std::cerr << "Value::operator%(): cannot compute modulo of non-integer values\n";
+      return Value{};
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
 // Power
-Value Value::operator^(const Value& value) const
+auto Value::operator^(const Value& otherValue) const -> Value
 {
-  switch (binary_optype(value))
+  switch (GetBinaryOpType(otherValue))
   {
-    case II:
-      return Value(std::pow(double(val.ival), value.val.ival));
-    case IF:
-      return Value(std::pow(float(val.ival), value.val.fval));
-    case FI:
-      return Value(std::pow(val.fval, value.val.ival));
-    case FF:
-      return Value(std::pow(val.fval, value.val.fval));
-    case UNDEF:
+    case OpType::II:
+      return Value(std::pow(static_cast<double>(m_val.intVal), otherValue.m_val.intVal));
+    case OpType::IF:
+      return Value(std::pow(static_cast<float>(m_val.intVal), otherValue.m_val.fltVal));
+    case OpType::FI:
+      return Value(std::pow(m_val.fltVal, otherValue.m_val.intVal));
+    case OpType::FF:
+      return Value(std::pow(m_val.fltVal, otherValue.m_val.fltVal));
+    case OpType::UNDEF:
     default:
-      return Value();
+      return Value{};
   }
 }
 
-// Returns numeric value in i, true if a valid integer
-bool Value::GetIntValue(int& value) const
+// Returns numeric intValue in i, true if a valid integer
+auto Value::GetIntValue(int& intValue) const -> bool
 {
-  if (type == intType)
+  if (m_type == ValueType::INT)
   {
-    value = val.ival;
+    intValue = m_val.intVal;
     return true;
   }
 
   return false;
 }
 
-bool Value::GetFloatValue(float& value) const
+auto Value::GetFloatValue(float& fltValue) const -> bool
 {
-  if (type == intType)
+  if (m_type == ValueType::INT)
   {
-    value = static_cast<float>(val.ival);
+    fltValue = static_cast<float>(m_val.intVal);
     return true;
   }
-  if (type == floatType)
+  if (m_type == ValueType::FLOAT)
   {
-    value = val.fval;
+    fltValue = m_val.fltVal;
     return true;
   }
 
   return false;
 }
 
-std::ostream& operator<<(std::ostream& o, const Value& value)
+auto operator<<(std::ostream& out, const Value& value) -> std::ostream&
 {
-  switch (value.type)
+  switch (value.m_type)
   {
-    case intType:
-      o << value.val.ival;
+    case ValueType::INT:
+      out << value.m_val.intVal;
       break;
-    case floatType:
-      o.setf(std::ios::showpoint);
-      o << value.val.fval;
-      o.unsetf(std::ios::showpoint);
+    case ValueType::FLOAT:
+      out.setf(std::ios::showpoint);
+      out << value.m_val.fltVal;
+      out.unsetf(std::ios::showpoint);
       break;
-    case undefinedType:
+    case ValueType::UNDEFINED:
     default:
-      o << "(undefined value)";
+      out << "(undefined value)";
       break;
   }
-  return o;
+  return out;
 }
 
 } // namespace LSys
