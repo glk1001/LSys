@@ -100,7 +100,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
   if (m_input->left != nullptr)
   {
     PDebug(PD_PRODUCTION, std::cerr << "    [left context]\n");
-    // Scan each list in reverse order
+    // Scan each list in Reverse order
     auto listIterFormal = ListIterator<Module>{m_input->left};
     auto listIterValue  = ListIterator<Module>{modIter};
     const Module* formal;
@@ -177,7 +177,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
     const Module* value;
 
     PDebug(PD_PRODUCTION, std::cerr << "    [right context]\n");
-    // Scan each list in reverse order
+    // Scan each list in Reverse order
     for (formal = listIterFormal.first(), value = listIterValue.next();
          (formal != nullptr) and (value != nullptr);
          formal = listIterFormal.next(), value = listIterValue.next())

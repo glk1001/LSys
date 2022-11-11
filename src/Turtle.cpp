@@ -57,7 +57,7 @@ Turtle::Turtle(const float turn, const float widthScale)
   this->SetDefaults(widthScale, turn);
 
   // Set up initial frame and position, moving in +X with up in Z
-  m_frame.identity();
+  m_frame.Identity();
   this->SetGravity(this->GetHeading());
 
   // Default tropism vector is towards ground, but tropism is disabled
@@ -228,17 +228,17 @@ auto Turtle::Turn(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_frame.rotate(Matrix::z, m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::Z, m_defaultTurn);
   }
   else
   {
-    m_frame.rotate(Matrix::z, -m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::Z, -m_defaultTurn);
   }
 }
 
 auto Turtle::Turn(const float angle) -> void
 {
-  m_frame.rotate(Matrix::z, angle);
+  m_frame.Rotate(Matrix::Axis::Z, angle);
 }
 
 // Pitch up or down (rotate around the left vector)
@@ -246,17 +246,17 @@ auto Turtle::Pitch(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_frame.rotate(Matrix::y, m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::Y, m_defaultTurn);
   }
   else
   {
-    m_frame.rotate(Matrix::y, -m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::Y, -m_defaultTurn);
   }
 }
 
 auto Turtle::Pitch(const float angle) -> void
 {
-  m_frame.rotate(Matrix::y, angle);
+  m_frame.Rotate(Matrix::Axis::Y, angle);
 }
 
 // Roll left or right (rotate around the heading vector)
@@ -264,23 +264,23 @@ auto Turtle::Roll(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_frame.rotate(Matrix::x, m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::X, m_defaultTurn);
   }
   else
   {
-    m_frame.rotate(Matrix::x, -m_defaultTurn);
+    m_frame.Rotate(Matrix::Axis::X, -m_defaultTurn);
   }
 }
 
 auto Turtle::Roll(const float angle) -> void
 {
-  m_frame.rotate(Matrix::x, angle);
+  m_frame.Rotate(Matrix::Axis::X, angle);
 }
 
 // Spin around 180 degrees
 auto Turtle::Reverse() -> void
 {
-  m_frame.reverse();
+  m_frame.Reverse();
 }
 
 // Roll the turtle so the left vector is perpendicular to the antigravity
@@ -293,7 +293,7 @@ auto Turtle::RollHorizontal() -> void
   auto left          = m_gravity ^ heading;
 
   // Don't do anything if heading is too close to the antigravity vector.
-  auto magnitude = left.magnitude();
+  auto magnitude = left.GetMagnitude();
   if (magnitude < TOLERANCE)
   {
     return;
@@ -332,9 +332,9 @@ auto Turtle::Move(const float distance) -> void
   {
     const auto vector = GetHeading() ^ m_tropism.tropismVector;
     // This is bogus ??????????????????????????????????????????????????????????
-    // const float m= vector.magnitude();
+    // const float m= vector.GetMagnitude();
     //if (m != 0)
-    m_frame.rotate(vector, m_tropism.susceptibility);
+    m_frame.Rotate(vector, m_tropism.susceptibility);
   }
 }
 

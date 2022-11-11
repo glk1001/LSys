@@ -1,7 +1,4 @@
-/* vector.h - class definitions for vector and transformation Matrix classes.
- *
- * $Id: vector.h,v 1.6 93/05/12 22:26:51 leech Exp $
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -19,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	vector.h,v $
+ * $Log: vector.h,v $
  * Revision 1.6  93/05/12  22:26:51  leech
  * Reduce warnings from cfront 3.0.1.
  *
@@ -43,6 +40,7 @@
 
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 namespace LSys
@@ -51,195 +49,177 @@ namespace LSys
 // The usual scalar and vector operators are defined.
 // Cross product is denoted by a ^ b.
 
-#define Point Vector
 class Vector
 {
 public:
-  float& operator[](uint32_t i) { return x[i]; }
-  float operator[](uint32_t i) const { return x[i]; }
-  float operator()(uint32_t i) const { return x[i]; }
+  auto operator[](const uint32_t i) -> float& { return m_vec[i]; }
+  auto operator[](const uint32_t i) const -> float { return m_vec[i]; }
+  auto operator()(const uint32_t i) const -> float { return m_vec[i]; }
 
   Vector() = default;
-  explicit Vector(const float* v)
+  Vector(const float x, const float y, const float z) : m_vec{x, y, z} {};
+
+  [[nodiscard]] auto GetMagnitude() -> float
   {
-    x[0] = v[0];
-    x[1] = v[1];
-    x[2] = v[2];
+    return std::sqrt(Maths::sq(m_vec[0]) + Maths::sq(m_vec[1]) + Maths::sq(m_vec[2]));
   }
-  Vector(float xval, float yval, float zval)
-  {
-    x[0] = xval;
-    x[1] = yval;
-    x[2] = zval;
-  };
 
-  float magnitude() { return std::sqrt(Maths::sq(x[0]) + Maths::sq(x[1]) + Maths::sq(x[2])); }
-
-  Vector& normalize()
+  auto Normalize() -> Vector&
   {
-    float mag = this->magnitude();
-    if (mag != 0.0F)
+    if (const auto mag = this->GetMagnitude(); mag != 0.0F)
     {
-      mag = 1.0F / mag;
-      x[0] *= mag;
-      x[1] *= mag;
-      x[2] *= mag;
+      m_vec[0] /= mag;
+      m_vec[1] /= mag;
+      m_vec[2] /= mag;
     }
     return *this;
   }
 
-  Vector& operator+=(const Vector& v)
+  auto operator+=(const Vector& vec) -> Vector&
   {
-    x[0] += v(0);
-    x[1] += v(1);
-    x[2] += v(2);
+    m_vec[0] += vec(0);
+    m_vec[1] += vec(1);
+    m_vec[2] += vec(2);
     return *this;
   }
 
-  Vector& operator-=(const Vector& v)
+  auto operator-=(const Vector& vec) -> Vector&
   {
-    x[0] -= v(0);
-    x[1] -= v(1);
-    x[2] -= v(2);
+    m_vec[0] -= vec(0);
+    m_vec[1] -= vec(1);
+    m_vec[2] -= vec(2);
     return *this;
   }
 
-  Vector& operator*=(float s)
+  auto operator*=(const float val) -> Vector&
   {
-    x[0] *= s;
-    x[1] *= s;
-    x[2] *= s;
+    m_vec[0] *= val;
+    m_vec[1] *= val;
+    m_vec[2] *= val;
     return *this;
   }
 
-  Vector& operator/=(float s)
+  auto operator/=(const float val) -> Vector&
   {
-    x[0] /= s;
-    x[1] /= s;
-    x[2] /= s;
+    m_vec[0] /= val;
+    m_vec[1] /= val;
+    m_vec[2] /= val;
     return *this;
   }
 
-  friend Vector operator-(const Vector&); // Negation
-  friend Vector operator*(float, const Vector&); // Scalar multiply
-  friend Vector operator/(const Vector&, float); // Scalar division
-  friend Vector operator+(const Vector&, const Vector&); // Vector addition
-  friend Vector operator-(const Vector&, const Vector&); // Vector subtraction
-  friend Vector operator^(const Vector&, const Vector&); // Vector cross product
-  friend float operator*(const Vector&, const Vector&); // Vector inner product
+  friend auto operator-(const Vector& vec) -> Vector; // Negation
+  friend auto operator*(float val, const Vector& vec) -> Vector; // Scalar multiply
+  friend auto operator/(const Vector& vec, float val) -> Vector; // Scalar division
+  friend auto operator+(const Vector& vec1, const Vector& vec2) -> Vector; // Vector addition
+  friend auto operator-(const Vector& vec1, const Vector& vec2) -> Vector; // Vector subtraction
+  friend auto operator^(const Vector& vec1, const Vector& vec2) -> Vector; // Vector cross product
+  friend auto operator*(const Vector& vec1, const Vector& vec2) -> float; // Vector inner product
 
 private:
-  std::array<float, 3> x{};
+  std::array<float, 3> m_vec{};
 };
 
-inline Vector operator-(const Vector& v)
+inline auto operator-(const Vector& vec) -> Vector
 {
-  return Vector(-v(0), -v(1), -v(2));
+  return Vector(-vec(0), -vec(1), -vec(2));
 }
 
-inline Vector operator*(float s, const Vector& v)
+inline auto operator*(const float val, const Vector& vec) -> Vector
 {
-  return Vector(s * v(0), s * v(1), s * v(2));
+  return Vector(val * vec(0), val * vec(1), val * vec(2));
 }
 
-inline Vector operator/(const Vector& v, float s)
+inline auto operator/(const Vector& vec, const float val) -> Vector
 {
-  float recip = 1 / s;
-  return Vector(v(0) * recip, v(1) * recip, v(2) * recip);
+  const auto recip = 1.0F / val;
+  return Vector(vec(0) * recip, vec(1) * recip, vec(2) * recip);
 }
 
-inline Vector operator+(const Vector& a, const Vector& b)
+inline auto operator+(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector(a(0) + b(0), a(1) + b(1), a(2) + b(2));
+  return Vector(vec1(0) + vec2(0), vec1(1) + vec2(1), vec1(2) + vec2(2));
 }
 
-inline Vector operator-(const Vector& a, const Vector& b)
+inline auto operator-(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector(a(0) - b(0), a(1) - b(1), a(2) - b(2));
+  return Vector(vec1(0) - vec2(0), vec1(1) - vec2(1), vec1(2) - vec2(2));
 }
 
-inline Vector operator^(const Vector& a, const Vector& b)
+inline auto operator^(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector(a(1) * b(2) - a(2) * b(1), a(2) * b(0) - a(0) * b(2), a(0) * b(1) - a(1) * b(0));
+  return Vector((vec1(1) * vec2(2)) - (vec1(2) * vec2(1)),
+                (vec1(2) * vec2(0)) - (vec1(0) * vec2(2)),
+                (vec1(0) * vec2(1)) - (vec1(1) * vec2(0)));
 }
 
-inline float operator*(const Vector& a, const Vector& b)
+inline auto operator*(const Vector& vec1, const Vector& vec2) -> float
 {
-  return a(0) * b(0) + a(1) * b(1) + a(2) * b(2);
+  return (vec1(0) * vec2(0)) + (vec1(1) * vec2(1)) + (vec1(2) * vec2(2));
 }
 
-inline bool operator==(const Vector& a, const Vector& b)
+inline auto operator==(const Vector& vec1, const Vector& vec2) -> bool
 {
-  return (a(0) == b(0)) && (a(1) == b(1)) && (a(2) == b(2));
+  return (vec1(0) == vec2(0)) and (vec1(1) == vec2(1)) and (vec1(2) == vec2(2));
 }
 
-inline bool operator!=(const Vector& a, const Vector& b)
+inline auto Distance(const Vector& vec1, const Vector& vec2) -> float
 {
-  return not(a == b);
+  return std::sqrt(Maths::sq(vec1(0) - vec2(0)) + Maths::sq(vec1(1) - vec2(1)) +
+                   Maths::sq(vec1(2) - vec2(2)));
 }
 
-inline float Distance(const Vector& a, const Vector& b)
-{
-  return std::sqrt(Maths::sq(a(0) - b(0)) + Maths::sq(a(1) - b(1)) + Maths::sq(a(2) - b(2)));
-}
-
-std::ostream& operator<<(std::ostream&, const Vector&);
-
+auto operator<<(std::ostream& out, const Vector& vec) -> std::ostream&;
 
 // 3x4 transformation matrix (no perspective)
 class Matrix
 {
 public:
-  enum initialize
+  enum class Initialize
   {
-    columns,
-    rows
+    COLUMNS,
+    ROWS
   };
-  enum axis
+  enum class Axis
   {
-    x,
-    y,
-    z
+    X,
+    Y,
+    Z
   };
 
-  Matrix() {}
-  Matrix(initialize flag, const Vector&, const Vector&, const Vector&);
+  Matrix() = default;
+  Matrix(Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3);
 
-  float* operator[](uint32_t i) { return m_matrix[i]; }
-  const float* operator[](uint32_t i) const { return m_matrix[i]; }
-  Matrix& zero();
-  Matrix& identity();
-  Matrix& rotate(axis a, float alpha);
-  Matrix& rotate(const Vector&, float alpha);
-  Matrix& translate(const Vector&);
-  Matrix& reverse();
-  Vector operator*(const Vector&) const;
-  Matrix operator*(const Matrix&) const;
+  auto operator[](const uint32_t i) -> float* { return m_matrix[i]; }
+  auto operator[](const uint32_t i) const -> const float* { return m_matrix[i]; }
+  auto Zero() -> Matrix&;
+  auto Identity() -> Matrix&;
+  auto Rotate(Axis axis, float angle) -> Matrix&;
+  auto Rotate(const Vector& vec, float angle) -> Matrix&;
+  auto Reverse() -> Matrix&;
+  [[nodiscard]] auto operator*(const Vector& vec) const -> Vector;
+  [[nodiscard]] auto operator*(const Matrix& otherMatrix) const -> Matrix;
 
 private:
   float m_matrix[3][4];
 };
 
-Matrix view_matrix(const Point& eye, const Point& lookat, const Vector& vup);
-
-std::ostream& operator<<(std::ostream&, const Matrix&);
-
+std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
 
 class BoundingBox
 {
 public:
-  BoundingBox() : vmin(0, 0, 0), vmax(0, 0, 0) {}
-  BoundingBox(const Vector& p) : vmin(p), vmax(p) {}
-  void Expand(const Vector&);
-  Vector Min() const { return vmin; }
-  Vector Max() const { return vmax; }
-  BoundingBox Transform(const Matrix&);
+  BoundingBox() : m_minVec{0.0F, 0.0F, 0.0F}, m_maxVec{0.0F, 0.0F, 0.0F} {}
+  explicit BoundingBox(const Vector& vec) : m_minVec{vec}, m_maxVec{vec} {}
+
+  auto Expand(const Vector& point) -> void;
+  [[nodiscard]] auto Min() const -> Vector { return m_minVec; }
+  [[nodiscard]] auto Max() const -> Vector { return m_maxVec; }
 
 private:
-  Vector vmin;
-  Vector vmax;
+  Vector m_minVec;
+  Vector m_maxVec;
 };
 
-std::ostream& operator<<(std::ostream&, const BoundingBox&);
+std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
 
 } // namespace LSys

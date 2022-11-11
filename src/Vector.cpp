@@ -1,5 +1,4 @@
-/* vector.c - methods for vector and transformation Matrix classes.
- *
+/*
  * Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
@@ -17,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	vector.c,v $
+ * $Log: vector.c,v $
  * Revision 1.6  93/05/12  22:06:49  leech
  * Reduce warnings from cfront 3.0.1.
  *
@@ -26,7 +25,7 @@
  *
  * Revision 1.4  91/10/10  20:15:37  leech
  * Include <stdlib.h> for MPW. Avoid namespace clashes between enumeration
- * 'axis' and variable 'axis' which exercise a bug in Sun C++.
+ * 'Axis' and variable 'Axis' which exercise a bug in Sun C++.
  *
  * Revision 1.3  91/03/20  10:37:08  leech
  * Include stream.h to ensure we have it.
@@ -35,13 +34,12 @@
  * First public release.
  *
  */
-//static char RCSid[] = "$Id: vector.c,v 1.6 93/05/12 22:06:49 leech Exp $";
 
 #include "Vector.h"
 
+#include <cstdlib>
 #include <iomanip>
-#include <stdlib.h>
-
+#include <iostream>
 
 namespace LSys
 {
@@ -52,88 +50,56 @@ static constexpr uint32_t Z = 2U;
 static constexpr uint32_t W = 3U;
 
 // Expand the box to include the specified point
-void BoundingBox::Expand(const Vector& p)
+auto BoundingBox::Expand(const Vector& point) -> void
 {
-  for (auto i = X; i <= Z; i++)
+  for (auto i = X; i <= Z; ++i)
   {
-    if (p(i) > vmax[i])
+    if (point(i) > m_maxVec[i])
     {
-      vmax[i] = p(i);
+      m_maxVec[i] = point(i);
     }
-    else if (p(i) < vmin[i])
+    else if (point(i) < m_minVec[i])
     {
-      vmin[i] = p(i);
+      m_minVec[i] = point(i);
     }
   }
 }
 
-
-// Transform the box through the matrix, return a new box. The new
-// box will in general not bound the object as well.
-BoundingBox BoundingBox::Transform(const Matrix& m)
+std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox)
 {
-  // For each combination of object (min,max):
-  BoundingBox bnew(m * vmin); // 000
-
-  Vector v = m * Vector(vmin[X], vmin[Y], vmax[Z]); // 001
-  bnew.Expand(v);
-
-  v = m * Vector(vmin[X], vmax[Y], vmin[Z]); // 010
-  bnew.Expand(v);
-
-  v = m * Vector(vmin[X], vmax[Y], vmax[Z]); // 011
-  bnew.Expand(v);
-
-  v = m * Vector(vmax[X], vmin[Y], vmin[Z]); // 100
-  bnew.Expand(v);
-
-  v = m * Vector(vmax[X], vmin[Y], vmax[Z]); // 101
-  bnew.Expand(v);
-
-  v = m * Vector(vmax[X], vmax[Y], vmin[Z]); // 110
-  bnew.Expand(v);
-
-  bnew.Expand(m * vmax); // 111
-
-  return bnew;
+  return out << "[ min: " << boundingBox.Min() << " max: " << boundingBox.Max() << " ]";
 }
 
-
-std::ostream& operator<<(std::ostream& s, const BoundingBox& m)
+// Initialize a matrix by either COLUMNS or ROWS as specified;
+// assumes an underlying Identity matrix.
+Matrix::Matrix(const Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3)
 {
-  return s << "[ min: " << m.Min() << " max: " << m.Max() << " ]";
-}
-
-
-// Initialize a matrix by either columns or rows as specified;
-// assumes an underlying identity matrix.
-Matrix::Matrix(initialize flag, const Vector& u, const Vector& v, const Vector& w)
-{
-  for (auto i = X; i <= Z; i++)
+  for (auto i = X; i <= Z; ++i)
   {
-    if (flag == Matrix::columns)
+    if (flag == Matrix::Initialize::COLUMNS)
     {
-      m_matrix[i][X] = u(i);
-      m_matrix[i][Y] = v(i);
-      m_matrix[i][Z] = w(i);
+      m_matrix[i][X] = vec1(i);
+      m_matrix[i][Y] = vec2(i);
+      m_matrix[i][Z] = vec3(i);
     }
     else
-    { // flag = Matrix::rows
-      m_matrix[X][i] = u(i);
-      m_matrix[Y][i] = v(i);
-      m_matrix[Z][i] = w(i);
+    { // flag = Matrix::ROWS
+      m_matrix[X][i] = vec1(i);
+      m_matrix[Y][i] = vec2(i);
+      m_matrix[Z][i] = vec3(i);
     }
   }
-  m_matrix[X][W] = m_matrix[Y][W] = m_matrix[Z][W] = 0;
+  m_matrix[X][W] = 0.0F;
+  m_matrix[Y][W] = 0.0F;
+  m_matrix[Z][W] = 0.0F;
 }
 
-
-// Create a zero matrix
-Matrix& Matrix::zero()
+// Create a Zero matrix
+auto Matrix::Zero() -> Matrix&
 {
-  for (auto i = X; i <= Z; i++)
+  for (auto i = X; i <= Z; ++i)
   {
-    for (auto j = X; j <= W; j++)
+    for (auto j = X; j <= W; ++j)
     {
       m_matrix[i][j] = 0.0F;
     }
@@ -142,13 +108,12 @@ Matrix& Matrix::zero()
   return *this;
 }
 
-
-// Create an identity matrix
-Matrix& Matrix::identity()
+// Create an Identity matrix
+auto Matrix::Identity() -> Matrix&
 {
-  for (auto i = X; i <= Z; i++)
+  for (auto i = X; i <= Z; ++i)
   {
-    for (auto j = X; j <= W; j++)
+    for (auto j = X; j <= W; ++j)
     {
       m_matrix[i][j] = (i == j) ? 1.0F : 0.0F;
     }
@@ -157,165 +122,157 @@ Matrix& Matrix::identity()
   return *this;
 }
 
-static void sincos(float& cval, float& sval, float alpha)
+static auto CosSin(float& cosVal, float& sinVal, float const angle) -> void
 {
   // Tolerance before assuming the rotation is aligned with axes
-  static constexpr auto tolerance = 1e-10F;
+  static constexpr auto TOLERANCE = 1e-10F;
 
-  cval = std::cos(alpha);
-  sval = std::sin(alpha);
+  cosVal = std::cos(angle);
+  sinVal = std::sin(angle);
 
-  if (cval > (1.0F - tolerance))
+  if (cosVal > (1.0F - TOLERANCE))
   {
-    cval = 1;
-    sval = 0;
+    cosVal = 1;
+    sinVal = 0;
   }
-  else if (cval < (-1.0F + tolerance))
+  else if (cosVal < (-1.0F + TOLERANCE))
   {
-    cval = -1;
-    sval = 0;
+    cosVal = -1;
+    sinVal = 0;
   }
 
-  if (sval > (1.0F - tolerance))
+  if (sinVal > (1.0F - TOLERANCE))
   {
-    cval = 0;
-    sval = 1;
+    cosVal = 0;
+    sinVal = 1;
   }
-  else if (sval < (-1.0F + tolerance))
+  else if (sinVal < (-1.0F + TOLERANCE))
   {
-    cval = 0;
-    sval = -1;
+    cosVal = 0;
+    sinVal = -1;
   }
 }
 
-// Postmultiply by a rotation around specified axis (x,y,z) of alpha radians
-// Note: this is in a right handed coordinate system, and transformations
+// Post-multiply by axis rotation around specified Axis (x,y,z) of 'angle' radians
+// Note: this is in axis right-handed coordinate system, and transformations
 //  are performed by multiplying [matrix][pt].
-Matrix& Matrix::rotate(axis a, float alpha)
+auto Matrix::Rotate(const Axis axis, const float angle) -> Matrix&
 {
-  float ca, sa;
-  sincos(ca, sa, alpha);
-  Matrix r;
+  float cosAngle;
+  float sinAngle;
+  CosSin(cosAngle, sinAngle, angle);
 
-  switch (a)
+  auto rotatedMatrix = Matrix{};
+
+  switch (axis)
   {
-    case x:
-      r[X][X] = 1;
-      r[X][Y] = 0;
-      r[X][Z] = 0;
-      r[X][W] = 0;
-      r[Y][X] = 0;
-      r[Y][Y] = ca;
-      r[Y][Z] = -sa;
-      r[Y][W] = 0;
-      r[Z][X] = 0;
-      r[Z][Y] = sa;
-      r[Z][Z] = ca;
-      r[Z][W] = 0;
+    case Axis::X:
+      rotatedMatrix[X][X] = 1;
+      rotatedMatrix[X][Y] = 0;
+      rotatedMatrix[X][Z] = 0;
+      rotatedMatrix[X][W] = 0;
+      rotatedMatrix[Y][X] = 0;
+      rotatedMatrix[Y][Y] = cosAngle;
+      rotatedMatrix[Y][Z] = -sinAngle;
+      rotatedMatrix[Y][W] = 0;
+      rotatedMatrix[Z][X] = 0;
+      rotatedMatrix[Z][Y] = sinAngle;
+      rotatedMatrix[Z][Z] = cosAngle;
+      rotatedMatrix[Z][W] = 0;
       break;
-    case y:
-      r[X][X] = ca;
-      r[X][Y] = 0;
-      r[X][Z] = sa;
-      r[X][W] = 0;
-      r[Y][X] = 0;
-      r[Y][Y] = 1;
-      r[Y][Z] = 0;
-      r[Y][W] = 0;
-      r[Z][X] = -sa;
-      r[Z][Y] = 0;
-      r[Z][Z] = ca;
-      r[Z][W] = 0;
+    case Axis::Y:
+      rotatedMatrix[X][X] = cosAngle;
+      rotatedMatrix[X][Y] = 0;
+      rotatedMatrix[X][Z] = sinAngle;
+      rotatedMatrix[X][W] = 0;
+      rotatedMatrix[Y][X] = 0;
+      rotatedMatrix[Y][Y] = 1;
+      rotatedMatrix[Y][Z] = 0;
+      rotatedMatrix[Y][W] = 0;
+      rotatedMatrix[Z][X] = -sinAngle;
+      rotatedMatrix[Z][Y] = 0;
+      rotatedMatrix[Z][Z] = cosAngle;
+      rotatedMatrix[Z][W] = 0;
       break;
-    case z:
-      r[X][X] = ca;
-      r[X][Y] = -sa;
-      r[X][Z] = 0;
-      r[X][W] = 0;
-      r[Y][X] = sa;
-      r[Y][Y] = ca;
-      r[Y][Z] = 0;
-      r[Y][W] = 0;
-      r[Z][X] = 0;
-      r[Z][Y] = 0;
-      r[Z][Z] = 1;
-      r[Z][W] = 0;
+    case Axis::Z:
+      rotatedMatrix[X][X] = cosAngle;
+      rotatedMatrix[X][Y] = -sinAngle;
+      rotatedMatrix[X][Z] = 0;
+      rotatedMatrix[X][W] = 0;
+      rotatedMatrix[Y][X] = sinAngle;
+      rotatedMatrix[Y][Y] = cosAngle;
+      rotatedMatrix[Y][Z] = 0;
+      rotatedMatrix[Y][W] = 0;
+      rotatedMatrix[Z][X] = 0;
+      rotatedMatrix[Z][Y] = 0;
+      rotatedMatrix[Z][Z] = 1;
+      rotatedMatrix[Z][W] = 0;
       break;
     default:
-      std::cerr << "Matrix::rotate: unknown axis = " << static_cast<int>(a) << "\n";
-      exit(1);
+      std::cerr << "Matrix::rotate: unknown axis = " << static_cast<int>(axis) << "\n";
+      ::exit(1);
       break;
   }
 
-  *this = *this * r;
+  *this = *this * rotatedMatrix;
 
   return *this;
 }
 
-// Post-multiply by a rotation around the specified axis _axis of alpha radians.
-Matrix& Matrix::rotate(const Vector& _axis, float alpha)
+// Post-multiply by a rotation around the specified axis of 'angle' radians.
+auto Matrix::Rotate(const Vector& vec, const float angle) -> Matrix&
 {
-  float ca, sa;
-  sincos(ca, sa, alpha);
-  Matrix c, s, r;
+  float cosAngle;
+  float sinAngle;
+  CosSin(cosAngle, sinAngle, angle);
 
-  // rotation axis must be normalized
-  Vector a = _axis;
-  a.normalize();
+  auto cMatrix       = Matrix{};
+  auto sMatrix       = Matrix{};
+  auto rotatedMatrix = Matrix{};
 
-  // matrix effecting P' = (1 - cos alpha) (P dot A) A
+  // Rotation axis must be normalized
+  auto rotationAxis = vec;
+  rotationAxis.Normalize();
+
+  // Matrix effecting P' = (1 - cos alpha) (P dot A) A
   // Rij = (1 - cos alpha) Ai Aj
-  c.zero();
+  cMatrix.Zero();
   for (auto i = X; i <= Z; ++i)
   {
     for (auto j = X; j <= Z; ++j)
     {
-      c[i][j] = (1 - ca) * a(i) * a(j);
+      cMatrix[i][j] = (1 - cosAngle) * rotationAxis(i) * rotationAxis(j);
     }
   }
 
   // matrix effecting P' = (cos alpha) P + (sin alpha) P ^ A
-  s.zero();
-  s[X][X] = ca;
-  s[X][Y] = -sa * a(Z);
-  s[X][Z] = sa * a(Y);
-  s[Y][X] = sa * a(Z);
-  s[Y][Y] = ca;
-  s[Y][Z] = -sa * a(X);
-  s[Z][X] = -sa * a(Y);
-  s[Z][Y] = sa * a(X);
-  s[Z][Z] = ca;
+  sMatrix.Zero();
+  sMatrix[X][X] = cosAngle;
+  sMatrix[X][Y] = -sinAngle * rotationAxis(Z);
+  sMatrix[X][Z] = sinAngle * rotationAxis(Y);
+  sMatrix[Y][X] = sinAngle * rotationAxis(Z);
+  sMatrix[Y][Y] = cosAngle;
+  sMatrix[Y][Z] = -sinAngle * rotationAxis(X);
+  sMatrix[Z][X] = -sinAngle * rotationAxis(Y);
+  sMatrix[Z][Y] = sinAngle * rotationAxis(X);
+  sMatrix[Z][Z] = cosAngle;
 
   for (auto i = X; i <= Z; ++i)
   {
     for (auto j = X; j <= W; ++j)
     {
-      r[i][j] = s[i][j] + c[i][j];
+      rotatedMatrix[i][j] = sMatrix[i][j] + cMatrix[i][j];
     }
   }
 
-  *this = *this * r;
+  *this = *this * rotatedMatrix;
 
-  return *this;
-}
-
-// Post-multiply by a translation t.
-Matrix& Matrix::translate(const Vector& t)
-{
-  Matrix r;
-
-  r.identity();
-  r[X][W] = t(X);
-  r[Y][W] = t(Y);
-  r[Z][W] = t(Z);
-
-  *this = *this * r;
   return *this;
 }
 
 // Negate first and second columns of the matrix (heading and
 // left vectors), effecting a turnaround.
-Matrix& Matrix::reverse()
+auto Matrix::Reverse() -> Matrix&
 {
   m_matrix[X][X] = -m_matrix[X][X];
   m_matrix[X][Y] = -m_matrix[X][Y];
@@ -327,70 +284,47 @@ Matrix& Matrix::reverse()
   return *this;
 }
 
-// Matrix * Vector (transform vector s through the transformation)
-Vector Matrix::operator*(const Vector& s) const
+auto Matrix::operator*(const Vector& vec) const -> Vector
 {
   return Vector(
-      m_matrix[X][X] * s(X) + m_matrix[X][Y] * s(Y) + m_matrix[X][Z] * s(Z) + m_matrix[X][W],
-      m_matrix[Y][X] * s(X) + m_matrix[Y][Y] * s(Y) + m_matrix[Y][Z] * s(Z) + m_matrix[Y][W],
-      m_matrix[Z][X] * s(X) + m_matrix[Z][Y] * s(Y) + m_matrix[Z][Z] * s(Z) + m_matrix[Z][W]);
+      m_matrix[X][X] * vec(X) + m_matrix[X][Y] * vec(Y) + m_matrix[X][Z] * vec(Z) + m_matrix[X][W],
+      m_matrix[Y][X] * vec(X) + m_matrix[Y][Y] * vec(Y) + m_matrix[Y][Z] * vec(Z) + m_matrix[Y][W],
+      m_matrix[Z][X] * vec(X) + m_matrix[Z][Y] * vec(Y) + m_matrix[Z][Z] * vec(Z) + m_matrix[Z][W]);
 }
 
-// Matrix * Matrix (preconcatenate transformation b by postmultiplication)
-Matrix Matrix::operator*(const Matrix& b) const
+auto Matrix::operator*(const Matrix& otherMatrix) const -> Matrix
 {
-  Matrix res;
+  auto res = Matrix{};
 
   for (auto i = X; i <= Z; ++i)
   {
-    res[i][X] = m_matrix[i][X] * b[X][X] + m_matrix[i][Y] * b[Y][X] + m_matrix[i][Z] * b[Z][X];
-    res[i][Y] = m_matrix[i][X] * b[X][Y] + m_matrix[i][Y] * b[Y][Y] + m_matrix[i][Z] * b[Z][Y];
-    res[i][Z] = m_matrix[i][X] * b[X][Z] + m_matrix[i][Y] * b[Y][Z] + m_matrix[i][Z] * b[Z][Z];
-    res[i][W] = m_matrix[i][X] * b[X][W] + m_matrix[i][Y] * b[Y][W] + m_matrix[i][Z] * b[Z][W] +
-                m_matrix[i][W];
+    res[i][X] = m_matrix[i][X] * otherMatrix[X][X] + m_matrix[i][Y] * otherMatrix[Y][X] +
+                m_matrix[i][Z] * otherMatrix[Z][X];
+    res[i][Y] = m_matrix[i][X] * otherMatrix[X][Y] + m_matrix[i][Y] * otherMatrix[Y][Y] +
+                m_matrix[i][Z] * otherMatrix[Z][Y];
+    res[i][Z] = m_matrix[i][X] * otherMatrix[X][Z] + m_matrix[i][Y] * otherMatrix[Y][Z] +
+                m_matrix[i][Z] * otherMatrix[Z][Z];
+    res[i][W] = m_matrix[i][X] * otherMatrix[X][W] + m_matrix[i][Y] * otherMatrix[Y][W] +
+                m_matrix[i][Z] * otherMatrix[Z][W] + m_matrix[i][W];
   }
 
   return res;
 }
 
-// Construct a viewing matrix which effects a translation of the eye to
-// the origin, the lookat - eye vector to the -Z axis, and the vup vector
-// to the +Y axis. This is drawn from PPHIGS but done in RHS.
-Matrix view_matrix(const Point& eye, const Point& lookat, const Vector& vup)
+std::ostream& operator<<(std::ostream& out, const Vector& vec)
 {
-  Vector w = eye - lookat; // Look vector
-
-  Matrix trans;
-  trans.identity();
-  trans.translate(-eye); // Translate eye to origin
-
-  Vector u = vup ^ w; // Construct an orthogonal basis whose up
-  Vector v = w ^ u; //  vector v is as close to vup as possible
-
-  u.normalize();
-  v.normalize();
-  w.normalize();
-
-  Matrix frame(Matrix::rows, u, v, w);
-
-  return frame * trans;
+  return out << "( " << vec(X) << ' ' << vec(Y) << ' ' << vec(Z) << " )";
 }
 
-// Print a Vector
-std::ostream& operator<<(std::ostream& s, const Vector& v)
+std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
 {
-  return s << "( " << v(X) << ' ' << v(Y) << ' ' << v(Z) << " )";
+  for (auto i = X; i <= Z; ++i)
+  {
+    out << '\t' << "( " << std::setw(8) << matrix[i][X] << ' ' << std::setw(8) << matrix[i][Y]
+        << ' ' << std::setw(8) << matrix[i][Z] << ' ' << std::setw(8) << matrix[i][W] << " )\n";
+  }
+
+  return out;
 }
 
-// Print a Matrix
-std::ostream& operator<<(std::ostream& s, const Matrix& matrix)
-{
-  for (auto i = X; i <= Z; i++)
-    s << '\t' << "( " << std::setw(8) << matrix[i][X] << ' ' << std::setw(8) << matrix[i][Y] << ' '
-      << std::setw(8) << matrix[i][Z] << ' ' << std::setw(8) << matrix[i][W] << " )\n";
-
-  return s;
-}
-
-
-}; // namespace LSys
+} // namespace LSys
