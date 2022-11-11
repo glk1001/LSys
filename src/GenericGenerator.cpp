@@ -73,8 +73,8 @@ inline void OutputVec(std::ostream& f, const Vector& v)
 
 void GenericGenerator::OutputBounds(const Turtle& t)
 {
-  const Vector bndsMin = t.Bounds().Min();
-  const Vector bndsMax = t.Bounds().Max();
+  const Vector bndsMin = t.GetBoundingBox().Min();
+  const Vector bndsMax = t.GetBoundingBox().Max();
   const Vector startPoint(0, 0, 0);
 
   // Output start point
@@ -104,12 +104,12 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
   StartGraphics(turtle);
 
   //const Vector start     = this->LastPosition();
-  //const Vector end       = turtle.Location();
-  const int frontColor   = turtle.CurrentColor().m_color.index;
-  const int backColor    = turtle.CurrentBackColor().m_color.index;
-  const int frontTexture = turtle.CurrentTexture();
-  const int backTexture  = turtle.CurrentTexture();
-  //const float width      = turtle.CurrentWidth();
+  //const Vector end       = turtle.GetPosition();
+  const int frontColor   = turtle.GetColor().m_color.index;
+  const int backColor    = turtle.GetBackColor().m_color.index;
+  const int frontTexture = turtle.GetTexture();
+  const int backTexture  = turtle.GetTexture();
+  //const float width      = turtle.GetWidth();
 
   groupNum++;
   *m_output << "Start_Object_Group " << groupNum << '\n';
@@ -147,14 +147,14 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
 void GenericGenerator::LineTo(const Turtle& t)
 {
   const Vector start      = this->GetLastPosition();
-  const Vector end        = t.Location();
-  const int frontColor    = t.CurrentColor().m_color.index;
-  const int backColor     = t.CurrentBackColor().m_color.index;
-  const int frontTexture  = t.CurrentTexture();
-  const int backTexture   = t.CurrentTexture();
+  const Vector end        = t.GetPosition();
+  const int frontColor    = t.GetColor().m_color.index;
+  const int backColor     = t.GetBackColor().m_color.index;
+  const int frontTexture  = t.GetTexture();
+  const int backTexture   = t.GetTexture();
   const float lineLength  = Distance(start, end);
   const float startRadius = (0.5F * this->GetLastWidth() * lineLength) / 100.0F;
-  const float endRadius   = (0.5F * t.CurrentWidth() * lineLength) / 100.0F;
+  const float endRadius   = (0.5F * t.GetWidth() * lineLength) / 100.0F;
 
   groupNum++;
   *m_output << "Start_Object_Group " << groupNum << '\n';
@@ -207,12 +207,12 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = this->GetLastPosition();
-  const auto width        = turtle.CurrentWidth();
-  const auto distance     = turtle.DefaultDistance();
-  const auto frontColor   = turtle.CurrentColor().m_color.index;
-  const auto backColor    = turtle.CurrentBackColor().m_color.index;
-  const auto frontTexture = turtle.CurrentTexture();
-  const auto backTexture  = turtle.CurrentTexture();
+  const auto width        = turtle.GetWidth();
+  const auto distance     = turtle.GetDefaultDistance();
+  const auto frontColor   = turtle.GetColor().m_color.index;
+  const auto backColor    = turtle.GetBackColor().m_color.index;
+  const auto frontTexture = turtle.GetTexture();
+  const auto backTexture  = turtle.GetTexture();
 
   groupNum++;
   *m_output << "Start_Object_Group " << groupNum << '\n';
@@ -240,15 +240,15 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
   *m_output << '\n';
   *m_output << " "
             << "  Heading: ";
-  OutputVec(*m_output, turtle.CurrentHeading());
+  OutputVec(*m_output, turtle.GetHeading());
   *m_output << '\n';
   *m_output << " "
             << "  Left: ";
-  OutputVec(*m_output, turtle.CurrentLeft());
+  OutputVec(*m_output, turtle.GetLeft());
   *m_output << '\n';
   *m_output << " "
             << "  Up:";
-  OutputVec(*m_output, turtle.CurrentUp());
+  OutputVec(*m_output, turtle.GetUp());
   *m_output << '\n';
   *m_output << " "
             << "  nargs: " << numArgs << '\n';

@@ -82,7 +82,7 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
   // it's different from the last point defined in
   // the polygon, or there are no points defined in the polygon
   // yet).
-  if (auto* const point = new Vector(turtle.Location()); (nullptr == vec) or (*vec != *point))
+  if (auto* const point = new Vector(turtle.GetPosition()); (nullptr == vec) or (*vec != *point))
   {
     PDebug(PD_INTERPRET, std::cerr << "AddPolygonEdge: adding first vertex " << *point << "\n");
     polygonStack.at(static_cast<uint32_t>(polyPtr))->append(point);
@@ -91,8 +91,8 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
   // Move and add the ending point to the polygon.
   MoveTurtle(turtle, numArgs, args);
   PDebug(PD_INTERPRET,
-         std::cerr << "AddPolygonEdge: adding last vertex  " << turtle.Location() << "\n");
-  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(new Vector(turtle.Location()));
+         std::cerr << "AddPolygonEdge: adding last vertex  " << turtle.GetPosition() << "\n");
+  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(new Vector(turtle.GetPosition()));
 }
 
 // Set line width only if changed too much
@@ -104,7 +104,7 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
   // Don't bother changing line width if 'small enough'.
   // This is an optimization to handle e.g. !(w)[!(w/2)F][!(w/2)F]
   //sort of cases, which happen a lot with trees.
-  if (std::fabs(turtle.CurrentWidth() - s_lastLineWidth) < EPSILON)
+  if (std::fabs(turtle.GetWidth() - s_lastLineWidth) < EPSILON)
   {
     return;
   }
@@ -116,7 +116,7 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetWidth(turtle);
-  s_lastLineWidth = turtle.CurrentWidth();
+  s_lastLineWidth = turtle.GetWidth();
 }
 
 // Set color only if changed
@@ -125,7 +125,7 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
   static Color s_lastcolor(-1);
 
   // Don't change color if not needed, again an optimization
-  if (turtle.CurrentColor() == s_lastcolor)
+  if (turtle.GetColor() == s_lastcolor)
   {
     return;
   }
@@ -137,7 +137,7 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetColor(turtle);
-  s_lastcolor = turtle.CurrentColor();
+  s_lastcolor = turtle.GetColor();
 }
 
 // Set texture only if changed
@@ -146,7 +146,7 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
   static int s_lastTexture(-1);
 
   // Don't change txture if not needed, again an optimization
-  if (turtle.CurrentTexture() == s_lastTexture)
+  if (turtle.GetTexture() == s_lastTexture)
   {
     return;
   }
@@ -158,7 +158,7 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetTexture(turtle);
-  s_lastTexture = turtle.CurrentTexture();
+  s_lastTexture = turtle.GetTexture();
 }
 
 // f(l) Move without drawing
@@ -191,12 +191,12 @@ auto MoveHalfImpl(const ConstListIterator<Module>& moduleIter,
 {
   PDebug(PD_INTERPRET, std::cerr << "MoveHalf      \n");
 
-  const ArgsArray oneArg = {0.5F * turtle.DefaultDistance()};
+  const ArgsArray oneArg = {0.5F * turtle.GetDefaultDistance()};
   MoveImpl(moduleIter, turtle, generator, 1, oneArg);
 }
 
 // F(l) Move while drawing
-// Fr(l), Fl(l) - Right and CurrentLeft edges respectively
+// Fr(l), Fl(l) - Right and GetLeft edges respectively
 auto DrawImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
               Turtle& turtle,
               IGenerator& generator,
@@ -232,11 +232,11 @@ auto DrawHalfImpl(const ConstListIterator<Module>& moduleIter,
 {
   PDebug(PD_INTERPRET, std::cerr << "DrawHalf      \n");
 
-  const auto oneArg = ArgsArray{0.5F * turtle.DefaultDistance()};
+  const auto oneArg = ArgsArray{0.5F * turtle.GetDefaultDistance()};
   DrawImpl(moduleIter, turtle, generator, 1, oneArg);
 }
 
-// -(t) Turn right: negative rotation about Z
+// -(t) Turn right: NEGATIVE rotation about Z
 auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
                    [[maybe_unused]] const IGenerator& generator,
@@ -247,7 +247,7 @@ auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Turn(Turtle::negative);
+    turtle.Turn(Turtle::Direction::NEGATIVE);
   }
   else
   {
@@ -255,7 +255,7 @@ auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 }
 
-// +(t) Turn left; positive rotation about Z
+// +(t) Turn left; POSITIVE rotation about Z
 auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
                   [[maybe_unused]] const IGenerator& generator,
@@ -266,7 +266,7 @@ auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Turn(Turtle::positive);
+    turtle.Turn(Turtle::Direction::POSITIVE);
   }
   else
   {
@@ -274,7 +274,7 @@ auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 }
 
-// ^(t) Pitch up; negative rotation about Y
+// ^(t) Pitch up; NEGATIVE rotation about Y
 auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
                  [[maybe_unused]] const IGenerator& generator,
@@ -285,7 +285,7 @@ auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Pitch(Turtle::negative);
+    turtle.Pitch(Turtle::Direction::NEGATIVE);
   }
   else
   {
@@ -293,7 +293,7 @@ auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 }
 
-// &(t) Pitch down; positive rotation about Y
+// &(t) Pitch down; POSITIVE rotation about Y
 auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
                    [[maybe_unused]] const IGenerator& generator,
@@ -304,7 +304,7 @@ auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Pitch(Turtle::positive);
+    turtle.Pitch(Turtle::Direction::POSITIVE);
   }
   else
   {
@@ -312,7 +312,7 @@ auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 }
 
-// /(t) Roll right; positive rotation about X
+// /(t) Roll right; POSITIVE rotation about X
 auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                    Turtle& turtle,
                    [[maybe_unused]] const IGenerator& generator,
@@ -323,7 +323,7 @@ auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Roll(Turtle::positive);
+    turtle.Roll(Turtle::Direction::POSITIVE);
   }
   else
   {
@@ -331,7 +331,7 @@ auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
 }
 
-// \(t) Roll left; negative rotation about X
+// \(t) Roll left; NEGATIVE rotation about X
 auto RollLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                   Turtle& turtle,
                   [[maybe_unused]] const IGenerator& generator,
@@ -342,7 +342,7 @@ auto RollLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (0 == numArgs)
   {
-    turtle.Roll(Turtle::negative);
+    turtle.Roll(Turtle::Direction::NEGATIVE);
   }
   else
   {
@@ -466,7 +466,7 @@ auto PolygonVertexImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
     return; // Already got an error from StartPolygon
   }
 
-  auto* const vec = new Vector(turtle.Location());
+  auto* const vec = new Vector(turtle.GetPosition());
   polygonStack.at(static_cast<uint32_t>(polyPtr))->append(vec);
 }
 
@@ -524,7 +524,7 @@ auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter
   }
 }
 
-// @md(f) Multiply DefaultDistance by f
+// @md(f) Multiply GetDefaultDistance by f
 auto MultiplyDefaultDistanceImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                                  Turtle& turtle,
                                  [[maybe_unused]] const IGenerator& generator,
@@ -536,15 +536,15 @@ auto MultiplyDefaultDistanceImpl([[maybe_unused]] const ConstListIterator<Module
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.1F;
-    turtle.SetDefaultDistance(MULTIPLIER * turtle.DefaultDistance());
+    turtle.SetDefaultDistance(MULTIPLIER * turtle.GetDefaultDistance());
   }
   else
   {
-    turtle.SetDefaultDistance(args.at(0) * turtle.DefaultDistance());
+    turtle.SetDefaultDistance(args.at(0) * turtle.GetDefaultDistance());
   }
 }
 
-// @ma(f) Multiply DefaultTurnAngle by f
+// @ma(f) Multiply GetDefaultTurnAngle by f
 auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                                   Turtle& turtle,
                                   [[maybe_unused]] const IGenerator& generator,
@@ -556,11 +556,11 @@ auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Modul
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.1F;
-    turtle.SetDefaultTurnAngle(MULTIPLIER * turtle.DefaultTurnAngle());
+    turtle.SetDefaultTurnAngle(MULTIPLIER * turtle.GetDefaultTurnAngle());
   }
   else
   {
-    turtle.SetDefaultTurnAngle(args[0] * turtle.DefaultTurnAngle());
+    turtle.SetDefaultTurnAngle(args[0] * turtle.GetDefaultTurnAngle());
   }
 }
 
@@ -576,11 +576,11 @@ auto MultiplyWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.4F;
-    turtle.SetWidth(MULTIPLIER * turtle.CurrentWidth());
+    turtle.SetWidth(MULTIPLIER * turtle.GetWidth());
   }
   else
   {
-    turtle.SetWidth(args[0] * turtle.CurrentWidth());
+    turtle.SetWidth(args[0] * turtle.GetWidth());
   }
 
   SetLineWidth(turtle, generator);

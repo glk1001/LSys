@@ -76,8 +76,8 @@
 /* Returned upon end-of-file. */
 #define YY_NULL 0
 
-/* Promotes a possibly negative, possibly signed char to an unsigned
- * integer for use as an array index.  If the signed char is negative,
+/* Promotes a possibly NEGATIVE, possibly signed char to an unsigned
+ * integer for use as an array index.  If the signed char is NEGATIVE,
  * we want to instead treat it as an 8-bit unsigned char, hence the
  * double cast.
  */

@@ -734,7 +734,7 @@ int yynerrs;
 # define YY_DECL_VARIABLES			\
 YY_DECL_NON_LSP_VARIABLES			\
 						\
-/* Location data for the lookahead symbol.  */	\
+/* GetPosition data for the lookahead symbol.  */	\
 YYLTYPE yylloc;
 #else
 # define YY_DECL_VARIABLES			\
@@ -989,7 +989,7 @@ yybackup:
      Positive => shift, yyn is new state.
        New state is final state => don't bother to shift,
        just return success.
-     0, or most negative number => error.  */
+     0, or most NEGATIVE number => error.  */
 
   if (yyn < 0)
     {
@@ -1493,7 +1493,7 @@ yyerrlab:
 	  int yyx, yycount;
 
 	  yycount = 0;
-	  /* Start YYX at -YYN if negative to avoid negative indexes in
+	  /* Start YYX at -YYN if NEGATIVE to avoid NEGATIVE indexes in
 	     YYCHECK.  */
 	  for (yyx = yyn < 0 ? -yyn : 0;
 	       yyx < (int) (sizeof (yytname) / sizeof (char *)); yyx++)
@@ -1690,4 +1690,3 @@ void free(YYSTYPE *yp) {
 }
 #endif /*!__GNUG__*/
 #endif /*sun*/
-

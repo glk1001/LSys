@@ -63,15 +63,15 @@ auto IGenerator::Postscript([[maybe_unused]] const Turtle& turtle) -> void
 
 auto IGenerator::MoveTo(const Turtle& turtle) -> void
 {
-  m_lastPosition = turtle.Location();
-  m_lastWidth    = turtle.CurrentWidth();
+  m_lastPosition = turtle.GetPosition();
+  m_lastWidth    = turtle.GetWidth();
   m_lastMove     = true;
 }
 
 auto IGenerator::LineTo(const Turtle& turtle) -> void
 {
-  m_lastPosition = turtle.Location();
-  m_lastWidth    = turtle.CurrentWidth();
+  m_lastPosition = turtle.GetPosition();
+  m_lastWidth    = turtle.GetWidth();
   m_lastMove     = false;
 }
 
