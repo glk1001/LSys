@@ -47,7 +47,7 @@ class Expression
 public:
   Expression(int operation, Expression* lop, Expression* rop);
   explicit Expression(const Name& name, List<Expression>* funcArgs = nullptr);
-  explicit Expression(const Value&);
+  explicit Expression(const Value& value);
   Expression(const Expression&) = default;
   Expression(Expression&&)      = default;
   ~Expression();
@@ -61,16 +61,10 @@ public:
 
   // Evaluation methods
   [[nodiscard]] auto Evaluate(const SymbolTable<Value>& symbolTable) const -> Value;
-  [[nodiscard]] auto LEval(const SymbolTable<Value>& st) const -> Value
-  {
-    return GetLChild()->Evaluate(st);
-  }
-  [[nodiscard]] auto REval(const SymbolTable<Value>& st) const -> Value
-  {
-    return GetRChild()->Evaluate(st);
-  }
+  [[nodiscard]] auto LEval(const SymbolTable<Value>& symbolTable) const -> Value;
+  [[nodiscard]] auto REval(const SymbolTable<Value>& symbolTable) const -> Value;
 
-  friend std::ostream& operator<<(std::ostream&, const Expression&);
+  friend std::ostream& operator<<(std::ostream& out, const Expression& expression);
 
 private:
   int m_operation;
@@ -90,15 +84,12 @@ private:
   [[nodiscard]] static auto GetExpressionValue(const Name& name, List<Expression>* funcArgs)
       -> ExpressionValue;
 
-  [[nodiscard]] auto GetVarName() const -> Name { return Name{m_expressionValue.name.id}; }
-  [[nodiscard]] auto GetValue() const -> Value { return m_expressionValue.value; }
-  [[nodiscard]] auto GetLChild() const -> Expression* { return m_expressionValue.args[0]; }
-  [[nodiscard]] auto GetRChild() const -> Expression* { return m_expressionValue.args[1]; }
-  [[nodiscard]] auto GetFuncName() const -> Name { return Name(m_expressionValue.name.id); }
-  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*
-  {
-    return m_expressionValue.name.funcArgs;
-  }
+  [[nodiscard]] auto GetVarName() const -> Name;
+  [[nodiscard]] auto GetValue() const -> Value;
+  [[nodiscard]] auto GetLChild() const -> Expression*;
+  [[nodiscard]] auto GetRChild() const -> Expression*;
+  [[nodiscard]] auto GetFuncName() const -> Name;
+  [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*;
 };
 
 [[nodiscard]] auto Bind(const List<Expression>* formals,
@@ -116,5 +107,45 @@ private:
                             const List<Expression>& expressionList,
                             Value& value,
                             unsigned int n = 0) -> bool;
+
+inline auto Expression::LEval(const SymbolTable<Value>& symbolTable) const -> Value
+{
+  return GetLChild()->Evaluate(symbolTable);
+}
+
+inline auto Expression::REval(const SymbolTable<Value>& symbolTable) const -> Value
+{
+  return GetRChild()->Evaluate(symbolTable);
+}
+
+inline auto Expression::GetVarName() const -> Name
+{
+  return Name{m_expressionValue.name.id};
+}
+
+inline auto Expression::GetValue() const -> Value
+{
+  return m_expressionValue.value;
+}
+
+inline auto Expression::GetLChild() const -> Expression*
+{
+  return m_expressionValue.args[0];
+}
+
+inline auto Expression::GetRChild() const -> Expression*
+{
+  return m_expressionValue.args[1];
+}
+
+inline auto Expression::GetFuncName() const -> Name
+{
+  return Name{m_expressionValue.name.id};
+}
+
+inline auto Expression::GetFuncArgs() const -> List<Expression>*
+{
+  return m_expressionValue.name.funcArgs;
+}
 
 } // namespace LSys

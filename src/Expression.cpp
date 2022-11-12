@@ -47,7 +47,8 @@
 namespace LSys
 {
 
-namespace {
+namespace
+{
 
 using ExprFunc =
     std::function<Value(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)>;
@@ -59,7 +60,7 @@ using ExprFunc =
   {
     return Value(std::sin(Maths::ToRadians(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprCos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -69,7 +70,7 @@ using ExprFunc =
   {
     return Value(std::cos(Maths::ToRadians(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprTan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -79,7 +80,7 @@ using ExprFunc =
   {
     return Value(std::tan(Maths::ToRadians(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprASin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -89,7 +90,7 @@ using ExprFunc =
   {
     return Value(Maths::ToDegrees(std::asin(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprACos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -99,7 +100,7 @@ using ExprFunc =
   {
     return Value(Maths::ToDegrees(std::acos(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprATan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -109,7 +110,7 @@ using ExprFunc =
   {
     return Value(Maths::ToDegrees(std::atan(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprATan2(const SymbolTable<Value>& symbolTable,
@@ -121,7 +122,7 @@ using ExprFunc =
   {
     return Value(Maths::ToDegrees(std::atan2(y, x)));
   }
-  return Value();
+  return Value{};
 }
 
 // Returns type of argument
@@ -132,7 +133,7 @@ using ExprFunc =
   {
     return v.Abs();
   }
-  return Value();
+  return Value{};
 }
 
 // Always returns int
@@ -143,7 +144,7 @@ using ExprFunc =
   {
     return Value(static_cast<int>(std::ceil(x)));
   }
-  return Value();
+  return Value{};
 }
 
 // Always returns int
@@ -154,7 +155,7 @@ using ExprFunc =
   {
     return Value(static_cast<int>(std::floor(x)));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprExp(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -164,7 +165,7 @@ using ExprFunc =
   {
     return Value(std::exp(x));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprLog(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
@@ -174,7 +175,7 @@ using ExprFunc =
   {
     return Value(std::log(x));
   }
-  return Value();
+  return Value{};
 }
 
 [[nodiscard]] auto ExprLog10(const SymbolTable<Value>& symbolTable,
@@ -184,7 +185,7 @@ using ExprFunc =
   {
     return Value(std::log10(x));
   }
-  return Value();
+  return Value{};
 }
 
 // Return a uniformly distributed random number;
@@ -221,38 +222,34 @@ using ExprFunc =
   return Value(static_cast<int>(seed));
 }
 
-// The function table for function terms in expressions
-static SymbolTable<ExprFunc>* funcTab = nullptr;
-
-auto SetupFunctions() -> void
+// The function table for function terms in expressions.
+auto GetFunctionSymbolTable() -> SymbolTable<ExprFunc>
 {
-  if (funcTab != nullptr)
-  {
-    return;
-  }
+  auto symbolTable = SymbolTable<ExprFunc>{};
 
-  funcTab = new SymbolTable<ExprFunc>;
-  funcTab->Enter("sin", ExprSin);
-  funcTab->Enter("cos", ExprCos);
-  funcTab->Enter("tan", ExprTan);
-  funcTab->Enter("asin", ExprASin);
-  funcTab->Enter("acos", ExprACos);
-  funcTab->Enter("atan", ExprATan);
-  funcTab->Enter("atan2", ExprATan2);
-  funcTab->Enter("abs", ExprAbs);
-  funcTab->Enter("ceil", ExprCeil);
-  funcTab->Enter("floor", ExprFloor);
-  funcTab->Enter("exp", ExprExp);
-  funcTab->Enter("log", ExprLog);
-  funcTab->Enter("log10", ExprLog10);
-  funcTab->Enter("rand", ExprRand);
-  funcTab->Enter("srand", ExprSRand);
+  symbolTable.Enter("sin", ExprSin);
+  symbolTable.Enter("cos", ExprCos);
+  symbolTable.Enter("tan", ExprTan);
+  symbolTable.Enter("asin", ExprASin);
+  symbolTable.Enter("acos", ExprACos);
+  symbolTable.Enter("atan", ExprATan);
+  symbolTable.Enter("atan2", ExprATan2);
+  symbolTable.Enter("abs", ExprAbs);
+  symbolTable.Enter("ceil", ExprCeil);
+  symbolTable.Enter("floor", ExprFloor);
+  symbolTable.Enter("exp", ExprExp);
+  symbolTable.Enter("log", ExprLog);
+  symbolTable.Enter("log10", ExprLog10);
+  symbolTable.Enter("rand", ExprRand);
+  symbolTable.Enter("srand", ExprSRand);
+
+  return symbolTable;
 }
+
+const auto functionSymbolTable = GetFunctionSymbolTable();
 
 [[nodiscard]] auto GetOpName(const int operation) -> const char*
 {
-  static char str[] = " ";
-
   switch (operation)
   {
     case LSYS_UMINUS:
@@ -274,6 +271,7 @@ auto SetupFunctions() -> void
     case LSYS_GE:
       return ">=";
     default:
+      static char str[] = " ";
       str[0] = static_cast<char>(operation);
       return str;
   }
@@ -281,30 +279,30 @@ auto SetupFunctions() -> void
 
 } // namespace
 
-std::ostream& operator<<(std::ostream& oStream, const Expression& expression)
+std::ostream& operator<<(std::ostream& out, const Expression& expression)
 {
   switch (expression.m_operation)
   {
     case LSYS_NAME:
-      oStream << expression.GetVarName();
+      out << expression.GetVarName();
       break;
     case LSYS_FUNCTION:
-      oStream << expression.GetFuncName() << *expression.GetFuncArgs();
+      out << expression.GetFuncName() << *expression.GetFuncArgs();
       break;
     case LSYS_VALUE:
-      oStream << expression.GetValue();
+      out << expression.GetValue();
       break;
     case LSYS_UMINUS:
     case '!':
     case '~':
-      oStream << GetOpName(expression.m_operation) << *expression.GetLChild();
+      out << GetOpName(expression.m_operation) << *expression.GetLChild();
       break;
     default:
-      oStream << '(' << *expression.GetLChild() << GetOpName(expression.m_operation)
-              << *expression.GetRChild() << ')';
+      out << '(' << *expression.GetLChild() << GetOpName(expression.m_operation)
+          << *expression.GetRChild() << ')';
       break;
   }
-  return oStream;
+  return out;
 }
 
 Expression::Expression(const int operation, Expression* const lop, Expression* const rop)
@@ -406,8 +404,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       return GetValue();
 
     case LSYS_FUNCTION:
-      SetupFunctions();
-      if (ExprFunc exprFunc; funcTab->Lookup(GetFuncName().str(), exprFunc))
+      if (ExprFunc exprFunc; functionSymbolTable.Lookup(GetFuncName().str(), exprFunc))
       {
         return exprFunc(symbolTable, *GetFuncArgs());
       }
@@ -545,7 +542,7 @@ auto Conforms(const List<Expression>* const formals, const List<Expression>* con
   return fSize == vSize;
 }
 
-// Instantiate the list; that is, return a copy with all of the
+// Instantiate the list; that is, return a copy with all the
 // expressions evaluated in the context of the symbol table.
 // Return a NULL expression list if a NULL list is passed
 auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>& symbolTable)
@@ -570,7 +567,7 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
 
 // Return the nth (0 base) value in the list, if available.
 // Evaluates the expression against specified symbol table; if the
-// the expression must be a bound value, supply an empty symbol table.
+// expression must be a bound value, supply an empty symbol table.
 // Returns true on success, false if the list does not have enough
 // parameters or the parameter is not a number.
 // This should be wrapped around a method of class List(Expression),
