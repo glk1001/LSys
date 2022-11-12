@@ -7,75 +7,64 @@
 #include <fstream>
 #include <iomanip>
 
-using std::fixed;
-using std::setprecision;
-using std::setw;
-
-
 namespace LSys
 {
 
-const int precision = 5;
+static constexpr auto PRECISION = 5;
 
-
-void GenericGenerator::SetHeader(const std::string& str)
+auto GenericGenerator::SetHeader(const std::string& header) -> void
 {
   *m_output << "Start_Comment\n";
   *m_output << '\n';
 
-  *m_output << str << '\n';
+  *m_output << header << '\n';
 
   *m_output << "End_Comment\n";
   *m_output << "\n\n";
 }
 
-
-void GenericGenerator::Prelude(const Turtle& t)
+auto GenericGenerator::Prelude(const Turtle& turtle) -> void
 {
-  IGenerator::Prelude(t);
-  *m_output << fixed << setprecision(precision);
-  groupNum = 0;
+  IGenerator::Prelude(turtle);
+  *m_output << std::fixed << std::setprecision(PRECISION);
+  m_groupNum = 0;
 }
 
-
-void GenericGenerator::Postscript(const Turtle& t)
+auto GenericGenerator::Postscript(const Turtle& turtle) -> void
 {
-  this->OutputBounds(t);
+  this->OutputBounds(turtle);
 
   *m_output << "\n\n";
   *m_output << "RADEND"
             << "\n";
 
-  IGenerator::Postscript(t);
+  IGenerator::Postscript(turtle);
 }
 
-
-// Called when starting a new stream of graphics
-void GenericGenerator::StartGraphics(const Turtle&)
+auto GenericGenerator::StartGraphics([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not used.
 }
 
-
-// Called when ending a stream of graphics, to display it
-void GenericGenerator::FlushGraphics(const Turtle&)
+auto GenericGenerator::FlushGraphics([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not used.
 }
 
-
-inline void OutputVec(std::ostream& f, const Vector& v)
+inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
 {
-  //  f << v[0] << " " << v[1] << " " << v[2];
-  // Revert to right handed coord system
-  f << std::setw(10) << -Maths::Round(v[2], precision) << " " << std::setw(10)
-    << Maths::Round(v[1], precision) << " " << std::setw(10) << -Maths::Round(v[0], precision);
+  //  out << vec[0] << " " << vec[1] << " " << vec[2];
+  // Revert to right-handed coord system
+  out << std::setw(10) << -Maths::Round(vec[2], PRECISION) << " " << std::setw(10)
+      << Maths::Round(vec[1], PRECISION) << " " << std::setw(10)
+      << -Maths::Round(vec[0], PRECISION);
 }
 
-
-void GenericGenerator::OutputBounds(const Turtle& t)
+auto GenericGenerator::OutputBounds(const Turtle& turtle) -> void
 {
-  const Vector bndsMin = t.GetBoundingBox().Min();
-  const Vector bndsMax = t.GetBoundingBox().Max();
-  const Vector startPoint(0, 0, 0);
+  const auto minBoundingBox = turtle.GetBoundingBox().Min();
+  const auto maxBoundingBox = turtle.GetBoundingBox().Max();
+  const auto startPoint     = Vector{0.0F, 0.0F, 0.0F};
 
   // Output start point
   *m_boundsOutput << "start" << '\n';
@@ -86,21 +75,19 @@ void GenericGenerator::OutputBounds(const Turtle& t)
 
   // Output bounds
   *m_boundsOutput << "bounds" << '\n';
-  *m_boundsOutput << "  min: " << setw(12) << Maths::Round(bndsMin[0], precision) << " " << setw(12)
-                  << Maths::Round(bndsMin[1], precision) << " " << setw(12)
-                  << Maths::Round(bndsMin[2], precision) << '\n';
-  *m_boundsOutput << "  max: " << setw(12) << Maths::Round(bndsMax[0], precision) << " " << setw(12)
-                  << Maths::Round(bndsMax[1], precision) << " " << setw(12)
-                  << Maths::Round(bndsMax[2], precision) << '\n';
+  *m_boundsOutput << "  min: " << std::setw(12) << Maths::Round(minBoundingBox[0], PRECISION) << " "
+                  << std::setw(12) << Maths::Round(minBoundingBox[1], PRECISION) << " "
+                  << std::setw(12) << Maths::Round(minBoundingBox[2], PRECISION) << '\n';
+  *m_boundsOutput << "  max: " << std::setw(12) << Maths::Round(maxBoundingBox[0], PRECISION) << " "
+                  << std::setw(12) << Maths::Round(maxBoundingBox[1], PRECISION) << " "
+                  << std::setw(12) << Maths::Round(maxBoundingBox[2], PRECISION) << '\n';
   *m_boundsOutput << "\n\n";
 }
 
-
-void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon)
+auto GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon) -> void
 {
   // Draw the polygon
-
-  ConstPolygonIterator pi(polygon);
+  auto polygonIter = ConstPolygonIterator{polygon};
   StartGraphics(turtle);
 
   //const Vector start     = this->LastPosition();
@@ -111,8 +98,8 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
   const int backTexture  = turtle.GetTexture();
   //const float width      = turtle.GetWidth();
 
-  groupNum++;
-  *m_output << "Start_Object_Group " << groupNum << '\n';
+  ++m_groupNum;
+  *m_output << "Start_Object_Group " << m_groupNum << '\n';
   *m_output << " "
             << "FrontMaterial: " << frontColor << '\n';
   *m_output << " "
@@ -126,11 +113,13 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
   *m_output << "  "
             << "polygon" << '\n';
   int n = 0;
-  for (const Vector* vec = pi.first(); vec != NULL; vec = pi.next())
-    n++;
+  for (const Vector* vec = polygonIter.first(); vec != nullptr; vec = polygonIter.next())
+  {
+    ++n;
+  }
   *m_output << "  "
             << "vertices: " << n << '\n';
-  for (const Vector* vec = pi.first(); vec != NULL; vec = pi.next())
+  for (const Vector* vec = polygonIter.first(); vec != nullptr; vec = polygonIter.next())
   {
     *m_output << "  "
               << "  ";
@@ -139,25 +128,24 @@ void GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
   }
   *m_output << "\n";
 
-  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "End_Object_Group " << m_groupNum << '\n';
   *m_output << "\n\n";
 }
 
-
-void GenericGenerator::LineTo(const Turtle& t)
+auto GenericGenerator::LineTo(const Turtle& turtle) -> void
 {
-  const Vector start      = this->GetLastPosition();
-  const Vector end        = t.GetPosition();
-  const int frontColor    = t.GetColor().m_color.index;
-  const int backColor     = t.GetBackColor().m_color.index;
-  const int frontTexture  = t.GetTexture();
-  const int backTexture   = t.GetTexture();
+  const Vector start      = GetLastPosition();
+  const Vector end        = turtle.GetPosition();
+  const int frontColor    = turtle.GetColor().m_color.index;
+  const int backColor     = turtle.GetBackColor().m_color.index;
+  const int frontTexture  = turtle.GetTexture();
+  const int backTexture   = turtle.GetTexture();
   const float lineLength  = Distance(start, end);
-  const float startRadius = (0.5F * this->GetLastWidth() * lineLength) / 100.0F;
-  const float endRadius   = (0.5F * t.GetWidth() * lineLength) / 100.0F;
+  const float startRadius = (0.5F * GetLastWidth() * lineLength) / 100.0F;
+  const float endRadius   = (0.5F * turtle.GetWidth() * lineLength) / 100.0F;
 
-  groupNum++;
-  *m_output << "Start_Object_Group " << groupNum << '\n';
+  ++m_groupNum;
+  *m_output << "Start_Object_Group " << m_groupNum << '\n';
   *m_output << " "
             << "FrontMaterial: " << frontColor << '\n';
   *m_output << " "
@@ -179,8 +167,8 @@ void GenericGenerator::LineTo(const Turtle& t)
   OutputVec(*m_output, end);
   *m_output << '\n';
   *m_output << "  "
-            << "  " << Maths::Round(startRadius, precision) << " "
-            << Maths::Round(endRadius, precision) << '\n';
+            << "  " << Maths::Round(startRadius, PRECISION) << " "
+            << Maths::Round(endRadius, PRECISION) << '\n';
   *m_output << '\n';
 
   *m_output << "  "
@@ -190,23 +178,22 @@ void GenericGenerator::LineTo(const Turtle& t)
   OutputVec(*m_output, end);
   *m_output << '\n';
   *m_output << "  "
-            << "  " << Maths::Round(endRadius, precision) << '\n';
+            << "  " << Maths::Round(endRadius, PRECISION) << '\n';
   *m_output << '\n';
 
-  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "End_Object_Group " << m_groupNum << '\n';
   *m_output << "\n\n";
 
-  IGenerator::LineTo(t);
+  IGenerator::LineTo(turtle);
 }
 
-
-void GenericGenerator::DrawObject(const Turtle& turtle,
+auto GenericGenerator::DrawObject(const Turtle& turtle,
                                   const Module& mod,
                                   const int numArgs,
-                                  const ArgsArray& args)
+                                  const ArgsArray& args) -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
-  const auto contactPoint = this->GetLastPosition();
+  const auto contactPoint = GetLastPosition();
   const auto width        = turtle.GetWidth();
   const auto distance     = turtle.GetDefaultDistance();
   const auto frontColor   = turtle.GetColor().m_color.index;
@@ -214,8 +201,8 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
   const auto frontTexture = turtle.GetTexture();
   const auto backTexture  = turtle.GetTexture();
 
-  groupNum++;
-  *m_output << "Start_Object_Group " << groupNum << '\n';
+  ++m_groupNum;
+  *m_output << "Start_Object_Group " << m_groupNum << '\n';
   *m_output << " "
             << "FrontMaterial: " << frontColor << '\n';
   *m_output << " "
@@ -231,9 +218,9 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
   *m_output << " "
             << "  Name: " << objName << '\n';
   *m_output << " "
-            << "  LineWidth: " << Maths::Round(width, precision) << '\n';
+            << "  LineWidth: " << Maths::Round(width, PRECISION) << '\n';
   *m_output << " "
-            << "  LineDistance: " << Maths::Round(distance, precision) << '\n';
+            << "  LineDistance: " << Maths::Round(distance, PRECISION) << '\n';
   *m_output << " "
             << "  ContactPoint: ";
   OutputVec(*m_output, contactPoint);
@@ -252,36 +239,35 @@ void GenericGenerator::DrawObject(const Turtle& turtle,
   *m_output << '\n';
   *m_output << " "
             << "  nargs: " << numArgs << '\n';
-  for (auto i = 0U; i < static_cast<uint32_t>(numArgs); i++)
+  for (auto i = 0U; i < static_cast<uint32_t>(numArgs); ++i)
   {
     *m_output << "  "
               << "    " << args[i] << '\n';
   }
   *m_output << '\n';
 
-  *m_output << "End_Object_Group " << groupNum << '\n';
+  *m_output << "End_Object_Group " << m_groupNum << '\n';
   *m_output << "\n\n";
 }
 
-
-void GenericGenerator::SetColor(const Turtle&)
+auto GenericGenerator::SetColor([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not needed.
 }
 
-
-void GenericGenerator::SetBackColor(const Turtle&)
+auto GenericGenerator::SetBackColor([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not needed.
 }
 
-
-void GenericGenerator::SetTexture(const Turtle&)
+auto GenericGenerator::SetTexture([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not needed.
 }
 
-
-void GenericGenerator::SetWidth(const Turtle&)
+auto GenericGenerator::SetWidth([[maybe_unused]] const Turtle& turtle) -> void
 {
+  // Not needed.
 }
 
-
-}; // namespace LSys
+} // namespace LSys

@@ -100,7 +100,6 @@ private:
   std::string m_objectName = "null_object"; // Name of generated object
 };
 
-
 inline IGenerator::IGenerator(std::ofstream* const output, std::ofstream* const boundsOutput)
   : m_output(output), m_boundsOutput(boundsOutput)
 {
