@@ -32,6 +32,7 @@
 
 #include "Vector.h"
 
+#include <array>
 #include <iostream>
 
 namespace LSys
@@ -86,12 +87,6 @@ public:
   };
 
   explicit Turtle(float turn = 90.0F, float widthScale = 1.0F);
-  Turtle(const Turtle&) = delete;
-  Turtle(Turtle&&)      = delete;
-  ~Turtle();
-
-  auto operator=(const Turtle&) -> Turtle& = delete;
-  auto operator=(Turtle&&) -> Turtle&      = delete;
 
   auto SetDefaults(float widthScale, float delta) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
@@ -164,42 +159,45 @@ public:
   friend auto operator<<(std::ostream& out, const Turtle& turtle) -> std::ostream&;
 
 private:
+  // TODO(glk) - Use std::stack
+  static constexpr size_t MAX_STACK_DEPTH = 100;
+  size_t m_stackPtr                       = 0; // Stack depth
+
   // Position of turtle
-  Vector m_position;
-  Vector* m_positionPtr;
+  Vector m_position{0.0F, 0.0F, 0.0F};
+  std::array<Vector, MAX_STACK_DEPTH> m_positionPtr{};
 
   // Orientation frame of turtle
-  Matrix m_frame;
-  Matrix* m_framePtr;
+  Matrix m_frame{};
+  std::array<Matrix, MAX_STACK_DEPTH> m_framePtr{};
 
   // Standard distance to Move turtle
   float m_defaultDist = 0.0F;
-  float* m_defaultDistPtr;
+  std::array<float, MAX_STACK_DEPTH> m_defaultDistPtr{};
 
   float m_defaultTurn = 0.0F;
-  float* m_defaultTurnStack;
+  std::array<float, MAX_STACK_DEPTH> m_defaultTurnStack{};
 
   // Line width
   float m_width = 1.0F;
-  float* m_widthPtr;
+  std::array<float, MAX_STACK_DEPTH> m_widthPtr{};
   float m_widthScale = 1.0F;
 
   // Color index
-  Color m_color;
-  Color* m_colorPtr;
-  Color m_backgroundColor;
-  Color* m_colorBackStack;
+  Color m_color{};
+  std::array<Color, MAX_STACK_DEPTH> m_colorPtr{};
+  Color m_backgroundColor{};
+  std::array<Color, MAX_STACK_DEPTH> m_colorBackStack{};
 
   // Texture index
   int m_texture = 0;
-  int* m_textureStack;
+  std::array<int, MAX_STACK_DEPTH> m_textureStack{};
 
-  TropismInfo m_tropism;
-  TropismInfo* m_tropismPtr;
+  TropismInfo m_tropism{};
+  std::array<TropismInfo, MAX_STACK_DEPTH> m_tropismPtr{};
 
-  BoundingBox m_boundingBox; // Bounding box of turtle path
-  Vector m_gravity; // Antigravity vector
-  int m_stackPtr; // Stack depth
+  BoundingBox m_boundingBox{}; // Bounding box of turtle path
+  Vector m_gravity{0.0F, 0.0F, 0.0F}; // Antigravity vector
 };
 
 auto operator<<(std::ostream& out, const TropismInfo& tropismInfo) -> std::ostream&;

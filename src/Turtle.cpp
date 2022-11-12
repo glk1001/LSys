@@ -38,21 +38,7 @@
 namespace LSys
 {
 
-static constexpr int STACK_DEPTH = 100;
-
 Turtle::Turtle(const float turn, const float widthScale)
-  : m_position{0.0F, 0.0F, 0.0F},
-    m_positionPtr{new Vector[STACK_DEPTH]},
-    m_framePtr{new Matrix[STACK_DEPTH]},
-    m_defaultDistPtr{new float[STACK_DEPTH]},
-    m_defaultTurnStack{new float[STACK_DEPTH]},
-    m_widthPtr{new float[STACK_DEPTH]},
-    m_colorPtr{new Color[STACK_DEPTH]},
-    m_colorBackStack{new Color[STACK_DEPTH]},
-    m_textureStack{new int[STACK_DEPTH]},
-    m_tropismPtr{new TropismInfo[STACK_DEPTH]},
-    m_boundingBox{m_position},
-    m_stackPtr{0}
 {
   this->SetDefaults(widthScale, turn);
 
@@ -72,19 +58,6 @@ Turtle::Turtle(const float turn, const float widthScale)
   this->SetTexture(0);
   this->SetDefaultDistance(1);
   this->SetDefaultTurnAngle(turn);
-}
-
-Turtle::~Turtle()
-{
-  delete[] m_framePtr;
-  delete[] m_positionPtr;
-  delete[] m_tropismPtr;
-  delete[] m_defaultTurnStack;
-  delete[] m_defaultDistPtr;
-  delete[] m_widthPtr;
-  delete[] m_colorPtr;
-  delete[] m_colorBackStack;
-  delete[] m_textureStack;
 }
 
 // GetHeading is first column of frame
@@ -342,35 +315,31 @@ auto Turtle::Move(const float distance) -> void
 // Handle over/underflow gracefully
 auto Turtle::Push() -> void
 {
-  if (m_stackPtr < 0)
-  {
-    std::cerr << "Turtle::Push(): can't Push below bottom of stack!\n";
-  }
-  else if (m_stackPtr >= (STACK_DEPTH - 1))
+  if (m_stackPtr >= (MAX_STACK_DEPTH - 1))
   {
     std::cerr << "Turtle::Push(): stack depth exceeded, lost new frame!\n";
   }
   else
   {
-    m_defaultTurnStack[m_stackPtr] = m_defaultTurn;
-    m_defaultDistPtr[m_stackPtr]   = m_defaultDist;
-    m_framePtr[m_stackPtr]         = m_frame;
-    m_tropismPtr[m_stackPtr]       = m_tropism;
-    m_positionPtr[m_stackPtr]      = m_position;
-    m_widthPtr[m_stackPtr]         = m_width;
-    m_colorPtr[m_stackPtr]         = m_color;
-    m_colorBackStack[m_stackPtr]   = m_backgroundColor;
-    m_textureStack[m_stackPtr]     = m_texture;
-  }
+    m_defaultTurnStack.at(m_stackPtr) = m_defaultTurn;
+    m_defaultDistPtr.at(m_stackPtr)   = m_defaultDist;
+    m_framePtr.at(m_stackPtr)         = m_frame;
+    m_tropismPtr.at(m_stackPtr)       = m_tropism;
+    m_positionPtr.at(m_stackPtr)      = m_position;
+    m_widthPtr.at(m_stackPtr)         = m_width;
+    m_colorPtr.at(m_stackPtr)         = m_color;
+    m_colorBackStack.at(m_stackPtr)   = m_backgroundColor;
+    m_textureStack.at(m_stackPtr)     = m_texture;
 
-  ++m_stackPtr;
+    ++m_stackPtr;
+  }
 }
 
 // Restore state
 // Handle over/underflow gracefully
 auto Turtle::Pop() -> void
 {
-  if (m_stackPtr > STACK_DEPTH)
+  if (m_stackPtr > MAX_STACK_DEPTH)
   {
     std::cerr << "Turtle::Pop(): can't restore lost frame!\n";
   }
@@ -380,18 +349,18 @@ auto Turtle::Pop() -> void
   }
   else
   {
-    m_frame           = m_framePtr[m_stackPtr - 1];
-    m_tropism         = m_tropismPtr[m_stackPtr - 1];
-    m_position        = m_positionPtr[m_stackPtr - 1];
-    m_width           = m_widthPtr[m_stackPtr - 1];
-    m_color           = m_colorPtr[m_stackPtr - 1];
-    m_backgroundColor = m_colorBackStack[m_stackPtr - 1];
-    m_texture         = m_textureStack[m_stackPtr - 1];
-    m_defaultDist     = m_defaultDistPtr[m_stackPtr - 1];
-    m_defaultTurn     = m_defaultTurnStack[m_stackPtr - 1];
-  }
+    m_frame           = m_framePtr.at(m_stackPtr - 1);
+    m_tropism         = m_tropismPtr.at(m_stackPtr - 1);
+    m_position        = m_positionPtr.at(m_stackPtr - 1);
+    m_width           = m_widthPtr.at(m_stackPtr - 1);
+    m_color           = m_colorPtr.at(m_stackPtr - 1);
+    m_backgroundColor = m_colorBackStack.at(m_stackPtr - 1);
+    m_texture         = m_textureStack.at(m_stackPtr - 1);
+    m_defaultDist     = m_defaultDistPtr.at(m_stackPtr - 1);
+    m_defaultTurn     = m_defaultTurnStack.at(m_stackPtr - 1);
 
-  --m_stackPtr;
+    --m_stackPtr;
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const Turtle& turtle)

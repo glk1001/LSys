@@ -37,7 +37,6 @@
 namespace LSys
 {
 
-SymbolTable<int> Name::s_map{};
 char** Name::s_reverseMap       = nullptr;
 int Name::s_nextIndex           = 0;
 uint32_t Name::s_reverseMapSize = 0U;
