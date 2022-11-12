@@ -34,6 +34,7 @@
 
 #include <array>
 #include <iostream>
+#include <stack>
 
 namespace LSys
 {
@@ -91,7 +92,7 @@ public:
   auto SetDefaults(float widthScale, float delta) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
-  [[nodiscard]] auto GetPosition() const -> Vector { return m_position; }
+  [[nodiscard]] auto GetPosition() const -> Vector { return m_currentState.position; }
 
   // Methods to modify turtle parameters
   [[nodiscard]] auto GetHeading() const -> Vector;
@@ -101,35 +102,36 @@ public:
   [[nodiscard]] auto GetUp() const -> Vector;
   auto SetUp(const Vector& up) -> void;
 
-  [[nodiscard]] auto GetDefaultDistance() const -> float { return m_defaultDist; }
+  [[nodiscard]] auto GetDefaultDistance() const -> float { return m_currentState.defaultDistance; }
   auto SetDefaultDistance(float distance = 1.0F) -> void;
 
   [[nodiscard]] auto GetDefaultTurnAngle() const -> float
   {
-    return Maths::ToDegrees(m_defaultTurn);
+    return Maths::ToDegrees(m_currentState.defaultTurnAngle);
   }
   auto SetDefaultTurnAngle(float angle = 90.0F) -> void;
 
-  [[nodiscard]] auto GetFrame() const -> Matrix { return m_frame; }
+  [[nodiscard]] auto GetFrame() const -> Matrix { return m_currentState.frame; }
   auto SetFrame(const Matrix& frame) -> void;
   auto SetGravity(const Vector& gravity) -> void;
 
-  [[nodiscard]] auto GetWidth() const -> float { return m_width; }
+  [[nodiscard]] auto GetWidth() const -> float { return m_currentState.width; }
   auto SetWidth(float width = 1.0F) -> void;
+  [[nodiscard]] auto GetWidthScale() const -> float { return m_currentState.widthScale; }
 
-  [[nodiscard]] auto GetColor() const -> Color { return m_color; }
-  [[nodiscard]] auto GetBackColor() const -> Color { return m_backgroundColor; }
+  [[nodiscard]] auto GetColor() const -> Color { return m_currentState.color; }
+  [[nodiscard]] auto GetBackColor() const -> Color { return m_currentState.backgroundColor; }
   auto IncrementColor() -> void;
   auto SetColor(int color = 0) -> void;
   auto SetColor(int color, int backgroundColor) -> void;
   auto SetColor(const Vector& colorVector) -> void;
 
-  [[nodiscard]] auto GetTexture() const -> int { return m_texture; } // Line texture
+  [[nodiscard]] auto GetTexture() const -> int { return m_currentState.texture; } // Line texture
   auto SetTexture(int texture = 0) -> void;
 
   // Functions for enabling/disabling application of tropism
   // after each segment is drawn.
-  [[nodiscard]] auto GetTropism() const -> TropismInfo { return m_tropism; }
+  [[nodiscard]] auto GetTropism() const -> TropismInfo { return m_currentState.tropism; }
   auto SetTropismVector(const Vector& vector) -> void;
   auto SetTropismVector(float susceptibility) -> void;
   auto DisableTropism() -> void;
@@ -159,42 +161,21 @@ public:
   friend auto operator<<(std::ostream& out, const Turtle& turtle) -> std::ostream&;
 
 private:
-  // TODO(glk) - Use std::stack
-  static constexpr size_t MAX_STACK_DEPTH = 100;
-  size_t m_stackPtr                       = 0; // Stack depth
-
-  // Position of turtle
-  Vector m_position{0.0F, 0.0F, 0.0F};
-  std::array<Vector, MAX_STACK_DEPTH> m_positionPtr{};
-
-  // Orientation frame of turtle
-  Matrix m_frame{};
-  std::array<Matrix, MAX_STACK_DEPTH> m_framePtr{};
-
-  // Standard distance to Move turtle
-  float m_defaultDist = 0.0F;
-  std::array<float, MAX_STACK_DEPTH> m_defaultDistPtr{};
-
-  float m_defaultTurn = 0.0F;
-  std::array<float, MAX_STACK_DEPTH> m_defaultTurnStack{};
-
-  // Line width
-  float m_width = 1.0F;
-  std::array<float, MAX_STACK_DEPTH> m_widthPtr{};
-  float m_widthScale = 1.0F;
-
-  // Color index
-  Color m_color{};
-  std::array<Color, MAX_STACK_DEPTH> m_colorPtr{};
-  Color m_backgroundColor{};
-  std::array<Color, MAX_STACK_DEPTH> m_colorBackStack{};
-
-  // Texture index
-  int m_texture = 0;
-  std::array<int, MAX_STACK_DEPTH> m_textureStack{};
-
-  TropismInfo m_tropism{};
-  std::array<TropismInfo, MAX_STACK_DEPTH> m_tropismPtr{};
+  struct State
+  {
+    Vector position{0.0F, 0.0F, 0.0F};
+    Matrix frame{};
+    float defaultDistance  = 0.0F;
+    float defaultTurnAngle = 0.0F;
+    float width            = 1.0F;
+    float widthScale       = 1.0F;
+    Color color{};
+    Color backgroundColor{};
+    int texture = 0;
+    TropismInfo tropism{};
+  };
+  State m_currentState{};
+  std::stack<State> m_stateStack{};
 
   BoundingBox m_boundingBox{}; // Bounding box of turtle path
   Vector m_gravity{0.0F, 0.0F, 0.0F}; // Antigravity vector
