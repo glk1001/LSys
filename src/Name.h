@@ -51,7 +51,7 @@ public:
   [[nodiscard]] auto id() const -> int { return m_index; }
 
 private:
-  static SymbolTable<int>* s_map;
+  static SymbolTable<int> s_map;
   static char** s_reverseMap;
   static int s_nextIndex;
   static uint32_t s_reverseMapSize;

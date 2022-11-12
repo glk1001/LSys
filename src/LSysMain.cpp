@@ -50,6 +50,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <memory>
 #include <string>
 
 using LSys::GenericGenerator;
@@ -89,9 +90,9 @@ auto OutOfMemory() -> void
   return filenameCopy;
 }
 
-[[nodiscard]] auto OpenOutputFile(const char* const filename) -> std::ofstream*
+[[nodiscard]] auto GetOutputFile(const char* const filename) -> std::unique_ptr<std::ofstream>
 {
-  auto* const out = new std::ofstream(filename);
+  auto out = std::make_unique<std::ofstream>(filename);
   if (out->bad())
   {
     std::cerr << "Error opening output file " << filename << ", aborting.\n";
@@ -100,12 +101,9 @@ auto OutOfMemory() -> void
   return out;
 }
 
-// Set the output stream for the generated database to the specified
-// file. If the name has no extension, add one based on the output
-// format.
-[[nodiscard]] auto SetOutputFilename(const char* const filename) -> std::ofstream*
+[[nodiscard]] auto GetOpenOutputFile(const char* const filename) -> std::unique_ptr<std::ofstream>
 {
-  return OpenOutputFile(filename);
+  return GetOutputFile(filename);
 }
 
 /***
@@ -143,7 +141,7 @@ auto OutOfMemory() -> void
   ***/
 
 // Set override values for symbol table.
-auto SetSymbolTableValues(SymbolTable<Value>* const symbolTable,
+auto SetSymbolTableValues(SymbolTable<Value>& symbolTable,
                           const int maxGen,
                           const float delta,
                           const float width,
@@ -151,19 +149,19 @@ auto SetSymbolTableValues(SymbolTable<Value>* const symbolTable,
 {
   if (maxGen > 0)
   {
-    symbolTable->Enter("maxgen", Value(maxGen));
+    symbolTable.Enter("maxgen", Value(maxGen));
   }
   if (delta > 0.0F)
   {
-    symbolTable->Enter("delta", Value(delta));
+    symbolTable.Enter("delta", Value(delta));
   }
   if (width > 0.0F)
   {
-    symbolTable->Enter("width", Value(width));
+    symbolTable.Enter("width", Value(width));
   }
   if (distance > 0.0F)
   {
-    symbolTable->Enter("distance", Value(distance));
+    symbolTable.Enter("distance", Value(distance));
   }
 }
 
@@ -190,7 +188,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
       else
       {
         std::cerr << "Invalid GetFloatValue specified for maxgen: " << value << "\n";
-        ::exit(1);
+        std::exit(1);
       }
     }
   }
@@ -206,7 +204,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
       if (!value.GetFloatValue(*delta))
       {
         std::cerr << "Invalid GetFloatValue specified for delta: " << value << "\n";
-        ::exit(1);
+        std::exit(1);
       }
     }
   }
@@ -222,7 +220,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
       if (!value.GetFloatValue(*width))
       {
         std::cerr << "Invalid GetFloatValue specified for width: " << value << "\n";
-        ::exit(1);
+        std::exit(1);
       }
     }
   }
@@ -238,7 +236,7 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
       if (!value.GetFloatValue(*distance))
       {
         std::cerr << "Invalid GetFloatValue specified for distance: " << value << "\n";
-        ::exit(1);
+        std::exit(1);
       }
     }
   }
@@ -321,40 +319,40 @@ int main(int argc, const char* argv[])
     // Initialize random number generator
     ::srand48((seed != -1) ? seed : ::time(nullptr));
 
-    auto* model = new LSysModel;
+    auto model = LSysModel{};
 
-    SetSymbolTableValues(model->symbolTable, maxGen, delta, width, distance);
+    SetSymbolTableValues(model.symbolTable, maxGen, delta, width, distance);
 
-    ::set_parser_globals(model);
+    ::set_parser_globals(&model);
     ::set_parser_input(inputFilename.c_str());
-    std::ofstream* outputF    = SetOutputFilename(outputFilename);
-    std::ofstream* outputBnds = OpenOutputFile(boundsFilename);
+    auto outputFile       = GetOpenOutputFile(outputFilename);
+    auto boundsOutputFile = GetOutputFile(boundsFilename);
 
     //      yydebug = 1;
     ::yyparse(); // Parse input file
 
-    if (model->start != nullptr)
+    if (model.start != nullptr)
     {
-      PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->start << "\n");
+      PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model.start << "\n");
     }
     else
     {
       PDebug(PD_MAIN, std::cerr << "No starting module list\n");
     }
     //    PDebug(PD_SYMBOL, cerr << "\nSymbol Table:\n" << *model->symbolTable);
-    PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << *model->rules << "\n");
+    PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model.rules << "\n");
 
-    if (model->start == nullptr)
+    if (model.start == nullptr)
     {
       std::cerr << "No starting point found!\n";
       std::exit(1);
     }
 
-    SetDefaults(*model->symbolTable, &maxGen, &delta, &width, &distance);
+    SetDefaults(model.symbolTable, &maxGen, &delta, &width, &distance);
 
     if (display)
     {
-      std::cout << "Gen0 : " << *model->start << "\n";
+      std::cout << "Gen0 : " << *model.start << "\n";
     }
 
     // For each generation, apply appropriate productions
@@ -363,10 +361,10 @@ int main(int argc, const char* argv[])
     {
       std::cerr << "\n";
     }
-    LSys::List<Module>* oldModuleList = model->start;
+    LSys::List<Module>* oldModuleList = model.start.get();
     for (int gen = 1; gen <= maxGen; ++gen)
     {
-      LSys::List<Module>* newModuleList = model->Generate(oldModuleList);
+      LSys::List<Module>* newModuleList = model.Generate(oldModuleList);
       if (display)
       {
         std::cout << "Gen" << gen << ": " << *newModuleList << "\n";
@@ -382,22 +380,7 @@ int main(int argc, const char* argv[])
 
     // Construct an output generator and apply it to the final module list
     // to build a database.
-    enum class FileType
-    {
-      GENERIC
-    };
-    const auto filetype   = FileType::GENERIC;
-    IGenerator* generator = nullptr;
-    const char* type      = "";
-    switch (filetype)
-    {
-      case FileType::GENERIC:
-        type      = "generic";
-        generator = new GenericGenerator(outputF, outputBnds);
-        break;
-      default:
-        break;
-    }
+    auto generator = std::make_unique<GenericGenerator>(outputFile.get(), boundsOutputFile.get());
 
     auto strStream = std::ostringstream{};
     strStream << "  Input file = " << inputFilename << "\n";
@@ -410,7 +393,9 @@ int main(int argc, const char* argv[])
     strStream << "  Distance = " << distance << "\n";
 
     std::cerr << "\n";
-    std::cerr << "Generating " << type << " database..."
+    std::cerr << "Generating "
+              << "generic"
+              << " database..."
               << "\n";
     std::cerr << strStream.str();
     std::cerr << "\n";
@@ -418,10 +403,6 @@ int main(int argc, const char* argv[])
     generator->SetName(BaseFilename(outputFilename));
     generator->SetHeader(strStream.str());
     Interpret(*oldModuleList, *generator, delta, width, distance);
-
-    delete outputF;
-    delete outputBnds;
-    delete generator;
 
     PDebug(PD_MAIN, std::cerr << "About to exit\n");
     return 0;

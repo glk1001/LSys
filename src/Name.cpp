@@ -37,7 +37,7 @@
 namespace LSys
 {
 
-SymbolTable<int>* Name::s_map   = nullptr;
+SymbolTable<int> Name::s_map{};
 char** Name::s_reverseMap       = nullptr;
 int Name::s_nextIndex           = 0;
 uint32_t Name::s_reverseMapSize = 0U;
@@ -51,17 +51,13 @@ Name::Name(const char* name)
   {
     name = "";
   }
-  if (nullptr == s_map)
-  {
-    s_map = new SymbolTable<int>;
-  }
 
   PDebug(PD_NAME, std::cerr << "Name(" << name << std::flush << "= " << name << ")\n");
 
   // If the name already exists in the symbol table, use the assigned
   // hash value. Otherwise, enter it in the table with the next
   // sequential value.
-  if (s_map->Lookup(name, m_index))
+  if (s_map.Lookup(name, m_index))
   {
     return;
   }
@@ -81,9 +77,10 @@ Name::Name(const char* name)
     s_reverseMapSize += MAP_INCR;
   }
 
-  s_map->Enter(name, s_nextIndex);
+  s_map.Enter(name, s_nextIndex);
   s_reverseMap[s_nextIndex] = ::strdup(name);
-  m_index                   = s_nextIndex++;
+  m_index                   = s_nextIndex;
+  ++s_nextIndex;
 }
 
 std::ostream& operator<<(std::ostream& out, const Name& name)

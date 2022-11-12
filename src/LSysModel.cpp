@@ -36,18 +36,10 @@
 namespace LSys
 {
 
-LSysModel::~LSysModel()
-{
-  delete ignoreTable;
-  delete symbolTable;
-  delete rules;
-  delete start;
-}
-
 // Apply the model to the specified list for one generation, generating a new list.
-List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
+auto LSysModel::Generate(List<Module>* const oldModuleList) -> List<Module>*
 {
-  auto prodIter             = ListIterator<Production>{rules};
+  auto prodIter             = ListIterator<Production>{&rules};
   auto* const newModuleList = new List<Module>;
 
   auto modIter = ListIterator<Module>{*oldModuleList};
@@ -60,7 +52,7 @@ List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
     Production* prod;
     for (prod = prodIter.first(); prod != nullptr; prod = prodIter.next())
     {
-      if (prod->Matches(modIter, mod, *symbolTable))
+      if (prod->Matches(modIter, mod, symbolTable))
       {
         PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *prod << "\n");
         break;
@@ -69,7 +61,7 @@ List<Module>* LSysModel::Generate(List<Module>* const oldModuleList) const
     // If we found one, replace the module by its successor.
     if (prod != nullptr)
     {
-      auto* const result = prod->Produce(mod, *symbolTable);
+      auto* const result = prod->Produce(mod, symbolTable);
       PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
       newModuleList->append(result);
       delete result;

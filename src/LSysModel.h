@@ -30,26 +30,22 @@
 #include "SymbolTable.h"
 #include "Value.h"
 
+#include <memory>
+
 namespace LSys
 {
 
 struct LSysModel
 {
   LSysModel() = default;
-  LSysModel(const LSysModel&) = delete;
-  LSysModel(LSysModel&&) = delete;
-  ~LSysModel();
 
-  auto operator=(const LSysModel&) -> LSysModel& = delete;
-  auto operator=(LSysModel&&) -> LSysModel& = delete;
+  [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> List<Module>*;
 
-  List<Module>* Generate(List<Module>* oldModuleList) const;
+  SymbolTable<Value> ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
+  SymbolTable<Value> symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
+  List<Production> rules         = List<Production>{};
 
-  SymbolTable<Value>* ignoreTable = new SymbolTable<Value>; // Symbols ignored in context.
-  SymbolTable<Value>* symbolTable =
-      new SymbolTable<Value>; // Variables and bound formal parameters.
-  List<Production>* rules = new List<Production>; // Production list.
-  List<Module>* start     = nullptr; // Starting module list.
+  std::unique_ptr<List<Module>> start{};
 };
 
 } // namespace LSys

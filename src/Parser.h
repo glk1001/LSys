@@ -37,9 +37,9 @@
 #include "Production.h"
 #include "Value.h"
 
-#define parserRules (*parseInfo->rules)
-#define parserSymbolTable (*parseInfo->symbolTable)
-#define parserIgnoreTable (*parseInfo->ignoreTable)
+#define parserRules (parseInfo->rules)
+#define parserSymbolTable (parseInfo->symbolTable)
+#define parserIgnoreTable (parseInfo->ignoreTable)
 #define parserStart (parseInfo->start)
 
 // In lex.l, for setting input stream
