@@ -39,13 +39,13 @@ struct LSysModel
 {
   LSysModel() = default;
 
-  [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> List<Module>*;
+  [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> std::unique_ptr<List<Module>>;
 
   SymbolTable<Value> ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
   SymbolTable<Value> symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
   List<Production> rules         = List<Production>{};
 
-  std::unique_ptr<List<Module>> start{};
+  std::shared_ptr<List<Module>> start{};
 };
 
 } // namespace LSys

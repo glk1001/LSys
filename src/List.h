@@ -45,7 +45,6 @@ public:
   explicit ListIterator(List<T>& list);
   explicit ListIterator(List<T>* list);
 
-  [[nodiscard]] auto current() -> T*;
   [[nodiscard]] auto first() -> T*;
   [[nodiscard]] auto last() -> T*;
   [[nodiscard]] auto next() -> T*;
@@ -136,12 +135,6 @@ template<typename T>
 inline ListIterator<T>::ListIterator(List<T>* const list)
   : m_list(list), m_listIter(list->m_stdList.begin())
 {
-}
-
-template<typename T>
-inline auto ListIterator<T>::current() -> T*
-{
-  return (m_listIter != m_list->m_stdList.end()) ? *m_listIter : nullptr;
 }
 
 template<typename T>

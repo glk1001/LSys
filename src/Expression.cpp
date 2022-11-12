@@ -272,7 +272,7 @@ const auto functionSymbolTable = GetFunctionSymbolTable();
       return ">=";
     default:
       static char str[] = " ";
-      str[0] = static_cast<char>(operation);
+      str[0]            = static_cast<char>(operation);
       return str;
   }
 }
@@ -487,7 +487,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 }
 
 // Bind symbolic names of the list to values in list 'values'
-// using symbol table st for evaluation and binding. The two
+// using the symbol table for evaluation and binding. The two
 // lists should conform() for this method to succeed.
 // Returns true on success, false otherwise.
 auto Bind(const List<Expression>* const formals,
@@ -522,12 +522,13 @@ auto Bind(const List<Expression>* const formals,
     }
     if (rightPtr->GetType() != LSYS_VALUE)
     {
-      std::cerr << "Bind: right expression " << *rightPtr << " is not a GetValue\n";
+      std::cerr << "Bind: right expression " << *rightPtr << " is not a value\n";
       return false;
     }
-    const Value v = rightPtr->Evaluate(symbolTable);
-    PDebug(PD_EXPRESSION, std::cerr << "Binding " << leftPtr->GetName() << "= " << v << "\n");
-    symbolTable.Enter(leftPtr->GetName().str(), v);
+
+    const Value value = rightPtr->Evaluate(symbolTable);
+    PDebug(PD_EXPRESSION, std::cerr << "Binding " << leftPtr->GetName() << "= " << value << "\n");
+    symbolTable.Enter(leftPtr->GetName().str(), value);
   }
 
   return true;
@@ -537,9 +538,9 @@ auto Bind(const List<Expression>* const formals,
 // that they have the same number of expressions.
 auto Conforms(const List<Expression>* const formals, const List<Expression>* const values) -> bool
 {
-  const auto fSize = (formals != nullptr) ? formals->size() : 0U;
-  const auto vSize = (values != nullptr) ? values->size() : 0U;
-  return fSize == vSize;
+  const auto formalsSize = (formals != nullptr) ? formals->size() : 0U;
+  const auto valuesSize  = (values != nullptr) ? values->size() : 0U;
+  return formalsSize == valuesSize;
 }
 
 // Instantiate the list; that is, return a copy with all the
@@ -553,12 +554,12 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
     return nullptr;
   }
 
-  auto* const newExprList = new List<Expression>;
+  auto* const newExprList = new List<Expression>{};
   auto exprIter           = ConstListIterator<Expression>{*before};
 
   for (const auto* expr = exprIter.first(); expr != nullptr; expr = exprIter.next())
   {
-    auto* const newExpr = new Expression(expr->Evaluate(symbolTable));
+    auto* const newExpr = new Expression{expr->Evaluate(symbolTable)};
     newExprList->append(newExpr);
   }
 

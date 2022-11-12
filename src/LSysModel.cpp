@@ -37,10 +37,10 @@ namespace LSys
 {
 
 // Apply the model to the specified list for one generation, generating a new list.
-auto LSysModel::Generate(List<Module>* const oldModuleList) -> List<Module>*
+auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {
-  auto prodIter             = ListIterator<Production>{&rules};
-  auto* const newModuleList = new List<Module>;
+  auto prodIter      = ListIterator<Production>{&rules};
+  auto newModuleList = std::make_unique<List<Module>>();
 
   auto modIter = ListIterator<Module>{*oldModuleList};
   for (Module* mod = modIter.first(); mod != nullptr; mod = modIter.next())
@@ -61,10 +61,9 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> List<Module>*
     // If we found one, replace the module by its successor.
     if (prod != nullptr)
     {
-      auto* const result = prod->Produce(mod, symbolTable);
+      auto result = prod->Produce(mod, symbolTable);
       PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
-      newModuleList->append(result);
-      delete result;
+      newModuleList->append(result.get());
     }
     else
     {

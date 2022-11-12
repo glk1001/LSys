@@ -299,9 +299,9 @@ bool Production::Matches(const ListIterator<Module>& modIter,
 //  production, apply the production and return the resulting
 //  module list.
 auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& symbolTable)
-    -> List<Module>*
+    -> std::unique_ptr<List<Module>>
 {
-  auto* const moduleList = new List<Module>;
+  auto moduleList = std::make_unique<List<Module>>();
 
   // If no successors for this production, die (could return an empty list
   //	or return a copy of the predecessor).

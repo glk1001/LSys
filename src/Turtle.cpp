@@ -318,7 +318,7 @@ auto Turtle::Move(const float distance) -> void
 // Handle over/underflow gracefully
 auto Turtle::Push() -> void
 {
-  m_stateStack.push(m_currentState);
+  m_stateStack.emplace(m_currentState);
 }
 
 // Restore state

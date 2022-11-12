@@ -29,6 +29,8 @@
 
 #include "Module.h"
 
+#include <memory>
+
 namespace LSys
 {
 
@@ -111,7 +113,8 @@ public:
   auto Matches(const ListIterator<Module>& modIter,
                const Module* mod,
                SymbolTable<Value>& symbolTable) -> bool;
-  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable) -> List<Module>*;
+  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable)
+      -> std::unique_ptr<List<Module>>;
 
   friend auto operator<<(std::ostream& out, const Production& production) -> std::ostream&;
 

@@ -72,12 +72,6 @@ int ParseDebug = 1;
 namespace
 {
 
-auto OutOfMemory() -> void
-{
-  std::cerr << "FATAL: no free memory!\n";
-  std::exit(1);
-}
-
 // Return a copy of a filename stripped of its trailing
 // extension (.[^.]*), if any.
 [[nodiscard]] auto BaseFilename(const char* const filename) -> const char*
@@ -163,6 +157,30 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable,
   {
     symbolTable.Enter("distance", Value(distance));
   }
+}
+
+[[nodiscard]] auto GetParsedModel(const std::string& inputFilename,
+                                  const int maxGen,
+                                  const float delta,
+                                  const float width,
+                                  const float distance) -> std::unique_ptr<LSysModel>
+{
+  auto model = std::make_unique<LSysModel>();
+
+  SetSymbolTableValues(model->symbolTable, maxGen, delta, width, distance);
+  ::set_parser_globals(model.get());
+  ::set_parser_input(inputFilename.c_str());
+
+  //      yydebug = 1;
+  ::yyparse(); // Parse input file
+
+  if (model->start == nullptr)
+  {
+    PDebug(PD_MAIN, std::cerr << "No starting module list.\n");
+    std::exit(1);
+  }
+
+  return model;
 }
 
 // Look up defaults in the symbol table, if not overridden by specified
@@ -306,6 +324,7 @@ int main(int argc, const char* argv[])
       cmdOpts.Usage(std::cerr, "input file...");
       return 1;
     }
+
     if (nullptr == outputFilename)
     {
       std::cerr << "Must supply -o (output filename) option\n\n";
@@ -314,72 +333,43 @@ int main(int argc, const char* argv[])
     }
     const auto inputFilename = positionalParams[0];
 
-    std::set_new_handler(OutOfMemory);
-
     // Initialize random number generator
     ::srand48((seed != -1) ? seed : ::time(nullptr));
 
-    auto model = LSysModel{};
-
-    SetSymbolTableValues(model.symbolTable, maxGen, delta, width, distance);
-
-    ::set_parser_globals(&model);
-    ::set_parser_input(inputFilename.c_str());
-    auto outputFile       = GetOpenOutputFile(outputFilename);
-    auto boundsOutputFile = GetOutputFile(boundsFilename);
-
-    //      yydebug = 1;
-    ::yyparse(); // Parse input file
-
-    if (model.start != nullptr)
-    {
-      PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model.start << "\n");
-    }
-    else
-    {
-      PDebug(PD_MAIN, std::cerr << "No starting module list\n");
-    }
-    //    PDebug(PD_SYMBOL, cerr << "\nSymbol Table:\n" << *model->symbolTable);
-    PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model.rules << "\n");
-
-    if (model.start == nullptr)
-    {
-      std::cerr << "No starting point found!\n";
-      std::exit(1);
-    }
-
-    SetDefaults(model.symbolTable, &maxGen, &delta, &width, &distance);
+    const auto model = GetParsedModel(inputFilename, maxGen, delta, width, distance);
+    PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->start << "\n");
+    PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model->rules << "\n");
+    SetDefaults(model->symbolTable, &maxGen, &delta, &width, &distance);
 
     if (display)
     {
-      std::cout << "Gen0 : " << *model.start << "\n";
+      std::cout << "Gen0 : " << *model->start << "\n";
     }
-
-    // For each generation, apply appropriate productions
-    // in parallel to all modules.
     if (stats)
     {
       std::cerr << "\n";
     }
-    LSys::List<Module>* oldModuleList = model.start.get();
+
+    // For each generation, apply appropriate productions in parallel to all modules.
+    auto moduleList = model->start;
     for (int gen = 1; gen <= maxGen; ++gen)
     {
-      LSys::List<Module>* newModuleList = model.Generate(oldModuleList);
+      moduleList = model->Generate(moduleList.get());
       if (display)
       {
-        std::cout << "Gen" << gen << ": " << *newModuleList << "\n";
+        std::cout << "Gen " << gen << ": " << *moduleList << "\n";
       }
       if (stats)
       {
-        std::cerr << "Gen" << std::setw(3) << gen << ": # modules= " << std::setw(5)
-                  << newModuleList->size() << "\n";
+        std::cerr << "Gen " << std::setw(3) << gen << ": # modules= " << std::setw(5)
+                  << moduleList->size() << "\n";
       }
-      //////////    delete oldModuleList;
-      oldModuleList = newModuleList;
     }
 
     // Construct an output generator and apply it to the final module list
     // to build a database.
+    auto outputFile       = GetOpenOutputFile(outputFilename);
+    auto boundsOutputFile = GetOutputFile(boundsFilename);
     auto generator = std::make_unique<GenericGenerator>(outputFile.get(), boundsOutputFile.get());
 
     auto strStream = std::ostringstream{};
@@ -402,7 +392,7 @@ int main(int argc, const char* argv[])
 
     generator->SetName(BaseFilename(outputFilename));
     generator->SetHeader(strStream.str());
-    Interpret(*oldModuleList, *generator, delta, width, distance);
+    Interpret(*moduleList, *generator, delta, width, distance);
 
     PDebug(PD_MAIN, std::cerr << "About to exit\n");
     return 0;
