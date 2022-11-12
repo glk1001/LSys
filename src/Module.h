@@ -33,6 +33,8 @@
 #include "Expression.h"
 #include "Name.h"
 
+#include <memory>
+
 namespace LSys
 {
 
@@ -44,20 +46,10 @@ class Module
 {
 public:
   Module(const Name& name, List<Expression>* expressionList, bool ignoreFlag = false);
-  Module(const Module& mod);
-  Module(Module&&) = delete;
-  ~Module();
-
-  auto operator=(const Module&) -> Module& = delete;
-  auto operator=(Module&&) -> Module&      = delete;
-
-  // Call Empty before deallocating a module if it has previously
-  // been used as the argument to a copy constructor.
-  auto Empty() -> void;
 
   [[nodiscard]] auto GetName() const -> Name { return Name(m_tag); }
 
-  auto Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> bool;
+  auto Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> void;
   [[nodiscard]] auto Conforms(const Module& mod) const -> bool;
   [[nodiscard]] auto Ignore() const -> bool { return m_ignoreFlag; }
   [[nodiscard]] auto Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*;
@@ -68,8 +60,7 @@ public:
 private:
   int m_tag; // Module name
   bool m_ignoreFlag; // Should module be ignored in context?
-  bool m_emptyFlag = false; // Should tag and param be deleted?
-  List<Expression>* m_param; // Expressions bound to module
+  std::unique_ptr<List<Expression>> m_param; // Expressions bound to module
 };
 
 // These Names are used in context matching to ascend/descend tree levels.

@@ -69,8 +69,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> List<Module>*
     else
     {
       PDebug(PD_PRODUCTION, std::cerr << "\tno match found, passing production unchanged\n");
-      newModuleList->append(new Module(*mod));
-      mod->Empty();
+      newModuleList->append(new Module(std::move(*mod)));
     }
   }
 

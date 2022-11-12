@@ -43,7 +43,7 @@ Production::Production(const Name& name,
                        Predecessor* const lhs,
                        const Expression* const cond,
                        const List<Successor>* const rhs)
-  : m_productionName{name}, m_condition{cond}
+  : m_productionName{name}, m_input{lhs}, m_condition{cond}, m_successors{rhs}
 {
   // Ensure that empty context lists are represented by 0 pointers
   if ((lhs->left != nullptr) and (0 == lhs->left->size()))
@@ -57,8 +57,6 @@ Production::Production(const Name& name,
     lhs->right = nullptr;
   }
 
-  m_input       = lhs;
-  m_successors  = rhs;
   m_contextFree = (nullptr == lhs->left) and (nullptr == lhs->right);
 
   PDebug(PD_PRODUCTION, std::cerr << "Production::Production: created " << *this << "\n");

@@ -33,6 +33,7 @@
 #include "debug.h"
 
 #include <iostream>
+#include <stdexcept>
 
 namespace LSys
 {
@@ -43,44 +44,18 @@ Module::Module(const Name& name, List<Expression>* const expressionList, const b
   PDebug(PD_MODULE, std::cerr << "Creating module " << *this << " @ " << this << "\n");
 }
 
-Module::Module(const Module& mod)
-  : m_tag(mod.m_tag), m_ignoreFlag{mod.m_ignoreFlag}, m_param{mod.m_param}
-{
-  PDebug(PD_MODULE, std::cerr << "Copying module " << *this << "\n");
-}
-
-Module::~Module()
-{
-  PDebug(PD_MODULE, std::cerr << "Deleting module @ " << this << "\n");
-
-  if (not m_emptyFlag)
-  {
-    delete m_param;
-  }
-}
-
-// Don't delete parameter list when destructor called, even if it's
-//  dynamically allocated.
-auto Module::Empty() -> void
-{
-  m_emptyFlag = true;
-}
-
 // Bind symbolic names of the module to values in module 'values'
 //  using symbol table st for evaluation and binding. The two
 //  modules should conform() for this method to succeed.
-auto Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> bool
+auto Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> void
 {
   PDebug(PD_MODULE,
          std::cerr << "Module::Bind: formals= " << *this << " values= " << values << "\n");
 
-  if (not LSys::Bind(m_param, values.m_param, symbolTable))
+  if (not LSys::Bind(m_param.get(), values.m_param.get(), symbolTable))
   {
-    std::cerr << "failure binding module " << values << " to " << *this << "\n";
-    return false;
+    throw std::runtime_error("Failure binding module.");
   }
-
-  return true;
 }
 
 // Check if module 'm' is conformant with the module, e.g.,
@@ -93,14 +68,14 @@ auto Module::Conforms(const Module& mod) const -> bool
     return false;
   }
 
-  return LSys::Conforms(m_param, mod.m_param);
+  return LSys::Conforms(m_param.get(), mod.m_param.get());
 }
 
 // Instantiate the module; that is, return a copy with all of the
 //  module's expressions evaluated in the context of the symbol table.
 auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*
 {
-  auto* const exprList  = LSys::Instantiate(m_param, symbolTable);
+  auto* const exprList  = LSys::Instantiate(m_param.get(), symbolTable);
   auto* const newModule = new Module{Name(m_tag), exprList, m_ignoreFlag};
 
   PDebug(PD_MODULE,
