@@ -39,11 +39,11 @@
  *
  */
 #include "CommandLineOptions.h"
-#include "GenericGenerator.h"
 #include "IGenerator.h"
 #include "Interpret.h"
 #include "LSysModel.h"
 #include "Parser.h"
+#include "RadianceGenerator.h"
 #include "Rand.h"
 #include "Value.h"
 #include "debug.h"
@@ -51,12 +51,13 @@
 #include <fstream>
 #include <iomanip>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
-using LSys::GenericGenerator;
 using LSys::IGenerator;
 using LSys::LSysModel;
 using LSys::Module;
+using LSys::RadianceGenerator;
 using LSys::SymbolTable;
 using LSys::Value;
 using Utilities::CommandLineOptions;
@@ -90,7 +91,7 @@ namespace
   if (out->bad())
   {
     std::cerr << "Error opening output file " << filename << ", aborting.\n";
-    std::exit(1);
+    throw std::runtime_error("Error opening output file.");
   }
   return out;
 }
@@ -177,7 +178,7 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable,
   if (model->start == nullptr)
   {
     PDebug(PD_MAIN, std::cerr << "No starting module list.\n");
-    std::exit(1);
+    throw std::runtime_error("No starting module list.");
   }
 
   return model;
@@ -205,8 +206,8 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
       }
       else
       {
-        std::cerr << "Invalid GetFloatValue specified for maxgen: " << value << "\n";
-        std::exit(1);
+        std::cerr << "Invalid float value specified for maxgen: " << value << "\n";
+        throw std::runtime_error("Invalid float value specified for maxgen.");
       }
     }
   }
@@ -221,8 +222,8 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
     {
       if (!value.GetFloatValue(*delta))
       {
-        std::cerr << "Invalid GetFloatValue specified for delta: " << value << "\n";
-        std::exit(1);
+        std::cerr << "Invalid float value specified for delta: " << value << "\n";
+        throw std::runtime_error("Invalid float value specified for delta.");
       }
     }
   }
@@ -237,8 +238,8 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
     {
       if (!value.GetFloatValue(*width))
       {
-        std::cerr << "Invalid GetFloatValue specified for width: " << value << "\n";
-        std::exit(1);
+        std::cerr << "Invalid float value specified for width: " << value << "\n";
+        throw std::runtime_error("Invalid float value specified for width.");
       }
     }
   }
@@ -253,8 +254,8 @@ auto SetDefaults(const SymbolTable<Value>& symbolTable,
     {
       if (!value.GetFloatValue(*distance))
       {
-        std::cerr << "Invalid GetFloatValue specified for distance: " << value << "\n";
-        std::exit(1);
+        std::cerr << "Invalid float value specified for distance: " << value << "\n";
+        throw std::runtime_error("Invalid float value specified for distance.");
       }
     }
   }
@@ -368,7 +369,7 @@ int main(int argc, const char* argv[])
     // to build a database.
     auto outputFile       = GetOpenOutputFile(outputFilename);
     auto boundsOutputFile = GetOutputFile(boundsFilename);
-    auto generator = std::make_unique<GenericGenerator>(outputFile.get(), boundsOutputFile.get());
+    auto generator = std::make_unique<RadianceGenerator>(outputFile.get(), boundsOutputFile.get());
 
     auto strStream = std::ostringstream{};
     strStream << "  Input file = " << inputFilename << "\n";
