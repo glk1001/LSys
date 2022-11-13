@@ -81,7 +81,10 @@ auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*
   PDebug(PD_MODULE,
          std::cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *newModule
                    << " @ " << newModule << "\n");
-  PDebug(PD_MODULE, std::cerr << "        old elist: " << *exprList << "\n");
+  if (exprList != nullptr)
+  {
+    PDebug(PD_MODULE, std::cerr << "        old elist: " << *exprList << "\n");
+  }
 
   return newModule;
 }

@@ -27,6 +27,7 @@
 
 #pragma once
 
+#define PDEBUG_ENABLED
 extern int ParseDebug;
 
 #define PD_EXPRESSION 0x1
@@ -38,14 +39,14 @@ extern int ParseDebug;
 #define PD_INTERPRET 0x80
 #define PD_NAME 0x200
 
-#define PDEBUG_ENABLED
 #ifdef PDEBUG_ENABLED
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wextra"
 #define PDebug(level, code) \
-  [&]() { if (ParseDebug) { code; } } ()
+  if (ParseDebug) \
+  [&]() { code; }()
 #pragma GCC diagnostic pop
 
 #else

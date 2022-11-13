@@ -67,7 +67,7 @@ using enum Utilities::CommandLineOptions::OptionReturnCode;
 #if YYDEBUG != 0
 extern int yydebug; // nonzero means print parse trace
 #endif
-int ParseDebug = 1;
+int ParseDebug = 0;
 
 namespace
 {
@@ -270,8 +270,6 @@ int main(int argc, const char* argv[])
 #if YYDEBUG != 0
     //      yydebug= 1;
 #endif
-    ::ParseDebug = 0;
-
     auto help1                 = false;
     auto help2                 = false;
     auto maxGen                = -1; // Default # of generations to produce
@@ -400,5 +398,6 @@ int main(int argc, const char* argv[])
   catch (const std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
+    return 1;
   }
 }
