@@ -92,7 +92,7 @@ public:
   auto SetDefaults(float widthScale, float delta) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
-  [[nodiscard]] auto GetPosition() const -> Vector { return m_currentState.position; }
+  [[nodiscard]] auto GetPosition() const -> const Vector& { return m_currentState.position; }
 
   // Methods to modify turtle parameters
   [[nodiscard]] auto GetHeading() const -> Vector;

@@ -24,14 +24,14 @@
 
 #pragma once
 
-#include "List.h"
 #include "Vector.h"
+
+#include <vector>
 
 namespace LSys
 {
 
 // A polygon is just a list of vertices
-using Polygon              = List<Vector>;
-using ConstPolygonIterator = ConstListIterator<Vector>;
+using Polygon = std::vector<Vector>;
 
 } // namespace LSys

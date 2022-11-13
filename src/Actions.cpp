@@ -37,6 +37,8 @@
 #include "debug.h"
 
 #include <cassert>
+#include <stack>
+#include <stdexcept>
 
 namespace LSys
 {
@@ -47,9 +49,8 @@ namespace
 // The stack is used by the '{ }' commands to define polygons. It can
 // get quite deep in recursive L-system productions, thus we use a depth
 // of 100 (probably should use a dynamically allocated list).
-int polyPtr                 = -1;
 constexpr auto MAX_POLYGONS = 100;
-std::array<LSys::Polygon*, MAX_POLYGONS> polygonStack{};
+std::stack<LSys::Polygon> polygonStack{};
 
 enum class State
 {
@@ -75,24 +76,24 @@ auto MoveTurtle(Turtle& turtle, const int numArgs, const ArgsArray& args) noexce
 auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) noexcept -> void
 {
   // Add an edge to the current polygon
-  ConstPolygonIterator polygonIter(*polygonStack.at(static_cast<uint32_t>(polyPtr)));
-  const Vector* const vec = polygonIter.last();
+  const auto& lastPolygon = polygonStack.top();
 
   // See if the starting point needs to be added (only if
   // it's different from the last point defined in
   // the polygon, or there are no points defined in the polygon
   // yet).
-  if (auto* const point = new Vector(turtle.GetPosition()); (nullptr == vec) or (*vec != *point))
+  if (const auto& point = turtle.GetPosition();
+      lastPolygon.empty() or (lastPolygon.back() != point))
   {
-    PDebug(PD_INTERPRET, std::cerr << "AddPolygonEdge: adding first vertex " << *point << "\n");
-    polygonStack.at(static_cast<uint32_t>(polyPtr))->append(point);
+    PDebug(PD_INTERPRET, std::cerr << "AddPolygonEdge: adding first vertex " << point << "\n");
+    polygonStack.top().emplace_back(point);
   }
 
   // Move and add the ending point to the polygon.
   MoveTurtle(turtle, numArgs, args);
   PDebug(PD_INTERPRET,
          std::cerr << "AddPolygonEdge: adding last vertex  " << turtle.GetPosition() << "\n");
-  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(new Vector(turtle.GetPosition()));
+  polygonStack.top().emplace_back(turtle.GetPosition());
 }
 
 // Set line width only if changed too much
@@ -122,10 +123,10 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
 // Set color only if changed
 auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
 {
-  static Color s_lastcolor(-1);
+  static Color s_lastColor(-1);
 
   // Don't change color if not needed, again an optimization
-  if (turtle.GetColor() == s_lastcolor)
+  if (turtle.GetColor() == s_lastColor)
   {
     return;
   }
@@ -137,7 +138,7 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetColor(turtle);
-  s_lastcolor = turtle.GetColor();
+  s_lastColor = turtle.GetColor();
 }
 
 // Set texture only if changed
@@ -145,7 +146,7 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
 {
   static int s_lastTexture(-1);
 
-  // Don't change txture if not needed, again an optimization
+  // Don't change texture if not needed, again an optimization
   if (turtle.GetTexture() == s_lastTexture)
   {
     return;
@@ -374,7 +375,7 @@ auto PushImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   turtle.Push();
 }
 
-// ]	Pop turtle state
+// ] Pop turtle state
 auto PopImpl(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
              IGenerator& generator,
@@ -404,7 +405,7 @@ auto PopImpl(ConstListIterator<Module>& moduleIter,
   }
 }
 
-// $	Roll to horizontal plane (pg. 57)
+// $ Roll to horizontal plane (pg. 57)
 auto RollHorizontalImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                         Turtle& turtle,
                         [[maybe_unused]] const IGenerator& generator,
@@ -421,7 +422,7 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
                       const Turtle& turtle,
                       IGenerator& generator,
                       [[maybe_unused]] const int numArgs,
-                      [[maybe_unused]] const ArgsArray& args) noexcept -> void
+                      [[maybe_unused]] const ArgsArray& args) -> void
 {
   PDebug(PD_INTERPRET, std::cerr << "StartPolygon  \n");
 
@@ -431,14 +432,12 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
   }
 
   state = State::POLYGON;
-  ++polyPtr;
-  if (polyPtr >= MAX_POLYGONS)
+  if (polygonStack.size() > MAX_POLYGONS)
   {
-    std::cerr << "StartPolygon: polygon stack filled.\n";
-    return;
+    throw std::runtime_error("StartPolygon: polygon stack filled.");
   }
 
-  polygonStack.at(static_cast<uint32_t>(polyPtr)) = new LSys::Polygon;
+  polygonStack.emplace(LSys::Polygon{});
 }
 
 // .	Add a vertex to the current polygon
@@ -446,28 +445,22 @@ auto PolygonVertexImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
                        const Turtle& turtle,
                        [[maybe_unused]] const IGenerator& generator,
                        [[maybe_unused]] const int numArgs,
-                       [[maybe_unused]] const ArgsArray& args) noexcept -> void
+                       [[maybe_unused]] const ArgsArray& args) -> void
 {
   PDebug(PD_INTERPRET, std::cerr << "PolygonVertex \n");
 
   if (state != State::POLYGON)
   {
-    std::cerr << "Illegal: Polygon vertex while not in polygon mode\n";
-    return;
+    throw std::runtime_error("PolygonVertexImpl: Add polygon vertex while not in polygon mode.");
   }
 
-  if (polyPtr < 0)
+  if (polygonStack.empty())
   {
-    std::cerr << "PolygonVertex: no polygon being defined\n";
-    return;
+    throw std::runtime_error("PolygonVertexImpl: no polygon being defined.");
   }
-  if (polyPtr >= MAX_POLYGONS)
-  {
-    return; // Already got an error from StartPolygon
-  }
+  assert(polygonStack.size() <= MAX_POLYGONS);
 
-  auto* const vec = new Vector(turtle.GetPosition());
-  polygonStack.at(static_cast<uint32_t>(polyPtr))->append(vec);
+  polygonStack.top().emplace_back(turtle.GetPosition());
 }
 
 // G	Move without creating a polygon edge
@@ -496,28 +489,25 @@ auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter
                     const Turtle& turtle,
                     IGenerator& generator,
                     [[maybe_unused]] const int numArgs,
-                    [[maybe_unused]] const ArgsArray& args) noexcept -> void
+                    [[maybe_unused]] const ArgsArray& args) -> void
 {
   PDebug(PD_INTERPRET, std::cerr << "EndPolygon    \n");
 
-  if ((state != State::POLYGON) or (polyPtr < 0))
+  if ((state != State::POLYGON) or (polygonStack.empty()))
   {
-    std::cerr << "EndPolygon: no polygon being defined\n";
-    return;
+    throw std::runtime_error("EndPolygonImpl: no polygon being defined.");
   }
 
-  if (polyPtr >= MAX_POLYGONS)
+  if (polygonStack.size() > MAX_POLYGONS)
   {
-    std::cerr << "EndPolygon: polygon stack too deep, polygon lost\n";
-    --polyPtr;
+    throw std::runtime_error("EndPolygon: polygon stack too deep, polygon lost.");
   }
   else
   {
-    generator.Polygon(turtle, *polygonStack.at(static_cast<uint32_t>(polyPtr)));
-    delete polygonStack.at(static_cast<uint32_t>(polyPtr));
-    --polyPtr;
+    generator.Polygon(turtle, polygonStack.top());
+    polygonStack.pop();
     // Return to start state if no more polys on stack
-    if (polyPtr < 0)
+    if (polygonStack.empty())
     {
       state = State::START;
     }
@@ -712,13 +702,13 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
 
 // t	Enable/disable tropism corrections after each Move
 // t(x,y,z,e)	- enable tropism; tropism vector is T= (x,y,z),
-// e is `suspectibility parameter', preferably between 0 and 1.
+// e is `susceptibility parameter', preferably between 0 and 1.
 // t(0)		- disable tropism
-// t(1)		- reenable tropism with last (T,e) parameters
+// t(1)		- re-enable tropism with last (T,e) parameters
 
-auto TropismError() noexcept -> void
+auto TropismError() -> void
 {
-  std::cerr << "Tropism: expect arguments (x,y,z,e) or (e).\n";
+  throw std::runtime_error("Tropism error: expect arguments (x,y,z,e) or (e).");
 }
 
 

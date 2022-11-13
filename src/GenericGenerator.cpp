@@ -87,7 +87,6 @@ auto GenericGenerator::OutputBounds(const Turtle& turtle) -> void
 auto GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon) -> void
 {
   // Draw the polygon
-  auto polygonIter = ConstPolygonIterator{polygon};
   StartGraphics(turtle);
 
   //const Vector start     = this->LastPosition();
@@ -112,18 +111,13 @@ auto GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygo
 
   *m_output << "  "
             << "polygon" << '\n';
-  int n = 0;
-  for (const Vector* vec = polygonIter.first(); vec != nullptr; vec = polygonIter.next())
-  {
-    ++n;
-  }
   *m_output << "  "
-            << "vertices: " << n << '\n';
-  for (const Vector* vec = polygonIter.first(); vec != nullptr; vec = polygonIter.next())
+            << "vertices: " << polygon.size() << '\n';
+  for (auto polygonIter = cbegin(polygon); polygonIter != cend(polygon); ++polygonIter)
   {
     *m_output << "  "
               << "  ";
-    OutputVec(*m_output, *vec);
+    OutputVec(*m_output, *polygonIter);
     *m_output << '\n';
   }
   *m_output << "\n";
