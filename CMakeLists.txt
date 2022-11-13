@@ -37,6 +37,7 @@ add_executable(${TARGET_NAME}
         src/Parser.cpp
         src/Polygon.h
         src/Production.cpp
+        src/RadianceGenerator.cpp
         src/SymbolTable.h
         src/token.h
         src/Turtle.cpp
