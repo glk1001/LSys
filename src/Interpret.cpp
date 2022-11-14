@@ -146,6 +146,9 @@ auto Interpret(const List<Module>& moduleList,
     ActionFunc actionFunc;
     if (not actionSymbolTable.Lookup(GetModuleName(*mod), actionFunc))
     {
+      PDebug(PD_INTERPRET, std::cerr << "Unknown action for " << *mod << "\n");
+      continue;
+      // TODO(glk) - This is what we want in the long term.
       std::cerr << "Unknown action for " << *mod << "\n";
       throw std::runtime_error("Unknown action.");
     }
