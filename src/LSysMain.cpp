@@ -39,6 +39,7 @@
  *
  */
 #include "CommandLineOptions.h"
+#include "GenericGenerator.h"
 #include "IGenerator.h"
 #include "Interpret.h"
 #include "LSysModel.h"
@@ -54,6 +55,7 @@
 #include <stdexcept>
 #include <string>
 
+using LSys::GenericGenerator;
 using LSys::IGenerator;
 using LSys::LSysModel;
 using LSys::Module;
@@ -369,7 +371,8 @@ int main(int argc, const char* argv[])
     // to build a database.
     auto outputFile       = GetOpenOutputFile(outputFilename);
     auto boundsOutputFile = GetOutputFile(boundsFilename);
-    auto generator = std::make_unique<RadianceGenerator>(outputFile.get(), boundsOutputFile.get());
+//    auto generator = std::make_unique<RadianceGenerator>(outputFile.get(), boundsOutputFile.get());
+    auto generator = std::make_unique<GenericGenerator>(outputFile.get(), boundsOutputFile.get());
 
     auto strStream = std::ostringstream{};
     strStream << "  Input file = " << inputFilename << "\n";

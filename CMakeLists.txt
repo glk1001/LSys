@@ -1,8 +1,8 @@
 project(LSys)
 cmake_minimum_required(VERSION 3.24)
 
+
 set(CMAKE_CXX_STANDARD 20)
-set(CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -67,6 +67,6 @@ message(STATUS "LSys: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "LSys: CMAKE_GENERATOR = \"${CMAKE_GENERATOR}\".")
 message(STATUS "LSys: GENERATOR_IS_MULTI_CONFIG = \"${GENERATOR_IS_MULTI_CONFIG}\".")
 message(STATUS "LSys: CMAKE_RUNTIME_OUTPUT_DIRECTORY = \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
-message(STATUS "LSys: C++ standard = \"${CXX_STANDARD}\".")
+message(STATUS "LSys: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "LSys: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "LSys: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
