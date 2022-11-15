@@ -40,7 +40,7 @@
 #include <stack>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 namespace
@@ -50,7 +50,7 @@ namespace
 // get quite deep in recursive L-system productions, thus we use a depth
 // of 100 (probably should use a dynamically allocated list).
 constexpr auto MAX_POLYGONS = 100;
-std::stack<LSys::Polygon> polygonStack{};
+std::stack<L_SYSTEM::Polygon> polygonStack{};
 
 enum class State
 {
@@ -253,7 +253,7 @@ auto TurnRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Turn(-Maths::ToRadians(args[0]));
+    turtle.Turn(-MATHS::ToRadians(args[0]));
   }
 }
 
@@ -272,7 +272,7 @@ auto TurnLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Turn(Maths::ToRadians(args[0]));
+    turtle.Turn(MATHS::ToRadians(args[0]));
   }
 }
 
@@ -291,7 +291,7 @@ auto PitchUpImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Pitch(-Maths::ToRadians(args[0]));
+    turtle.Pitch(-MATHS::ToRadians(args[0]));
   }
 }
 
@@ -310,7 +310,7 @@ auto PitchDownImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Pitch(Maths::ToRadians(args[0]));
+    turtle.Pitch(MATHS::ToRadians(args[0]));
   }
 }
 
@@ -329,7 +329,7 @@ auto RollRightImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Roll(Maths::ToRadians(args[0]));
+    turtle.Roll(MATHS::ToRadians(args[0]));
   }
 }
 
@@ -348,7 +348,7 @@ auto RollLeftImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   }
   else
   {
-    turtle.Roll(-Maths::ToRadians(args[0]));
+    turtle.Roll(-MATHS::ToRadians(args[0]));
   }
 }
 
@@ -438,7 +438,7 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
     throw std::runtime_error("StartPolygon: polygon stack filled.");
   }
 
-  polygonStack.emplace(LSys::Polygon{});
+  polygonStack.emplace(L_SYSTEM::Polygon{});
 }
 
 // .	Add a vertex to the current polygon
@@ -729,12 +729,12 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   {
     // Only one parameter; disable tropism if it equals 0,
     // otherwise enable tropism with the specified parameter.
-    if (const auto susceptibility = args.at(0); std::fabs(susceptibility) < Maths::SMALL_FLOAT)
+    if (const auto susceptibility = args.at(0); std::fabs(susceptibility) < MATHS::SMALL_FLOAT)
     {
       turtle.DisableTropism();
     }
     // TODO(glk) - Is this check for 1 OK?
-    else if (std::fabs(susceptibility - 1.0F) < Maths::SMALL_FLOAT)
+    else if (std::fabs(susceptibility - 1.0F) < MATHS::SMALL_FLOAT)
     {
       turtle.SetTropismVector(susceptibility);
       turtle.EnableTropism();
@@ -1044,4 +1044,4 @@ auto Tropism(ConstListIterator<Module>& moduleIter,
   TropismImpl(moduleIter, turtle, generator, numArgs, args);
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

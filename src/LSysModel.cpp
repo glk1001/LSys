@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 // Apply the model to the specified list for one generation, generating a new list.
@@ -73,4 +73,4 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
   return newModuleList;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

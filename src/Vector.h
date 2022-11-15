@@ -43,7 +43,7 @@
 #include <cstdint>
 #include <iostream>
 
-namespace LSys
+namespace L_SYSTEM
 {
 // This is a Cartesian vector class.
 // The usual scalar and vector operators are defined.
@@ -61,7 +61,7 @@ public:
 
   [[nodiscard]] auto GetMagnitude() -> float
   {
-    return std::sqrt(Maths::sq(m_vec[0]) + Maths::sq(m_vec[1]) + Maths::sq(m_vec[2]));
+    return std::sqrt(MATHS::sq(m_vec[0]) + MATHS::sq(m_vec[1]) + MATHS::sq(m_vec[2]));
   }
 
   auto Normalize() -> Vector&
@@ -164,8 +164,8 @@ inline auto operator==(const Vector& vec1, const Vector& vec2) -> bool
 
 inline auto Distance(const Vector& vec1, const Vector& vec2) -> float
 {
-  return std::sqrt(Maths::sq(vec1(0) - vec2(0)) + Maths::sq(vec1(1) - vec2(1)) +
-                   Maths::sq(vec1(2) - vec2(2)));
+  return std::sqrt(MATHS::sq(vec1(0) - vec2(0)) + MATHS::sq(vec1(1) - vec2(1)) +
+                   MATHS::sq(vec1(2) - vec2(2)));
 }
 
 auto operator<<(std::ostream& out, const Vector& vec) -> std::ostream&;
@@ -222,4 +222,4 @@ private:
 
 std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
 
-} // namespace LSys
+} // namespace L_SYSTEM

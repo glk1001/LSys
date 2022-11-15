@@ -34,7 +34,7 @@
 
 #include <string>
 
-namespace LSys
+namespace L_SYSTEM
 {
 // A class to generate a database; uses virtual methods and should be
 // subclassed for a specific type of database, e.g. PostScript or
@@ -69,8 +69,8 @@ public:
   virtual auto DrawObject(const Turtle& turtle,
                           const Module& mod,
                           int numArgs,
-                          const ArgsArray& args) -> void                   = 0;
-  virtual auto Polygon(const Turtle& turtle, const LSys::Polygon&) -> void = 0;
+                          const ArgsArray& args) -> void                       = 0;
+  virtual auto Polygon(const Turtle& turtle, const L_SYSTEM::Polygon&) -> void = 0;
 
   // Functions to change rendering parameters
   virtual auto SetColor(const Turtle& turtle) -> void     = 0;
@@ -115,4 +115,4 @@ inline auto IGenerator::SetHeader(const std::string& header) -> void
   m_objectHeader = header;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

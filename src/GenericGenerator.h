@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 class GenericGenerator : public IGenerator
@@ -26,7 +26,7 @@ public:
   auto FlushGraphics(const Turtle& turtle) -> void override;
 
   // Functions to draw objects in graphics mode
-  auto Polygon(const Turtle& turtle, const LSys::Polygon& polygon) -> void override;
+  auto Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& polygon) -> void override;
   auto LineTo(const Turtle& turtle) -> void override;
   auto Flower(const Turtle& turtle, float radius) -> void;
   auto Leaf(const Turtle& turtle, float length) -> void;
@@ -48,4 +48,4 @@ private:
   auto OutputAttributes(const Turtle::State& turtleState) -> void;
 };
 
-} // namespace LSys
+} // namespace L_SYSTEM

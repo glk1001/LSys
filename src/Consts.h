@@ -2,13 +2,12 @@
 
 #include <array>
 
-namespace LSys
+namespace L_SYSTEM
 {
 inline constexpr int MAX_ARGS = 10;
 using ArgsArray               = std::array<float, MAX_ARGS>;
-}
 
-namespace Maths
+namespace MATHS
 {
 inline constexpr auto SMALL_FLOAT = 0.00001F;
 
@@ -38,4 +37,5 @@ inline constexpr auto DEGREES_360 = 360.0F;
   return radians * (DEGREES_360 / TWO_PI);
 }
 
-} // namespace Maths
+} // namespace MATHS
+} // namespace L_SYSTEM

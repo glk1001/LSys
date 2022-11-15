@@ -44,7 +44,7 @@
 #include <ctime>
 #include <functional>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 namespace
@@ -58,7 +58,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(std::sin(Maths::ToRadians(x)));
+    return Value(std::sin(MATHS::ToRadians(x)));
   }
   return Value{};
 }
@@ -68,7 +68,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(std::cos(Maths::ToRadians(x)));
+    return Value(std::cos(MATHS::ToRadians(x)));
   }
   return Value{};
 }
@@ -78,7 +78,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(std::tan(Maths::ToRadians(x)));
+    return Value(std::tan(MATHS::ToRadians(x)));
   }
   return Value{};
 }
@@ -88,7 +88,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(Maths::ToDegrees(std::asin(x)));
+    return Value(MATHS::ToDegrees(std::asin(x)));
   }
   return Value{};
 }
@@ -98,7 +98,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(Maths::ToDegrees(std::acos(x)));
+    return Value(MATHS::ToDegrees(std::acos(x)));
   }
   return Value{};
 }
@@ -108,7 +108,7 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(Maths::ToDegrees(std::atan(x)));
+    return Value(MATHS::ToDegrees(std::atan(x)));
   }
   return Value{};
 }
@@ -120,7 +120,7 @@ using ExprFunc =
   auto y = 0.0F;
   if (GetFloat(symbolTable, expressionList, y) and GetFloat(symbolTable, expressionList, x, 1))
   {
-    return Value(Maths::ToDegrees(std::atan2(y, x)));
+    return Value(MATHS::ToDegrees(std::atan2(y, x)));
   }
   return Value{};
 }
@@ -271,9 +271,9 @@ const auto functionSymbolTable = GetFunctionSymbolTable();
     case LSYS_GE:
       return ">=";
     default:
-      static char str[] = " ";
-      str[0]            = static_cast<char>(operation);
-      return str;
+      static char s_str[] = " ";
+      s_str[0]            = static_cast<char>(operation);
+      return s_str;
   }
 }
 
@@ -618,4 +618,4 @@ auto GetFloat(const SymbolTable<Value>& symbolTable,
   return false;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

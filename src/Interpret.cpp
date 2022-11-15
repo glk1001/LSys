@@ -40,7 +40,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 namespace
@@ -164,4 +164,4 @@ auto Interpret(const List<Module>& moduleList,
   generator.Postscript(turtle);
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

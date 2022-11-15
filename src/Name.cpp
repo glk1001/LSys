@@ -34,7 +34,7 @@
 #include <cstring>
 #include <iostream>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 char** Name::s_reverseMap       = nullptr;
@@ -88,4 +88,4 @@ std::ostream& operator<<(std::ostream& out, const Name& name)
   //  return o << "[id: " << int(n) << " name: " << (const char *)n << "]";
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

@@ -41,7 +41,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 Value::Value() : m_type{ValueType::UNDEFINED}, m_val{}
@@ -512,4 +512,4 @@ auto operator<<(std::ostream& out, const Value& value) -> std::ostream&
   return out;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

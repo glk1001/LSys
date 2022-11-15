@@ -35,7 +35,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 Module::Module(const Name& name, List<Expression>* const expressionList, const bool ignoreFlag)
@@ -52,7 +52,7 @@ auto Module::Bind(const Module& values, SymbolTable<Value>& symbolTable) const -
   PDebug(PD_MODULE,
          std::cerr << "Module::Bind: formals= " << *this << " values= " << values << "\n");
 
-  if (not LSys::Bind(m_param.get(), values.m_param.get(), symbolTable))
+  if (not L_SYSTEM::Bind(m_param.get(), values.m_param.get(), symbolTable))
   {
     throw std::runtime_error("Failure binding module.");
   }
@@ -68,14 +68,14 @@ auto Module::Conforms(const Module& mod) const -> bool
     return false;
   }
 
-  return LSys::Conforms(m_param.get(), mod.m_param.get());
+  return L_SYSTEM::Conforms(m_param.get(), mod.m_param.get());
 }
 
 // Instantiate the module; that is, return a copy with all of the
 //  module's expressions evaluated in the context of the symbol table.
 auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*
 {
-  auto* const exprList  = LSys::Instantiate(m_param.get(), symbolTable);
+  auto* const exprList  = L_SYSTEM::Instantiate(m_param.get(), symbolTable);
   auto* const newModule = new Module{Name(m_tag), exprList, m_ignoreFlag};
 
   PDebug(PD_MODULE,
@@ -101,7 +101,7 @@ auto Module::GetFloat(float& fltValue, const unsigned int n) const -> bool
 
   // An empty symbol table used to ensure the argument is a bound value.
   static const auto s_SYMBOL_TABLE = SymbolTable<Value>{};
-  return LSys::GetFloat(s_SYMBOL_TABLE, *m_param, fltValue, n);
+  return L_SYSTEM::GetFloat(s_SYMBOL_TABLE, *m_param, fltValue, n);
 }
 
 auto operator<<(std::ostream& out, const Module& mod) -> std::ostream&
@@ -115,4 +115,4 @@ auto operator<<(std::ostream& out, const Module& mod) -> std::ostream&
   return out;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM
