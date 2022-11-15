@@ -24,11 +24,7 @@ CommandLineOptionBase::CommandLineOptionBase(char _optChar,
 {
 }
 
-
-CommandLineOptionBase::CommandLineOptionBase(const CommandLineOptionBase& c)
-  : optChar(c.optChar), optType(c.optType), longOpt(c.longOpt), optDescription(c.optDescription)
-{
-}
+CommandLineOptionBase::~CommandLineOptionBase() = default;
 
 
 CommandLineOptionBase* CommandLineOptionBase::Clone() const

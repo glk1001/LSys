@@ -76,11 +76,11 @@ private:
       int id{};
       List<Expression>* funcArgs{};
     };
-    Name name;
-    Value value; // Ensure union is big enough for a Value
+    Name name{};
+    Value value{}; // Ensure union is big enough for a Value
     std::array<Expression*, 2> args{}; // Child expressions
   };
-  ExpressionValue m_expressionValue;
+  ExpressionValue m_expressionValue{};
   [[nodiscard]] static auto GetExpressionValue(const Name& name, List<Expression>* funcArgs)
       -> ExpressionValue;
 

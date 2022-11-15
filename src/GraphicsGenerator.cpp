@@ -8,8 +8,7 @@
 namespace L_SYSTEM
 {
 
-GraphicsGenerator::GraphicsGenerator(const DrawFuncs& drawFuncs)
-  : m_drawFuncs{drawFuncs}
+GraphicsGenerator::GraphicsGenerator(const DrawFuncs& drawFuncs) : m_drawFuncs{drawFuncs}
 {
 }
 
@@ -44,10 +43,12 @@ auto GraphicsGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
 {
   ++m_groupNum;
 
-  const auto color = GetTurtle().GetCurrentState().color.m_color.index;
-  const auto width = GetTurtle().GetCurrentState().width;
+  const auto color   = GetTurtle().GetCurrentState().color.m_color.index;
+  const auto width   = GetTurtle().GetCurrentState().width;
+  auto closedPolygon = polygon;
+  closedPolygon.emplace_back(polygon.front());
 
-  m_drawFuncs.drawPolygonFunc(polygon, color, width);
+  m_drawFuncs.drawPolygonFunc(closedPolygon, color, width);
 }
 
 auto GraphicsGenerator::LineTo() -> void

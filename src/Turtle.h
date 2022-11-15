@@ -54,7 +54,7 @@ enum class ColorType
 };
 struct Color
 {
-  ColorType colorType;
+  ColorType colorType = ColorType::INDEX;
   union
   {
     int index;

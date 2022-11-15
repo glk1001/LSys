@@ -61,8 +61,11 @@ public:
   [[nodiscard]] auto Abs() const -> Value;
   [[nodiscard]] auto operator&(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator|(const Value& otherValue) const -> Value;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
   [[nodiscard]] auto operator&&(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator||(const Value& otherValue) const -> Value;
+#pragma GCC diagnostic pop
   [[nodiscard]] auto operator==(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator!=(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator<(const Value& otherValue) const -> Value;
@@ -82,12 +85,12 @@ public:
   friend auto operator<<(std::ostream& out, const Value& value) -> std::ostream&;
 
 private:
-  ValueType m_type;
+  ValueType m_type = ValueType::UNDEFINED;
   union
   {
-    int intVal;
+    int intVal{};
     float fltVal;
-  } m_val;
+  } m_val{};
   enum class OpType
   {
     II,

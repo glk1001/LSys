@@ -129,14 +129,19 @@ auto GenericGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
   OutputAttributes(GetTurtle().GetCurrentState());
   m_output << "\n";
 
+  const auto numClosedPolygonVertices = polygon.size() + 1;
   m_output << INDENT << "polygon\n";
-  m_output << INDENT << "vertices: " << polygon.size() << "\n";
+  m_output << INDENT << "vertices: " << numClosedPolygonVertices << "\n";
   for (auto polygonIter = cbegin(polygon); polygonIter != cend(polygon); ++polygonIter)
   {
     m_output << INDENT << INDENT;
     OutputVec(m_output, *polygonIter);
     m_output << "\n";
   }
+  // Close the polygon.
+  m_output << INDENT << INDENT;
+  OutputVec(m_output, polygon.front());
+  m_output << "\n";
   m_output << "\n";
 
   m_output << "End Group " << m_groupNum << "\n";

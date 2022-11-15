@@ -31,7 +31,7 @@ public:
 
 private:
   using SymbolTableMap = typename std::map<std::string, Symbol<T>>;
-  SymbolTableMap m_symbolTable;
+  SymbolTableMap m_symbolTable{};
 };
 
 template<typename T>

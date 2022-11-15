@@ -120,7 +120,7 @@ public:
 
 private:
   Name m_productionName;
-  bool m_contextFree; // Is the production context-free?
+  bool m_contextFree = false; // Is the production context-free?
   const Predecessor* m_input;
   const Expression* m_condition;
   const List<Successor>* m_successors;
