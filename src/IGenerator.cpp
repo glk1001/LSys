@@ -25,6 +25,8 @@
  *
  */
 
+#define NDEBUG
+
 #include "IGenerator.h"
 
 #include <cassert>

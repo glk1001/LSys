@@ -25,6 +25,7 @@ add_executable(${TARGET_NAME}
         src/Consts.cpp
         src/Expression.cpp
         src/GenericGenerator.cpp
+        src/GraphicsGenerator.cpp
         src/IGenerator.cpp
         src/Interpret.cpp
         src/Lexer.cpp

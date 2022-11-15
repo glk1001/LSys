@@ -82,40 +82,6 @@ namespace
   return std::filesystem::path{filename}.stem();
 }
 
-/***
-  // Print a message describing program options
-  void usage(const char* progname)
-  {
-    cerr << "Usage: " << progname
-         << " [-maxgen n] [-delta angle] [-width w]"
-         << " [-display] [-stats] [-generic] [-o file] [-D [lmEGILMNPSA]\n"
-         << "-maxgen  sets number of generations to produce\n"
-         << "-delta   sets default turn angle\n"
-         << "-width   sets default line width\n"
-         << "-seed    sets seed GetFloatValue\n"
-         << "-display displays the L-systems produced at each generation\n"
-         << "-stats   displays module stats for each generation\n";
-
-    cerr << "-generic generates a generic database format\n"
-         << "-i       specifies input file (default standard input)\n"
-         << "-o       specifies output file (default 'output.ps')\n"
-         << "-D enables debugging statements for any of:\n"
-         << "    g - output generation\n"
-         << "    l - memory allocation\n";
-
-    cerr << "    m - main program loop\n"
-         << "    E - Expressions\n"
-         << "    G - Parsing\n"
-         << "    I - Interpretation\n"
-         << "    L - Lexical scanning\n"
-         << "    M - Modules\n"
-         << "    N - Hashed names\n"
-         << "    P - Productions\n"
-         << "    S - Symbols\n"
-         << "    A - all of the above" << endl;
-  }
-  ***/
-
 struct Properties
 {
   std::string inputFilename  = "";
@@ -269,6 +235,40 @@ struct CommandLineArgs
   bool display = false;
   bool stats   = false;
 };
+
+/***
+  // Print a message describing program options
+  void usage(const char* progname)
+  {
+    cerr << "Usage: " << progname
+         << " [-maxgen n] [-delta angle] [-width w]"
+         << " [-display] [-stats] [-generic] [-o file] [-D [lmEGILMNPSA]\n"
+         << "-maxgen  sets number of generations to produce\n"
+         << "-delta   sets default turn angle\n"
+         << "-width   sets default line width\n"
+         << "-seed    sets seed GetFloatValue\n"
+         << "-display displays the L-systems produced at each generation\n"
+         << "-stats   displays module stats for each generation\n";
+
+cerr << "-generic generates a generic database format\n"
+     << "-i       specifies input file (default standard input)\n"
+     << "-o       specifies output file (default 'output.ps')\n"
+     << "-D enables debugging statements for any of:\n"
+     << "    g - output generation\n"
+     << "    l - memory allocation\n";
+
+cerr << "    m - main program loop\n"
+     << "    E - Expressions\n"
+     << "    G - Parsing\n"
+     << "    I - Interpretation\n"
+     << "    L - Lexical scanning\n"
+     << "    M - Modules\n"
+     << "    N - Hashed names\n"
+     << "    P - Productions\n"
+     << "    S - Symbols\n"
+     << "    A - all of the above" << endl;
+}
+***/
 
 [[nodiscard]] auto GetPropertiesFromCommandLine(const int argc, const char* argv[])
     -> CommandLineArgs
