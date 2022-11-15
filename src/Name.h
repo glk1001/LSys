@@ -55,7 +55,7 @@ private:
   static char** s_reverseMap;
   static int s_nextIndex;
   static uint32_t s_reverseMapSize;
-  int m_index;
+  int m_index = 0;
   friend auto operator==(const Name& a, const Name& b) -> bool;
 };
 

@@ -38,7 +38,11 @@ public:
 
   CommandLineOptions(bool use_f_flag = true);
   CommandLineOptions(const CommandLineOptions&) = delete;
+  CommandLineOptions(CommandLineOptions&&)      = default;
   ~CommandLineOptions();
+
+  auto operator=(const CommandLineOptions&) -> CommandLineOptions& = delete;
+  auto operator=(CommandLineOptions&&) -> CommandLineOptions&      = delete;
 
   template<typename T>
   void Add(char optChar,
@@ -78,8 +82,13 @@ public:
                         const std::string& longOpt,
                         const std::string& optDescription,
                         CommandLineOptions::OptionTypes);
-  CommandLineOptionBase(const CommandLineOptionBase&);
-  virtual ~CommandLineOptionBase() {}
+  CommandLineOptionBase(const CommandLineOptionBase&) = default;
+  CommandLineOptionBase(CommandLineOptionBase&&)      = default;
+  virtual ~CommandLineOptionBase();
+
+  auto operator=(const CommandLineOptionBase&) -> CommandLineOptionBase& = delete;
+  auto operator=(CommandLineOptionBase&&) -> CommandLineOptionBase&      = delete;
+
   virtual CommandLineOptionBase* Clone() const;
   virtual void SetValue([[maybe_unused]] const char* valStr) {}
 
@@ -103,14 +112,20 @@ public:
                     const std::string& longOption,
                     const std::string& optionDescription,
                     CommandLineOptions::OptionTypes,
-                    T* theVal);
+                    T* val);
   CommandLineOption(const CommandLineOption&);
+  CommandLineOption(CommandLineOption&&) = default;
+  virtual ~CommandLineOption()           = default;
+
+  auto operator=(const CommandLineOption&) -> CommandLineOption& = delete;
+  auto operator=(CommandLineOption&&) -> CommandLineOption&      = delete;
+
   virtual CommandLineOption* Clone() const;
   virtual void SetValue(const char* valStr);
-  const T& Value() const { return *theVal; }
+  const T& Value() const { return *m_val; }
 
 private:
-  T* theVal;
+  T* m_val;
 };
 
 template<typename T>
@@ -118,10 +133,10 @@ CommandLineOption<T>::CommandLineOption(char optionChar,
                                         const std::string& longOption,
                                         const std::string& optionDescription,
                                         CommandLineOptions::OptionTypes optionType,
-                                        T* _theVal)
-  : CommandLineOptionBase(optionChar, longOption, optionDescription, optionType), theVal(_theVal)
+                                        T* val)
+  : CommandLineOptionBase(optionChar, longOption, optionDescription, optionType), m_val(val)
 {
-  if (theVal == 0)
+  if (m_val == 0)
   {
     throw std::runtime_error("Cannot have null option address for short option " +
                              std::string(1, optionChar) + ", long option " + longOption);
@@ -130,7 +145,7 @@ CommandLineOption<T>::CommandLineOption(char optionChar,
 
 template<typename T>
 inline CommandLineOption<T>::CommandLineOption(const CommandLineOption<T>& c)
-  : CommandLineOptionBase(c), theVal(c.theVal)
+  : CommandLineOptionBase(c), m_val(c.m_val)
 {
 }
 
@@ -143,26 +158,26 @@ inline CommandLineOption<T>* CommandLineOption<T>::Clone() const
 template<typename T>
 inline void CommandLineOption<T>::SetValue(const char* valStr)
 {
-  *theVal = boost::lexical_cast<T>(valStr);
+  *m_val = boost::lexical_cast<T>(valStr);
 }
 
 template<>
 inline void CommandLineOption<bool>::SetValue(const char*)
 {
-  *theVal = true;
+  *m_val = true;
 }
 
 template<>
 inline void CommandLineOption<const char*>::SetValue(const char* valStr)
 {
-  *theVal = valStr;
+  *m_val = valStr;
 }
 
 template<>
 inline void CommandLineOption<std::vector<std::string>>::SetValue(const char* valStr)
 {
   if (valStr != 0)
-    theVal->push_back(valStr); // ????????????????????????????????????????
+    m_val->push_back(valStr); // ????????????????????????????????????????
 }
 
 template<typename T>

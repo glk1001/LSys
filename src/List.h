@@ -34,7 +34,7 @@ private:
   friend class ListIterator<T>;
   friend class ConstListIterator<T>;
   using ListIter = typename std::vector<T*>::iterator;
-  std::vector<T*> m_stdList;
+  std::vector<T*> m_stdList{};
   auto Clear() -> void;
 };
 
@@ -75,7 +75,7 @@ private:
 };
 
 template<typename T>
-inline List<T>::~List()
+List<T>::~List()
 {
   for (ListIter i = m_stdList.begin(); i != m_stdList.end(); ++i)
   {
