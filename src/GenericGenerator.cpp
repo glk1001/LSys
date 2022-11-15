@@ -36,9 +36,9 @@ auto GenericGenerator::SetHeader(const std::string& header) -> void
   m_output << "\n\n";
 }
 
-auto GenericGenerator::Prelude(const Turtle& turtle) -> void
+auto GenericGenerator::Prelude() -> void
 {
-  IGenerator::Prelude(turtle);
+  IGenerator::Prelude();
 
   m_output << std::fixed << std::setprecision(PRECISION);
   if (m_output.bad())
@@ -49,9 +49,9 @@ auto GenericGenerator::Prelude(const Turtle& turtle) -> void
   m_groupNum = 0;
 }
 
-auto GenericGenerator::Postscript(const Turtle& turtle) -> void
+auto GenericGenerator::Postscript() -> void
 {
-  this->OutputBounds(turtle);
+  OutputBounds();
 
   m_output << "End File\n";
 
@@ -62,12 +62,12 @@ auto GenericGenerator::Postscript(const Turtle& turtle) -> void
   m_output.close();
 }
 
-auto GenericGenerator::StartGraphics([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::StartGraphics() -> void
 {
   // Not used.
 }
 
-auto GenericGenerator::FlushGraphics([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::FlushGraphics() -> void
 {
   // Not used.
 }
@@ -84,10 +84,10 @@ inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
       << -MATHS::Round(vec[0], PRECISION);
 }
 
-auto GenericGenerator::OutputBounds(const Turtle& turtle) -> void
+auto GenericGenerator::OutputBounds() -> void
 {
-  const auto minBoundingBox = turtle.GetBoundingBox().Min();
-  const auto maxBoundingBox = turtle.GetBoundingBox().Max();
+  const auto minBoundingBox = GetTurtle().GetBoundingBox().Min();
+  const auto maxBoundingBox = GetTurtle().GetBoundingBox().Max();
   const auto startPoint     = Vector{0.0F, 0.0F, 0.0F};
 
   // Output start point
@@ -119,14 +119,14 @@ auto GenericGenerator::OutputAttributes(const Turtle::State& turtleState) -> voi
   m_output << INDENT << "Width: " << turtleState.width << "\n";
 }
 
-auto GenericGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& polygon) -> void
+auto GenericGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
 {
   // Draw the polygon
-  StartGraphics(turtle);
+  StartGraphics();
 
   ++m_groupNum;
   m_output << "Start Group " << m_groupNum << "\n";
-  OutputAttributes(turtle.GetCurrentState());
+  OutputAttributes(GetTurtle().GetCurrentState());
   m_output << "\n";
 
   m_output << INDENT << "polygon\n";
@@ -143,15 +143,15 @@ auto GenericGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& po
   m_output << "\n\n";
 }
 
-auto GenericGenerator::LineTo(const Turtle& turtle) -> void
+auto GenericGenerator::LineTo() -> void
 {
   ++m_groupNum;
   m_output << "Start Group " << m_groupNum << "\n";
-  OutputAttributes(turtle.GetCurrentState());
+  OutputAttributes(GetTurtle().GetCurrentState());
   m_output << "\n";
 
   const auto& start = GetLastPosition();
-  const auto& end   = turtle.GetCurrentState().position;
+  const auto& end   = GetTurtle().GetCurrentState().position;
 
   m_output << INDENT << "line\n";
   m_output << INDENT << INDENT;
@@ -164,39 +164,38 @@ auto GenericGenerator::LineTo(const Turtle& turtle) -> void
   m_output << "End Group " << m_groupNum << "\n";
   m_output << "\n\n";
 
-  IGenerator::LineTo(turtle);
+  IGenerator::LineTo();
 }
 
-auto GenericGenerator::DrawObject(const Turtle& turtle,
-                                  const Module& mod,
-                                  const int numArgs,
-                                  const ArgsArray& args) -> void
+auto GenericGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
+    -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();
 
   ++m_groupNum;
   m_output << "Start Group " << m_groupNum << "\n";
-  OutputAttributes(turtle.GetCurrentState());
+  OutputAttributes(GetTurtle().GetCurrentState());
   m_output << "\n";
 
   m_output << INDENT << "object\n";
   m_output << INDENT << "  Name: " << objName << "\n";
-  m_output << INDENT << "  LineWidth: " << MATHS::Round(turtle.GetCurrentState().width, PRECISION)
+  m_output << INDENT
+           << "  LineWidth: " << MATHS::Round(GetTurtle().GetCurrentState().width, PRECISION)
            << "\n";
   m_output << INDENT << "  LineDistance: "
-           << MATHS::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << "\n";
+           << MATHS::Round(GetTurtle().GetCurrentState().defaultDistance, PRECISION) << "\n";
   m_output << INDENT << "  ContactPoint: ";
   OutputVec(m_output, contactPoint);
   m_output << "\n";
   m_output << INDENT << "  Heading: ";
-  OutputVec(m_output, turtle.GetHeading());
+  OutputVec(m_output, GetTurtle().GetHeading());
   m_output << "\n";
   m_output << INDENT << "  Left: ";
-  OutputVec(m_output, turtle.GetLeft());
+  OutputVec(m_output, GetTurtle().GetLeft());
   m_output << "\n";
   m_output << INDENT << "  Up:";
-  OutputVec(m_output, turtle.GetUp());
+  OutputVec(m_output, GetTurtle().GetUp());
   m_output << "\n";
   m_output << INDENT << "  nargs: " << numArgs << "\n";
   for (auto i = 0U; i < static_cast<uint32_t>(numArgs); ++i)
@@ -209,22 +208,22 @@ auto GenericGenerator::DrawObject(const Turtle& turtle,
   m_output << "\n\n";
 }
 
-auto GenericGenerator::SetColor([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::SetColor() -> void
 {
   // Not needed.
 }
 
-auto GenericGenerator::SetBackColor([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::SetBackColor() -> void
 {
   // Not needed.
 }
 
-auto GenericGenerator::SetTexture([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::SetTexture() -> void
 {
   // Not needed.
 }
 
-auto GenericGenerator::SetWidth([[maybe_unused]] const Turtle& turtle) -> void
+auto GenericGenerator::SetWidth() -> void
 {
   // Not needed.
 }

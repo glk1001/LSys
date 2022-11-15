@@ -135,7 +135,8 @@ auto Interpret(const List<Module>& moduleList,
   turtle.SetWidth(width); // ???????????????????????????????????????????????????????
   turtle.SetDefaultDistance(distance);
 
-  generator.Prelude(turtle);
+  generator.SetTurtle(turtle);
+  generator.Prelude();
 
   const auto actionSymbolTable = GetActionSymbolTable();
   auto modList                 = ConstListIterator<Module>{moduleList};
@@ -161,7 +162,7 @@ auto Interpret(const List<Module>& moduleList,
     PDebug(PD_INTERPRET, std::cerr << turtle);
   }
 
-  generator.Postscript(turtle);
+  generator.Postscript();
 }
 
 } // namespace L_SYSTEM

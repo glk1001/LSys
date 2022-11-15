@@ -1,7 +1,6 @@
 #include "RadianceGenerator.h"
 
 #include "Module.h"
-#include "Turtle.h"
 #include "Vector.h"
 
 #include <fstream>
@@ -40,9 +39,9 @@ auto RadianceGenerator::SetHeader(const std::string& header) -> void
   m_output << "\n\n";
 }
 
-auto RadianceGenerator::Prelude(const Turtle& turtle) -> void
+auto RadianceGenerator::Prelude() -> void
 {
-  IGenerator::Prelude(turtle);
+  IGenerator::Prelude();
 
   m_output << std::fixed << std::setprecision(PRECISION);
   if (m_output.bad())
@@ -53,9 +52,9 @@ auto RadianceGenerator::Prelude(const Turtle& turtle) -> void
   m_groupNum = 0;
 }
 
-auto RadianceGenerator::Postscript(const Turtle& turtle) -> void
+auto RadianceGenerator::Postscript() -> void
 {
-  this->OutputBounds(turtle);
+  OutputBounds();
 
   m_output << "\n\n";
   m_output << "RADEND\n";
@@ -67,12 +66,12 @@ auto RadianceGenerator::Postscript(const Turtle& turtle) -> void
   m_output.close();
 }
 
-auto RadianceGenerator::StartGraphics([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::StartGraphics() -> void
 {
   // Not used.
 }
 
-auto RadianceGenerator::FlushGraphics([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::FlushGraphics() -> void
 {
   // Not used.
 }
@@ -86,10 +85,10 @@ inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
       << -MATHS::Round(vec[0], PRECISION);
 }
 
-auto RadianceGenerator::OutputBounds(const Turtle& turtle) -> void
+auto RadianceGenerator::OutputBounds() -> void
 {
-  const auto minBoundingBox = turtle.GetBoundingBox().Min();
-  const auto maxBoundingBox = turtle.GetBoundingBox().Max();
+  const auto minBoundingBox = GetTurtle().GetBoundingBox().Min();
+  const auto maxBoundingBox = GetTurtle().GetBoundingBox().Max();
   const auto startPoint     = Vector{0.0F, 0.0F, 0.0F};
 
   // Output start point
@@ -110,21 +109,22 @@ auto RadianceGenerator::OutputBounds(const Turtle& turtle) -> void
   m_boundsOutput << "\n\n";
 }
 
-auto RadianceGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& polygon) -> void
+auto RadianceGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
 {
   // Draw the polygon
-  StartGraphics(turtle);
+  StartGraphics();
 
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << "  "
-           << "FrontMaterial: " << turtle.GetCurrentState().color.m_color.index << "\n";
+           << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << "  "
-           << "FrontTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << "  "
-           << "BackMaterial: " << turtle.GetCurrentState().backgroundColor.m_color.index << "\n";
+           << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
+           << "\n";
   m_output << "  "
-           << "BackTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
   m_output << "  "
@@ -144,24 +144,25 @@ auto RadianceGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& p
   m_output << "\n\n";
 }
 
-auto RadianceGenerator::LineTo(const Turtle& turtle) -> void
+auto RadianceGenerator::LineTo() -> void
 {
   const Vector start      = GetLastPosition();
-  const Vector end        = turtle.GetCurrentState().position;
+  const Vector end        = GetTurtle().GetCurrentState().position;
   const float lineLength  = Distance(start, end);
   const float startRadius = (0.5F * GetLastWidth() * lineLength) / 100.0F;
-  const float endRadius   = (0.5F * turtle.GetCurrentState().width * lineLength) / 100.0F;
+  const float endRadius   = (0.5F * GetTurtle().GetCurrentState().width * lineLength) / 100.0F;
 
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << "  "
-           << "FrontMaterial: " << turtle.GetCurrentState().color.m_color.index << "\n";
+           << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << "  "
-           << "FrontTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << "  "
-           << "BackMaterial: " << turtle.GetCurrentState().backgroundColor.m_color.index << "\n";
+           << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
+           << "\n";
   m_output << "  "
-           << "BackTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
   m_output << "  "
@@ -192,13 +193,11 @@ auto RadianceGenerator::LineTo(const Turtle& turtle) -> void
   m_output << "End_Object_Group " << m_groupNum << '\n';
   m_output << "\n\n";
 
-  IGenerator::LineTo(turtle);
+  IGenerator::LineTo();
 }
 
-auto RadianceGenerator::DrawObject(const Turtle& turtle,
-                                   const Module& mod,
-                                   const int numArgs,
-                                   const ArgsArray& args) -> void
+auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
+    -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();
@@ -206,13 +205,14 @@ auto RadianceGenerator::DrawObject(const Turtle& turtle,
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << "  "
-           << "FrontMaterial: " << turtle.GetCurrentState().color.m_color.index << "\n";
+           << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << "  "
-           << "FrontTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << "  "
-           << "BackMaterial: " << turtle.GetCurrentState().backgroundColor.m_color.index << "\n";
+           << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
+           << "\n";
   m_output << "  "
-           << "BackTexture: " << turtle.GetCurrentState().texture << "\n";
+           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
   m_output << " "
@@ -220,25 +220,26 @@ auto RadianceGenerator::DrawObject(const Turtle& turtle,
   m_output << " "
            << "  Name: " << objName << '\n';
   m_output << " "
-           << "  LineWidth: " << MATHS::Round(turtle.GetCurrentState().width, PRECISION) << '\n';
+           << "  LineWidth: " << MATHS::Round(GetTurtle().GetCurrentState().width, PRECISION)
+           << '\n';
   m_output << " "
            << "  LineDistance: "
-           << MATHS::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << '\n';
+           << MATHS::Round(GetTurtle().GetCurrentState().defaultDistance, PRECISION) << '\n';
   m_output << " "
            << "  ContactPoint: ";
   OutputVec(m_output, contactPoint);
   m_output << '\n';
   m_output << " "
            << "  Heading: ";
-  OutputVec(m_output, turtle.GetHeading());
+  OutputVec(m_output, GetTurtle().GetHeading());
   m_output << '\n';
   m_output << " "
            << "  Left: ";
-  OutputVec(m_output, turtle.GetLeft());
+  OutputVec(m_output, GetTurtle().GetLeft());
   m_output << '\n';
   m_output << " "
            << "  Up:";
-  OutputVec(m_output, turtle.GetUp());
+  OutputVec(m_output, GetTurtle().GetUp());
   m_output << '\n';
   m_output << " "
            << "  nargs: " << numArgs << '\n';
@@ -253,22 +254,22 @@ auto RadianceGenerator::DrawObject(const Turtle& turtle,
   m_output << "\n\n";
 }
 
-auto RadianceGenerator::SetColor([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::SetColor() -> void
 {
   // Not needed.
 }
 
-auto RadianceGenerator::SetBackColor([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::SetBackColor() -> void
 {
   // Not needed.
 }
 
-auto RadianceGenerator::SetTexture([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::SetTexture() -> void
 {
   // Not needed.
 }
 
-auto RadianceGenerator::SetWidth([[maybe_unused]] const Turtle& turtle) -> void
+auto RadianceGenerator::SetWidth() -> void
 {
   // Not needed.
 }
