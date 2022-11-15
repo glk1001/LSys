@@ -32,7 +32,6 @@
 #include "Polygon.h"
 #include "Turtle.h"
 
-#include <iosfwd>
 #include <string>
 
 namespace LSys
@@ -44,7 +43,7 @@ namespace LSys
 class IGenerator
 {
 public:
-  IGenerator(std::ofstream* output, std::ofstream* boundsOutput);
+  IGenerator()                  = default;
   IGenerator(const IGenerator&) = default;
   IGenerator(IGenerator&&)      = default;
   virtual ~IGenerator()         = default;
@@ -53,12 +52,12 @@ public:
   auto operator=(IGenerator&&) -> IGenerator&      = default;
 
   auto SetName(const std::string& name) -> void;
-  virtual auto SetHeader(const std::string& header) -> void = 0;
-  virtual auto OutputFailed() -> void;
+  [[nodiscard]] auto GetHeader() const -> std::string;
+  virtual auto SetHeader(const std::string& header) -> void;
 
   // Functions to provide bracketing information
   virtual auto Prelude(const Turtle& turtle) -> void;
-  virtual auto Postscript(const Turtle& turtle) -> void;
+  virtual auto Postscript(const Turtle& turtle) -> void = 0;
 
   // Functions to start/end a stream of graphics
   virtual auto StartGraphics(const Turtle& turtle) -> void = 0;
@@ -80,8 +79,8 @@ public:
   virtual auto SetTexture(const Turtle& turtle) -> void   = 0;
 
 protected:
-  std::ofstream* m_output;
-  std::ofstream* m_boundsOutput;
+  virtual auto OutputFailed() -> void;
+
   [[nodiscard]] auto GetLastPosition() const -> const Vector& { return m_lastPosition; }
   [[nodiscard]] auto GetLastWidth() const -> float { return m_lastWidth; }
   [[nodiscard]] auto GetLastMove() const -> bool // Was last move/draw a move?
@@ -94,20 +93,26 @@ protected:
   }
 
 private:
-  Vector m_lastPosition;
-  float m_lastWidth        = 0.0F;
-  bool m_lastMove          = true; // Was last move/draw a move?
-  std::string m_objectName = "null_object"; // Name of generated object
+  Vector m_lastPosition{};
+  float m_lastWidth          = 0.0F;
+  bool m_lastMove            = true; // Was last move/draw a move?
+  std::string m_objectName   = "null_object"; // Name of generated object
+  std::string m_objectHeader = "";
 };
-
-inline IGenerator::IGenerator(std::ofstream* const output, std::ofstream* const boundsOutput)
-  : m_output(output), m_boundsOutput(boundsOutput)
-{
-}
 
 inline auto IGenerator::SetName(const std::string& name) -> void
 {
   m_objectName = name;
+}
+
+inline auto IGenerator::GetHeader() const -> std::string
+{
+  return m_objectHeader;
+}
+
+inline auto IGenerator::SetHeader(const std::string& header) -> void
+{
+  m_objectHeader = header;
 }
 
 } // namespace LSys

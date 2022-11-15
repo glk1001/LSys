@@ -89,10 +89,23 @@ public:
 
   explicit Turtle(float turn = 90.0F, float widthScale = 1.0F);
 
-  auto SetDefaults(float widthScale, float delta) -> void;
+  auto SetDefaultDrawingParams(float widthScale, float delta) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
-  [[nodiscard]] auto GetPosition() const -> const Vector& { return m_currentState.position; }
+  struct State
+  {
+    Vector position{0.0F, 0.0F, 0.0F};
+    Matrix frame{};
+    float defaultDistance  = 0.0F;
+    float defaultTurnAngle = 0.0F;
+    float width            = 1.0F;
+    float widthScale       = 1.0F;
+    Color color{};
+    Color backgroundColor{};
+    int texture = 0;
+    TropismInfo tropism{};
+  };
+  [[nodiscard]] auto GetCurrentState() const -> const State& { return m_currentState; }
 
   // Methods to modify turtle parameters
   [[nodiscard]] auto GetHeading() const -> Vector;
@@ -102,36 +115,21 @@ public:
   [[nodiscard]] auto GetUp() const -> Vector;
   auto SetUp(const Vector& up) -> void;
 
-  [[nodiscard]] auto GetDefaultDistance() const -> float { return m_currentState.defaultDistance; }
   auto SetDefaultDistance(float distance = 1.0F) -> void;
-
-  [[nodiscard]] auto GetDefaultTurnAngle() const -> float
-  {
-    return Maths::ToDegrees(m_currentState.defaultTurnAngle);
-  }
   auto SetDefaultTurnAngle(float angle = 90.0F) -> void;
 
-  [[nodiscard]] auto GetFrame() const -> Matrix { return m_currentState.frame; }
   auto SetFrame(const Matrix& frame) -> void;
   auto SetGravity(const Vector& gravity) -> void;
-
-  [[nodiscard]] auto GetWidth() const -> float { return m_currentState.width; }
   auto SetWidth(float width = 1.0F) -> void;
-  [[nodiscard]] auto GetWidthScale() const -> float { return m_currentState.widthScale; }
+  auto SetTexture(int texture = 0) -> void;
 
-  [[nodiscard]] auto GetColor() const -> Color { return m_currentState.color; }
-  [[nodiscard]] auto GetBackColor() const -> Color { return m_currentState.backgroundColor; }
   auto IncrementColor() -> void;
   auto SetColor(int color = 0) -> void;
   auto SetColor(int color, int backgroundColor) -> void;
   auto SetColor(const Vector& colorVector) -> void;
 
-  [[nodiscard]] auto GetTexture() const -> int { return m_currentState.texture; } // Line texture
-  auto SetTexture(int texture = 0) -> void;
-
   // Functions for enabling/disabling application of tropism
   // after each segment is drawn.
-  [[nodiscard]] auto GetTropism() const -> TropismInfo { return m_currentState.tropism; }
   auto SetTropismVector(const Vector& vector) -> void;
   auto SetTropismVector(float susceptibility) -> void;
   auto DisableTropism() -> void;
@@ -161,19 +159,6 @@ public:
   friend auto operator<<(std::ostream& out, const Turtle& turtle) -> std::ostream&;
 
 private:
-  struct State
-  {
-    Vector position{0.0F, 0.0F, 0.0F};
-    Matrix frame{};
-    float defaultDistance  = 0.0F;
-    float defaultTurnAngle = 0.0F;
-    float width            = 1.0F;
-    float widthScale       = 1.0F;
-    Color color{};
-    Color backgroundColor{};
-    int texture = 0;
-    TropismInfo tropism{};
-  };
   State m_currentState{};
   std::stack<State> m_stateStack{};
 

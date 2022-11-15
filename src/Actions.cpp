@@ -82,7 +82,7 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
   // it's different from the last point defined in
   // the polygon, or there are no points defined in the polygon
   // yet).
-  if (const auto& point = turtle.GetPosition();
+  if (const auto& point = turtle.GetCurrentState().position;
       lastPolygon.empty() or (lastPolygon.back() != point))
   {
     PDebug(PD_INTERPRET, std::cerr << "AddPolygonEdge: adding first vertex " << point << "\n");
@@ -92,8 +92,9 @@ auto AddPolygonEdge(Turtle& turtle, const int numArgs, const ArgsArray& args) no
   // Move and add the ending point to the polygon.
   MoveTurtle(turtle, numArgs, args);
   PDebug(PD_INTERPRET,
-         std::cerr << "AddPolygonEdge: adding last vertex  " << turtle.GetPosition() << "\n");
-  polygonStack.top().emplace_back(turtle.GetPosition());
+         std::cerr << "AddPolygonEdge: adding last vertex  " << turtle.GetCurrentState().position
+                   << "\n");
+  polygonStack.top().emplace_back(turtle.GetCurrentState().position);
 }
 
 // Set line width only if changed too much
@@ -105,7 +106,7 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
   // Don't bother changing line width if 'small enough'.
   // This is an optimization to handle e.g. !(w)[!(w/2)F][!(w/2)F]
   //sort of cases, which happen a lot with trees.
-  if (std::fabs(turtle.GetWidth() - s_lastLineWidth) < EPSILON)
+  if (std::fabs(turtle.GetCurrentState().width - s_lastLineWidth) < EPSILON)
   {
     return;
   }
@@ -117,7 +118,7 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetWidth(turtle);
-  s_lastLineWidth = turtle.GetWidth();
+  s_lastLineWidth = turtle.GetCurrentState().width;
 }
 
 // Set color only if changed
@@ -126,7 +127,7 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
   static Color s_lastColor(-1);
 
   // Don't change color if not needed, again an optimization
-  if (turtle.GetColor() == s_lastColor)
+  if (turtle.GetCurrentState().color == s_lastColor)
   {
     return;
   }
@@ -138,7 +139,7 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetColor(turtle);
-  s_lastColor = turtle.GetColor();
+  s_lastColor = turtle.GetCurrentState().color;
 }
 
 // Set texture only if changed
@@ -147,7 +148,7 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
   static int s_lastTexture(-1);
 
   // Don't change texture if not needed, again an optimization
-  if (turtle.GetTexture() == s_lastTexture)
+  if (turtle.GetCurrentState().texture == s_lastTexture)
   {
     return;
   }
@@ -159,7 +160,7 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
   }
 
   generator.SetTexture(turtle);
-  s_lastTexture = turtle.GetTexture();
+  s_lastTexture = turtle.GetCurrentState().texture;
 }
 
 // f(l) Move without drawing
@@ -192,7 +193,7 @@ auto MoveHalfImpl(const ConstListIterator<Module>& moduleIter,
 {
   PDebug(PD_INTERPRET, std::cerr << "MoveHalf      \n");
 
-  const ArgsArray oneArg = {0.5F * turtle.GetDefaultDistance()};
+  const ArgsArray oneArg = {0.5F * turtle.GetCurrentState().defaultDistance};
   MoveImpl(moduleIter, turtle, generator, 1, oneArg);
 }
 
@@ -233,7 +234,7 @@ auto DrawHalfImpl(const ConstListIterator<Module>& moduleIter,
 {
   PDebug(PD_INTERPRET, std::cerr << "DrawHalf      \n");
 
-  const auto oneArg = ArgsArray{0.5F * turtle.GetDefaultDistance()};
+  const auto oneArg = ArgsArray{0.5F * turtle.GetCurrentState().defaultDistance};
   DrawImpl(moduleIter, turtle, generator, 1, oneArg);
 }
 
@@ -460,7 +461,7 @@ auto PolygonVertexImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
   }
   assert(polygonStack.size() <= MAX_POLYGONS);
 
-  polygonStack.top().emplace_back(turtle.GetPosition());
+  polygonStack.top().emplace_back(turtle.GetCurrentState().position);
 }
 
 // G	Move without creating a polygon edge
@@ -526,11 +527,11 @@ auto MultiplyDefaultDistanceImpl([[maybe_unused]] const ConstListIterator<Module
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.1F;
-    turtle.SetDefaultDistance(MULTIPLIER * turtle.GetDefaultDistance());
+    turtle.SetDefaultDistance(MULTIPLIER * turtle.GetCurrentState().defaultDistance);
   }
   else
   {
-    turtle.SetDefaultDistance(args.at(0) * turtle.GetDefaultDistance());
+    turtle.SetDefaultDistance(args.at(0) * turtle.GetCurrentState().defaultDistance);
   }
 }
 
@@ -546,11 +547,11 @@ auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Modul
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.1F;
-    turtle.SetDefaultTurnAngle(MULTIPLIER * turtle.GetDefaultTurnAngle());
+    turtle.SetDefaultTurnAngle(MULTIPLIER * turtle.GetCurrentState().defaultTurnAngle);
   }
   else
   {
-    turtle.SetDefaultTurnAngle(args[0] * turtle.GetDefaultTurnAngle());
+    turtle.SetDefaultTurnAngle(args[0] * turtle.GetCurrentState().defaultTurnAngle);
   }
 }
 
@@ -566,11 +567,11 @@ auto MultiplyWidthImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.4F;
-    turtle.SetWidth(MULTIPLIER * turtle.GetWidth());
+    turtle.SetWidth(MULTIPLIER * turtle.GetCurrentState().width);
   }
   else
   {
-    turtle.SetWidth(args[0] * turtle.GetWidth());
+    turtle.SetWidth(args[0] * turtle.GetCurrentState().width);
   }
 
   SetLineWidth(turtle, generator);
