@@ -3,10 +3,10 @@
 /* This must be the first include file in a file. Otherwise name clashes
      may occur. */
 
-#include "Module.h"
-#include "Production.h"
-#include "Value.h"
+#include "module.h"
+#include "production.h"
 #include "token.inc"
+#include "value.h"
 
 namespace L_SYSTEM
 {
