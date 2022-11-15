@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 template<typename T>
@@ -63,4 +63,4 @@ auto SymbolTable<T>::Lookup(const std::string& name, T& value) const -> bool
   return true;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

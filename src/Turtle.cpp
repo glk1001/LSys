@@ -36,7 +36,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 // TODO(glk) -  Make most of these inline.
@@ -141,7 +141,7 @@ auto Turtle::SetWidth(const float width) -> void
 auto Turtle::SetDefaultDrawingParams(const float widthScale, const float delta) -> void
 {
   m_currentState.widthScale       = widthScale;
-  m_currentState.defaultTurnAngle = Maths::ToRadians(delta);
+  m_currentState.defaultTurnAngle = MATHS::ToRadians(delta);
 }
 
 auto Turtle::SetDefaultDistance(const float distance) -> void
@@ -151,7 +151,7 @@ auto Turtle::SetDefaultDistance(const float distance) -> void
 
 auto Turtle::SetDefaultTurnAngle(const float angle) -> void
 {
-  m_currentState.defaultTurnAngle = Maths::ToRadians(angle);
+  m_currentState.defaultTurnAngle = MATHS::ToRadians(angle);
 }
 
 // Set color index. This is interpreted by the output generator.
@@ -399,4 +399,4 @@ std::ostream& operator<<(std::ostream& out, const Color& color)
   return out;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

@@ -36,7 +36,7 @@
 #include <iostream>
 #include <stack>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 // TODO(glk) - This should be restricted to the scope of class Turtle
@@ -168,4 +168,4 @@ private:
 
 auto operator<<(std::ostream& out, const TropismInfo& tropismInfo) -> std::ostream&;
 
-} // namespace LSys
+} // namespace L_SYSTEM

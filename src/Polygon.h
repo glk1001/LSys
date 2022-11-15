@@ -28,10 +28,10 @@
 
 #include <vector>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 // A polygon is just a list of vertices
 using Polygon = std::vector<Vector>;
 
-} // namespace LSys
+} // namespace L_SYSTEM

@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 static constexpr auto PRECISION = 5;
@@ -74,14 +74,14 @@ auto GenericGenerator::FlushGraphics([[maybe_unused]] const Turtle& turtle) -> v
 
 inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
 {
-  out << std::setw(10) << Maths::Round(vec[0], PRECISION) << " " << std::setw(10)
-      << Maths::Round(vec[1], PRECISION) << " " << std::setw(10) << Maths::Round(vec[2], PRECISION);
+  out << std::setw(10) << MATHS::Round(vec[0], PRECISION) << " " << std::setw(10)
+      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10) << MATHS::Round(vec[2], PRECISION);
   return;
 
   // Revert to right-handed coord system
-  out << std::setw(10) << -Maths::Round(vec[2], PRECISION) << " " << std::setw(10)
-      << Maths::Round(vec[1], PRECISION) << " " << std::setw(10)
-      << -Maths::Round(vec[0], PRECISION);
+  out << std::setw(10) << -MATHS::Round(vec[2], PRECISION) << " " << std::setw(10)
+      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10)
+      << -MATHS::Round(vec[0], PRECISION);
 }
 
 auto GenericGenerator::OutputBounds(const Turtle& turtle) -> void
@@ -101,12 +101,12 @@ auto GenericGenerator::OutputBounds(const Turtle& turtle) -> void
   // Output bounds
   m_boundsOutput << "bounds"
                  << "\n";
-  m_boundsOutput << INDENT << "min: " << std::setw(12) << Maths::Round(minBoundingBox[0], PRECISION)
-                 << " " << std::setw(12) << Maths::Round(minBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(minBoundingBox[2], PRECISION) << "\n";
-  m_boundsOutput << INDENT << "max: " << std::setw(12) << Maths::Round(maxBoundingBox[0], PRECISION)
-                 << " " << std::setw(12) << Maths::Round(maxBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(maxBoundingBox[2], PRECISION) << "\n";
+  m_boundsOutput << INDENT << "min: " << std::setw(12) << MATHS::Round(minBoundingBox[0], PRECISION)
+                 << " " << std::setw(12) << MATHS::Round(minBoundingBox[1], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(minBoundingBox[2], PRECISION) << "\n";
+  m_boundsOutput << INDENT << "max: " << std::setw(12) << MATHS::Round(maxBoundingBox[0], PRECISION)
+                 << " " << std::setw(12) << MATHS::Round(maxBoundingBox[1], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(maxBoundingBox[2], PRECISION) << "\n";
   m_boundsOutput << "\n\n";
 }
 
@@ -119,7 +119,7 @@ auto GenericGenerator::OutputAttributes(const Turtle::State& turtleState) -> voi
   m_output << INDENT << "Width: " << turtleState.width << "\n";
 }
 
-auto GenericGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon) -> void
+auto GenericGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& polygon) -> void
 {
   // Draw the polygon
   StartGraphics(turtle);
@@ -182,10 +182,10 @@ auto GenericGenerator::DrawObject(const Turtle& turtle,
 
   m_output << INDENT << "object\n";
   m_output << INDENT << "  Name: " << objName << "\n";
-  m_output << INDENT << "  LineWidth: " << Maths::Round(turtle.GetCurrentState().width, PRECISION)
+  m_output << INDENT << "  LineWidth: " << MATHS::Round(turtle.GetCurrentState().width, PRECISION)
            << "\n";
   m_output << INDENT << "  LineDistance: "
-           << Maths::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << "\n";
+           << MATHS::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << "\n";
   m_output << INDENT << "  ContactPoint: ";
   OutputVec(m_output, contactPoint);
   m_output << "\n";
@@ -229,4 +229,4 @@ auto GenericGenerator::SetWidth([[maybe_unused]] const Turtle& turtle) -> void
   // Not needed.
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

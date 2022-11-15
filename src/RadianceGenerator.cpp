@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 static constexpr auto PRECISION = 5;
@@ -81,9 +81,9 @@ inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
 {
   //  out << vec[0] << " " << vec[1] << " " << vec[2];
   // Revert to right-handed coord system
-  out << std::setw(10) << -Maths::Round(vec[2], PRECISION) << " " << std::setw(10)
-      << Maths::Round(vec[1], PRECISION) << " " << std::setw(10)
-      << -Maths::Round(vec[0], PRECISION);
+  out << std::setw(10) << -MATHS::Round(vec[2], PRECISION) << " " << std::setw(10)
+      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10)
+      << -MATHS::Round(vec[0], PRECISION);
 }
 
 auto RadianceGenerator::OutputBounds(const Turtle& turtle) -> void
@@ -101,16 +101,16 @@ auto RadianceGenerator::OutputBounds(const Turtle& turtle) -> void
 
   // Output bounds
   m_boundsOutput << "bounds" << '\n';
-  m_boundsOutput << "  min: " << std::setw(12) << Maths::Round(minBoundingBox[0], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(minBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(minBoundingBox[2], PRECISION) << '\n';
-  m_boundsOutput << "  max: " << std::setw(12) << Maths::Round(maxBoundingBox[0], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(maxBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << Maths::Round(maxBoundingBox[2], PRECISION) << '\n';
+  m_boundsOutput << "  min: " << std::setw(12) << MATHS::Round(minBoundingBox[0], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(minBoundingBox[1], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(minBoundingBox[2], PRECISION) << '\n';
+  m_boundsOutput << "  max: " << std::setw(12) << MATHS::Round(maxBoundingBox[0], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(maxBoundingBox[1], PRECISION) << " "
+                 << std::setw(12) << MATHS::Round(maxBoundingBox[2], PRECISION) << '\n';
   m_boundsOutput << "\n\n";
 }
 
-auto RadianceGenerator::Polygon(const Turtle& turtle, const LSys::Polygon& polygon) -> void
+auto RadianceGenerator::Polygon(const Turtle& turtle, const L_SYSTEM::Polygon& polygon) -> void
 {
   // Draw the polygon
   StartGraphics(turtle);
@@ -175,8 +175,8 @@ auto RadianceGenerator::LineTo(const Turtle& turtle) -> void
   OutputVec(m_output, end);
   m_output << '\n';
   m_output << "  "
-           << "  " << Maths::Round(startRadius, PRECISION) << " "
-           << Maths::Round(endRadius, PRECISION) << '\n';
+           << "  " << MATHS::Round(startRadius, PRECISION) << " "
+           << MATHS::Round(endRadius, PRECISION) << '\n';
   m_output << '\n';
 
   m_output << "  "
@@ -186,7 +186,7 @@ auto RadianceGenerator::LineTo(const Turtle& turtle) -> void
   OutputVec(m_output, end);
   m_output << '\n';
   m_output << "  "
-           << "  " << Maths::Round(endRadius, PRECISION) << '\n';
+           << "  " << MATHS::Round(endRadius, PRECISION) << '\n';
   m_output << '\n';
 
   m_output << "End_Object_Group " << m_groupNum << '\n';
@@ -220,10 +220,10 @@ auto RadianceGenerator::DrawObject(const Turtle& turtle,
   m_output << " "
            << "  Name: " << objName << '\n';
   m_output << " "
-           << "  LineWidth: " << Maths::Round(turtle.GetCurrentState().width, PRECISION) << '\n';
+           << "  LineWidth: " << MATHS::Round(turtle.GetCurrentState().width, PRECISION) << '\n';
   m_output << " "
            << "  LineDistance: "
-           << Maths::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << '\n';
+           << MATHS::Round(turtle.GetCurrentState().defaultDistance, PRECISION) << '\n';
   m_output << " "
            << "  ContactPoint: ";
   OutputVec(m_output, contactPoint);
@@ -273,4 +273,4 @@ auto RadianceGenerator::SetWidth([[maybe_unused]] const Turtle& turtle) -> void
   // Not needed.
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

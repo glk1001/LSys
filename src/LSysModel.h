@@ -32,7 +32,7 @@
 
 #include <memory>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 struct LSysModel
@@ -48,4 +48,4 @@ struct LSysModel
   std::shared_ptr<List<Module>> start{};
 };
 
-} // namespace LSys
+} // namespace L_SYSTEM

@@ -55,14 +55,14 @@
 #include <stdexcept>
 #include <string>
 
-using LSys::GenericGenerator;
-using LSys::IGenerator;
-using LSys::List;
-using LSys::LSysModel;
-using LSys::Module;
-using LSys::RadianceGenerator;
-using LSys::SymbolTable;
-using LSys::Value;
+using L_SYSTEM::GenericGenerator;
+using L_SYSTEM::IGenerator;
+using L_SYSTEM::List;
+using L_SYSTEM::LSysModel;
+using L_SYSTEM::Module;
+using L_SYSTEM::RadianceGenerator;
+using L_SYSTEM::SymbolTable;
+using L_SYSTEM::Value;
 using Utilities::CommandLineOptions;
 
 using enum Utilities::CommandLineOptions::OptionTypes;

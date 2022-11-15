@@ -26,7 +26,7 @@
 
 #include "IGenerator.h"
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 auto Interpret(const List<Module>& moduleList,
@@ -35,4 +35,4 @@ auto Interpret(const List<Module>& moduleList,
                float width    = 1.0F,
                float distance = 1.0F) -> void;
 
-} // namespace LSys
+} // namespace L_SYSTEM

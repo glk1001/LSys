@@ -28,13 +28,10 @@
 #include "IGenerator.h"
 
 #include "Turtle.h"
-#include "Vector.h"
 
-#include <cstdlib>
-#include <fstream>
 #include <stdexcept>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 auto IGenerator::OutputFailed() -> void
@@ -62,4 +59,4 @@ auto IGenerator::LineTo(const Turtle& turtle) -> void
   m_lastMove     = false;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

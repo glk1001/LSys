@@ -31,7 +31,7 @@
 
 #include <functional>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 inline constexpr char DRAW_OBJECT_START_CHAR   = '~';
@@ -238,4 +238,4 @@ auto FloweringApex(ConstListIterator<Module>& moduleIter,
                    int numArgs,
                    const ArgsArray& args) noexcept -> void;
 
-} // namespace LSys
+} // namespace L_SYSTEM

@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 inline double drand48()
@@ -15,4 +15,4 @@ inline void srand48(unsigned int seed)
   srand(seed);
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

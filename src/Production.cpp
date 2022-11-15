@@ -36,7 +36,7 @@
 
 #include <cstdlib>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 Production::Production(const Name& name,
@@ -400,4 +400,4 @@ auto operator<<(std::ostream& out, const Production& production) -> std::ostream
   return out;
 }
 
-} // namespace LSys
+} // namespace L_SYSTEM

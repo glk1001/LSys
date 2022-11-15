@@ -35,7 +35,7 @@
 
 #include <memory>
 
-namespace LSys
+namespace L_SYSTEM
 {
 
 // A Module is the basic object of an L-system to which productions
@@ -67,4 +67,4 @@ private:
 inline const Name LEFT_BRACKET{"["};
 inline const Name RIGHT_BRACKET{"]"};
 
-} // namespace LSys
+} // namespace L_SYSTEM
