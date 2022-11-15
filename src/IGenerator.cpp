@@ -27,8 +27,7 @@
 
 #include "IGenerator.h"
 
-#include "Turtle.h"
-
+#include <cassert>
 #include <stdexcept>
 
 namespace L_SYSTEM
@@ -39,23 +38,25 @@ auto IGenerator::OutputFailed() -> void
   throw std::runtime_error("Fatal error in output generator, aborting");
 }
 
-auto IGenerator::Prelude(const Turtle& turtle) -> void
+auto IGenerator::Prelude() -> void
 {
-  SetColor(turtle);
-  SetWidth(turtle);
+  assert(m_turtle != nullptr);
+
+  SetColor();
+  SetWidth();
 }
 
-auto IGenerator::MoveTo(const Turtle& turtle) -> void
+auto IGenerator::MoveTo() -> void
 {
-  m_lastPosition = turtle.GetCurrentState().position;
-  m_lastWidth    = turtle.GetCurrentState().width;
+  m_lastPosition = m_turtle->GetCurrentState().position;
+  m_lastWidth    = m_turtle->GetCurrentState().width;
   m_lastMove     = true;
 }
 
-auto IGenerator::LineTo(const Turtle& turtle) -> void
+auto IGenerator::LineTo() -> void
 {
-  m_lastPosition = turtle.GetCurrentState().position;
-  m_lastWidth    = turtle.GetCurrentState().width;
+  m_lastPosition = m_turtle->GetCurrentState().position;
+  m_lastWidth    = m_turtle->GetCurrentState().width;
   m_lastMove     = false;
 }
 

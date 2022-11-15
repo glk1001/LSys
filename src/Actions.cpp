@@ -113,11 +113,11 @@ auto SetLineWidth(const Turtle& turtle, IGenerator& generator) noexcept -> void
 
   if (state == State::DRAWING)
   {
-    generator.FlushGraphics(turtle);
+    generator.FlushGraphics();
     state = State::START;
   }
 
-  generator.SetWidth(turtle);
+  generator.SetWidth();
   s_lastLineWidth = turtle.GetCurrentState().width;
 }
 
@@ -134,11 +134,11 @@ auto SetColor(const Turtle& turtle, IGenerator& generator) noexcept -> void
 
   if (state == State::DRAWING)
   {
-    generator.FlushGraphics(turtle);
+    generator.FlushGraphics();
     state = State::START;
   }
 
-  generator.SetColor(turtle);
+  generator.SetColor();
   s_lastColor = turtle.GetCurrentState().color;
 }
 
@@ -155,11 +155,11 @@ auto SetTexture(const Turtle& turtle, IGenerator& generator) noexcept -> void
 
   if (state == State::DRAWING)
   {
-    generator.FlushGraphics(turtle);
+    generator.FlushGraphics();
     state = State::START;
   }
 
-  generator.SetTexture(turtle);
+  generator.SetTexture();
   s_lastTexture = turtle.GetCurrentState().texture;
 }
 
@@ -175,7 +175,7 @@ auto MoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
   if ((state == State::DRAWING) or (state == State::START))
   {
     MoveTurtle(turtle, numArgs, args);
-    generator.MoveTo(turtle);
+    generator.MoveTo();
   }
   else
   {
@@ -209,14 +209,14 @@ auto DrawImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (state == State::START)
   {
-    generator.StartGraphics(turtle);
+    generator.StartGraphics();
     state = State::DRAWING;
   }
 
   if (state == State::DRAWING)
   {
     MoveTurtle(turtle, numArgs, args);
-    generator.LineTo(turtle);
+    generator.LineTo();
   }
   else
   {
@@ -399,7 +399,7 @@ auto PopImpl(ConstListIterator<Module>& moduleIter,
     {
       SetLineWidth(turtle, generator);
       SetColor(turtle, generator);
-      generator.MoveTo(turtle);
+      generator.MoveTo();
     }
     // Back off one step so the next module is interpreted properly
     moduleIter.previous();
@@ -420,7 +420,6 @@ auto RollHorizontalImpl([[maybe_unused]] const ConstListIterator<Module>& module
 
 // {	Start a new polygon
 auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
-                      const Turtle& turtle,
                       IGenerator& generator,
                       [[maybe_unused]] const int numArgs,
                       [[maybe_unused]] const ArgsArray& args) -> void
@@ -429,7 +428,7 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
 
   if (state == State::DRAWING)
   {
-    generator.FlushGraphics(turtle);
+    generator.FlushGraphics();
   }
 
   state = State::POLYGON;
@@ -487,7 +486,6 @@ auto PolygonMoveImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIte
 
 // }	Close the current polygon
 auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
-                    const Turtle& turtle,
                     IGenerator& generator,
                     [[maybe_unused]] const int numArgs,
                     [[maybe_unused]] const ArgsArray& args) -> void
@@ -505,7 +503,7 @@ auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter
   }
   else
   {
-    generator.Polygon(turtle, polygonStack.top());
+    generator.Polygon(polygonStack.top());
     polygonStack.pop();
     // Return to start state if no more polys on stack
     if (polygonStack.empty())
@@ -647,7 +645,6 @@ auto ChangeTextureImpl([[maybe_unused]] const ConstListIterator<Module>& moduleI
 // Needs a standardized object file format for this.
 // Should leave graphics mode before drawing object.
 auto DrawObjectImpl(const ConstListIterator<Module>& moduleIter,
-                    const Turtle& turtle,
                     IGenerator& generator,
                     const int numArgs,
                     const ArgsArray& args) noexcept -> void
@@ -658,7 +655,7 @@ auto DrawObjectImpl(const ConstListIterator<Module>& moduleIter,
   const Module* const obj = moduleIter.current();
   if (obj != nullptr)
   {
-    generator.DrawObject(turtle, *obj, numArgs, args);
+    generator.DrawObject(*obj, numArgs, args);
   }
 }
 
@@ -793,12 +790,12 @@ auto DrawHalf(ConstListIterator<Module>& moduleIter,
 }
 
 auto DrawObject(ConstListIterator<Module>& moduleIter,
-                const Turtle& turtle,
+                [[maybe_unused]] const Turtle& turtle,
                 IGenerator& generator,
                 const int numArgs,
                 const ArgsArray& args) noexcept -> void
 {
-  DrawObjectImpl(moduleIter, turtle, generator, numArgs, args);
+  DrawObjectImpl(moduleIter, generator, numArgs, args);
 }
 
 auto GeneralisedCylinderStart([[maybe_unused]] ConstListIterator<Module>& moduleIter,
@@ -1000,19 +997,19 @@ auto ChangeTexture(ConstListIterator<Module>& moduleIter,
 }
 
 auto StartPolygon(ConstListIterator<Module>& moduleIter,
-                  const Turtle& turtle,
+                  [[maybe_unused]] const Turtle& turtle,
                   IGenerator& generator,
                   const int numArgs,
-                  const ArgsArray& args) noexcept -> void
+                  const ArgsArray& args) -> void
 {
-  StartPolygonImpl(moduleIter, turtle, generator, numArgs, args);
+  StartPolygonImpl(moduleIter, generator, numArgs, args);
 }
 
 auto PolygonVertex(ConstListIterator<Module>& moduleIter,
                    const Turtle& turtle,
                    const IGenerator& generator,
                    const int numArgs,
-                   const ArgsArray& args) noexcept -> void
+                   const ArgsArray& args) -> void
 {
   PolygonVertexImpl(moduleIter, turtle, generator, numArgs, args);
 }
@@ -1027,12 +1024,12 @@ auto PolygonMove(ConstListIterator<Module>& moduleIter,
 }
 
 auto EndPolygon(ConstListIterator<Module>& moduleIter,
-                const Turtle& turtle,
+                [[maybe_unused]] const Turtle& turtle,
                 IGenerator& generator,
                 const int numArgs,
                 const ArgsArray& args) noexcept -> void
 {
-  EndPolygonImpl(moduleIter, turtle, generator, numArgs, args);
+  EndPolygonImpl(moduleIter, generator, numArgs, args);
 }
 
 auto Tropism(ConstListIterator<Module>& moduleIter,

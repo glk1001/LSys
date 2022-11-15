@@ -194,12 +194,12 @@ auto StartPolygon(ConstListIterator<Module>& moduleIter,
                   const Turtle& turtle,
                   IGenerator& generator,
                   int numArgs,
-                  const ArgsArray& args) noexcept -> void;
+                  const ArgsArray& args) -> void;
 auto PolygonVertex(ConstListIterator<Module>& moduleIter,
                    const Turtle& turtle,
                    const IGenerator& generator,
                    int numArgs,
-                   const ArgsArray& args) noexcept -> void;
+                   const ArgsArray& args) -> void;
 auto PolygonMove(ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
                  const IGenerator& generator,

@@ -51,34 +51,34 @@ public:
   auto operator=(const IGenerator&) -> IGenerator& = default;
   auto operator=(IGenerator&&) -> IGenerator&      = default;
 
+  auto SetTurtle(const Turtle& turtle) -> void;
+
   auto SetName(const std::string& name) -> void;
   [[nodiscard]] auto GetHeader() const -> std::string;
   virtual auto SetHeader(const std::string& header) -> void;
 
   // Functions to provide bracketing information
-  virtual auto Prelude(const Turtle& turtle) -> void;
-  virtual auto Postscript(const Turtle& turtle) -> void = 0;
+  virtual auto Prelude() -> void;
+  virtual auto Postscript() -> void = 0;
 
   // Functions to start/end a stream of graphics
-  virtual auto StartGraphics(const Turtle& turtle) -> void = 0;
-  virtual auto FlushGraphics(const Turtle& turtle) -> void = 0;
+  virtual auto StartGraphics() -> void = 0;
+  virtual auto FlushGraphics() -> void = 0;
 
   // Functions to draw objects in graphics mode
-  virtual auto MoveTo(const Turtle& turtle) -> void;
-  virtual auto LineTo(const Turtle& turtle) -> void;
-  virtual auto DrawObject(const Turtle& turtle,
-                          const Module& mod,
-                          int numArgs,
-                          const ArgsArray& args) -> void                       = 0;
-  virtual auto Polygon(const Turtle& turtle, const L_SYSTEM::Polygon&) -> void = 0;
+  virtual auto MoveTo() -> void;
+  virtual auto LineTo() -> void;
+  virtual auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args) -> void = 0;
+  virtual auto Polygon(const L_SYSTEM::Polygon& polygon) -> void                         = 0;
 
   // Functions to change rendering parameters
-  virtual auto SetColor(const Turtle& turtle) -> void     = 0;
-  virtual auto SetBackColor(const Turtle& turtle) -> void = 0;
-  virtual auto SetWidth(const Turtle& turtle) -> void     = 0;
-  virtual auto SetTexture(const Turtle& turtle) -> void   = 0;
+  virtual auto SetColor() -> void     = 0;
+  virtual auto SetBackColor() -> void = 0;
+  virtual auto SetTexture() -> void   = 0;
+  virtual auto SetWidth() -> void     = 0;
 
 protected:
+  [[nodiscard]] auto GetTurtle() const -> const Turtle&;
   virtual auto OutputFailed() -> void;
 
   [[nodiscard]] auto GetLastPosition() const -> const Vector& { return m_lastPosition; }
@@ -93,12 +93,23 @@ protected:
   }
 
 private:
+  const Turtle* m_turtle = nullptr;
   Vector m_lastPosition{};
   float m_lastWidth          = 0.0F;
   bool m_lastMove            = true; // Was last move/draw a move?
   std::string m_objectName   = "null_object"; // Name of generated object
   std::string m_objectHeader = "";
 };
+
+inline auto IGenerator::GetTurtle() const -> const Turtle&
+{
+  return *m_turtle;
+}
+
+inline auto IGenerator::SetTurtle(const Turtle& turtle) -> void
+{
+  m_turtle = &turtle;
+}
 
 inline auto IGenerator::SetName(const std::string& name) -> void
 {
