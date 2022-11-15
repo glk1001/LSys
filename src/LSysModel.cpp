@@ -20,9 +20,7 @@
  * Revision 1.1  91/10/10  19:53:58  leech
  * Initial revision
  *
- *
  */
-//static char RCSid[] = "$Id: PlantModel.c,v 1.1 91/10/10 19:53:58 leech Exp $";
 
 #include "LSysModel.h"
 
@@ -39,36 +37,36 @@ namespace LSys
 // Apply the model to the specified list for one generation, generating a new list.
 auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {
-  auto prodIter      = ListIterator<Production>{&rules};
+  auto ruleIter      = ListIterator<Production>{&rules};
   auto newModuleList = std::make_unique<List<Module>>();
 
-  auto modIter = ListIterator<Module>{*oldModuleList};
-  for (Module* mod = modIter.first(); mod != nullptr; mod = modIter.next())
+  auto oldModIter = ListIterator<Module>{*oldModuleList};
+  for (Module* oldMod = oldModIter.first(); oldMod != nullptr; oldMod = oldModIter.next())
   {
-    PDebug(PD_PRODUCTION, std::cerr << "Searching for matching production to " << *mod << "\n");
+    PDebug(PD_PRODUCTION, std::cerr << "Searching for matching production to " << *oldMod << "\n");
 
     // Find a matching production.
     // NOTE: This could be optimized a bunch.
-    Production* prod;
-    for (prod = prodIter.first(); prod != nullptr; prod = prodIter.next())
+    Production* rule;
+    for (rule = ruleIter.first(); rule != nullptr; rule = ruleIter.next())
     {
-      if (prod->Matches(modIter, mod, symbolTable))
+      if (rule->Matches(oldModIter, oldMod, symbolTable))
       {
-        PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *prod << "\n");
+        PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *rule << "\n");
         break;
       }
     }
     // If we found one, replace the module by its successor.
-    if (prod != nullptr)
+    if (rule != nullptr)
     {
-      auto result = prod->Produce(mod, symbolTable);
+      auto result = rule->Produce(oldMod, symbolTable);
       PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
       newModuleList->append(result.get());
     }
     else
     {
       PDebug(PD_PRODUCTION, std::cerr << "\tno match found, passing production unchanged\n");
-      newModuleList->append(new Module(std::move(*mod)));
+      newModuleList->append(new Module(std::move(*oldMod)));
     }
   }
 

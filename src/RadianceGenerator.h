@@ -3,6 +3,7 @@
 #include "Consts.h"
 #include "IGenerator.h"
 
+#include <fstream>
 #include <string>
 
 namespace LSys
@@ -11,7 +12,7 @@ namespace LSys
 class RadianceGenerator : public IGenerator
 {
 public:
-  using IGenerator::IGenerator;
+  RadianceGenerator(const std::string& outputFilename, const std::string& boundsFilename);
 
   auto SetHeader(const std::string& header) -> void override;
 
@@ -40,6 +41,8 @@ public:
   auto SetTexture(const Turtle& turtle) -> void override;
 
 private:
+  std::ofstream m_output;
+  std::ofstream m_boundsOutput;
   int m_groupNum = 0;
   auto OutputBounds(const Turtle& turtle) -> void;
 };

@@ -43,7 +43,7 @@ namespace LSys
 
 Turtle::Turtle(const float turn, const float widthScale)
 {
-  this->SetDefaults(widthScale, turn);
+  this->SetDefaultDrawingParams(widthScale, turn);
 
   // Set up initial frame and position, moving in +X with up in Z
   m_currentState.frame.Identity();
@@ -63,13 +63,12 @@ Turtle::Turtle(const float turn, const float widthScale)
   this->SetDefaultTurnAngle(turn);
 }
 
-// GetHeading is first column of frame
 auto Turtle::GetHeading() const -> Vector
 {
+  // GetHeading is first column of frame
   return Vector{m_currentState.frame[0][0], m_currentState.frame[1][0], m_currentState.frame[2][0]};
 }
 
-// Set heading
 auto Turtle::SetHeading(const Vector& heading) -> void
 {
   m_currentState.frame[0][0] = heading(0);
@@ -77,13 +76,12 @@ auto Turtle::SetHeading(const Vector& heading) -> void
   m_currentState.frame[2][0] = heading(2);
 }
 
-// GetLeft is second column of frame
 auto Turtle::GetLeft() const -> Vector
 {
+  // GetLeft is second column of frame
   return Vector{m_currentState.frame[0][1], m_currentState.frame[1][1], m_currentState.frame[2][1]};
 }
 
-// Set left
 auto Turtle::SetLeft(const Vector& left) -> void
 {
   m_currentState.frame[0][1] = left(0);
@@ -91,13 +89,12 @@ auto Turtle::SetLeft(const Vector& left) -> void
   m_currentState.frame[2][1] = left(2);
 }
 
-// GetUp is third column of frame
 auto Turtle::GetUp() const -> Vector
 {
+  // GetUp is third column of frame
   return Vector{m_currentState.frame[0][2], m_currentState.frame[1][2], m_currentState.frame[2][2]};
 }
 
-// Set up
 auto Turtle::SetUp(const Vector& up) -> void
 {
   m_currentState.frame[0][2] = up(0);
@@ -105,13 +102,11 @@ auto Turtle::SetUp(const Vector& up) -> void
   m_currentState.frame[2][2] = up(2);
 }
 
-// Set the whole frame at once
 auto Turtle::SetFrame(const Matrix& frame) -> void
 {
   m_currentState.frame = frame;
 }
 
-// Set the antigravity vector
 auto Turtle::SetGravity(const Vector& gravity) -> void
 {
   m_gravity = gravity;
@@ -137,15 +132,13 @@ auto Turtle::EnableTropism() -> void
   m_currentState.tropism.flag = true;
 }
 
-// Set line width
 auto Turtle::SetWidth(const float width) -> void
 {
   //  width= w * widthScale * relative_line_width;
   m_currentState.width = width;
 }
 
-// Set the default drawing parameters
-auto Turtle::SetDefaults(const float widthScale, const float delta) -> void
+auto Turtle::SetDefaultDrawingParams(const float widthScale, const float delta) -> void
 {
   m_currentState.widthScale       = widthScale;
   m_currentState.defaultTurnAngle = Maths::ToRadians(delta);
@@ -174,19 +167,11 @@ auto Turtle::SetColor(const int color, const int backgroundColor) -> void
   m_currentState.backgroundColor = Color(backgroundColor);
 }
 
-// Set color index. This is interpreted by the output generator.
-auto Turtle::SetTexture(const int texture) -> void
-{
-  m_currentState.texture = texture;
-}
-
-// Set RGB color
 auto Turtle::SetColor(const Vector& colorVector) -> void
 {
   m_currentState.color = Color{colorVector};
 }
 
-// Increment the current color index
 auto Turtle::IncrementColor() -> void
 {
   if (m_currentState.color.colorType == ColorType::INDEX)
@@ -199,7 +184,12 @@ auto Turtle::IncrementColor() -> void
   }
 }
 
-// Turn left or right (rotate around the up vector)
+// Set texture index. This is interpreted by the output generator.
+auto Turtle::SetTexture(const int texture) -> void
+{
+  m_currentState.texture = texture;
+}
+
 auto Turtle::Turn(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
@@ -217,7 +207,6 @@ auto Turtle::Turn(const float angle) -> void
   m_currentState.frame.Rotate(Matrix::Axis::Z, angle);
 }
 
-// Pitch up or down (rotate around the left vector)
 auto Turtle::Pitch(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
@@ -235,7 +224,6 @@ auto Turtle::Pitch(const float angle) -> void
   m_currentState.frame.Rotate(Matrix::Axis::Y, angle);
 }
 
-// Roll left or right (rotate around the heading vector)
 auto Turtle::Roll(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
@@ -253,7 +241,6 @@ auto Turtle::Roll(const float angle) -> void
   m_currentState.frame.Rotate(Matrix::Axis::X, angle);
 }
 
-// Spin around 180 degrees
 auto Turtle::Reverse() -> void
 {
   m_currentState.frame.Reverse();
@@ -314,15 +301,11 @@ auto Turtle::Move(const float distance) -> void
   }
 }
 
-// Save state
-// Handle over/underflow gracefully
 auto Turtle::Push() -> void
 {
   m_stateStack.emplace(m_currentState);
 }
 
-// Restore state
-// Handle over/underflow gracefully
 auto Turtle::Pop() -> void
 {
   if (m_stateStack.empty())
@@ -337,14 +320,14 @@ auto Turtle::Pop() -> void
 std::ostream& operator<<(std::ostream& out, const Turtle& turtle)
 {
   out << "Turtle:\n"
-      << "\tpos=         " << turtle.GetPosition() << "\n"
+      << "\tpos=         " << turtle.GetCurrentState().position << "\n"
       << "\tH  =         " << turtle.GetHeading() << "\n"
       << "\tL  =         " << turtle.GetLeft() << "\n"
       << "\tU  =         " << turtle.GetUp() << "\n"
-      << "\tTropism=     " << turtle.m_currentState.tropism << "\n"
-      << "\tcolor index= " << turtle.GetColor() << "\n"
-      << "\tdefaultDist= " << turtle.GetDefaultDistance() << "\n"
-      << "\twidth=       " << turtle.GetWidth() << "\n";
+      << "\tTropism=     " << turtle.GetCurrentState().tropism << "\n"
+      << "\tcolor index= " << turtle.GetCurrentState().color << "\n"
+      << "\tdefaultDist= " << turtle.GetCurrentState().defaultDistance << "\n"
+      << "\twidth=       " << turtle.GetCurrentState().width << "\n";
   return out;
 }
 

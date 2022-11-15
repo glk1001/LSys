@@ -32,46 +32,33 @@
 
 #include <cstdlib>
 #include <fstream>
+#include <stdexcept>
 
 namespace LSys
 {
 
 auto IGenerator::OutputFailed() -> void
 {
-  std::cerr << "Fatal error in output generator, aborting\n";
-  std::exit(1);
+  throw std::runtime_error("Fatal error in output generator, aborting");
 }
 
 auto IGenerator::Prelude(const Turtle& turtle) -> void
 {
   SetColor(turtle);
   SetWidth(turtle);
-  if (m_output->bad())
-  {
-    OutputFailed();
-  }
-}
-
-auto IGenerator::Postscript([[maybe_unused]] const Turtle& turtle) -> void
-{
-  if (m_output->bad())
-  {
-    OutputFailed();
-  }
-  m_output->close();
 }
 
 auto IGenerator::MoveTo(const Turtle& turtle) -> void
 {
-  m_lastPosition = turtle.GetPosition();
-  m_lastWidth    = turtle.GetWidth();
+  m_lastPosition = turtle.GetCurrentState().position;
+  m_lastWidth    = turtle.GetCurrentState().width;
   m_lastMove     = true;
 }
 
 auto IGenerator::LineTo(const Turtle& turtle) -> void
 {
-  m_lastPosition = turtle.GetPosition();
-  m_lastWidth    = turtle.GetWidth();
+  m_lastPosition = turtle.GetCurrentState().position;
+  m_lastWidth    = turtle.GetCurrentState().width;
   m_lastMove     = false;
 }
 
