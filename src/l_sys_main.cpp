@@ -39,27 +39,26 @@
  *
  */
 #include "command_line_options.h"
-#include "debug.h"
 #include "generator.h"
 #include "generic_generator.h"
 #include "interpret.h"
-#include "l_sys_model.h"
 #include "list.h"
-#include "parser.h"
+#include "parsed_model.h"
 #include "radiance_generator.h"
 #include "rand.h"
 #include "value.h"
 
 #include <filesystem>
 #include <iomanip>
-#include <stdexcept>
 #include <string>
 
 using L_SYSTEM::GenericGenerator;
+using L_SYSTEM::GetFinalProperties;
 using L_SYSTEM::IGenerator;
 using L_SYSTEM::List;
 using L_SYSTEM::LSysModel;
 using L_SYSTEM::Module;
+using L_SYSTEM::Properties;
 using L_SYSTEM::RadianceGenerator;
 using L_SYSTEM::SymbolTable;
 using L_SYSTEM::Value;
@@ -68,145 +67,34 @@ using Utilities::CommandLineOptions;
 using enum Utilities::CommandLineOptions::OptionTypes;
 using enum Utilities::CommandLineOptions::OptionReturnCode;
 
-#if YYDEBUG != 0
-extern int yydebug; // nonzero means print parse trace
-#endif
-int ParseDebug = 0;
-
 namespace
 {
 
+struct CommandLineArgs
+{
+  bool success = false;
+  Properties properties{};
+  const char* outputFilename = "";
+  const char* boundsFilename = "";
+  bool display               = false;
+  bool stats                 = false;
+};
+
 // Return a copy of a filename stripped of its trailing extension.
-[[nodiscard]] auto GetBaseFilename(const char* const filename) -> std::string
+[[nodiscard]] auto GetBaseFilename(const std::string& filename) -> std::string
 {
   return std::filesystem::path{filename}.stem();
 }
 
-struct Properties
-{
-  std::string inputFilename  = "";
-  const char* outputFilename = "";
-  const char* boundsFilename = "";
-  int maxGen                 = -1;
-  float turnAngle            = -1.0F;
-  float lineWidth            = -1.0F;
-  float lineDistance         = -1.0F;
-  int64_t seed               = -1L; // Seed for random numbers: -1 means use time
-};
-
-constexpr auto DEFAULT_MAX_GEN       = 0; // Default: just do sanity checking
-constexpr auto DEFAULT_TURN_ANGLE    = 90.0F; // Default: turn at right angles
-constexpr auto DEFAULT_LINE_WIDTH    = 1.0F; // Default line aspect ratio (1/100)
-constexpr auto DEFAULT_LINE_DISTANCE = 1.0F;
-
-// Look up defaults in the symbol table, if not overridden by specified
-// arguments.
-auto SetNewDefaults(const SymbolTable<Value>& symbolTable, Properties& properties) -> void
-{
-  if (properties.maxGen < 0)
-  {
-    if (Value value; not symbolTable.Lookup("maxgen", value))
-    {
-      properties.maxGen = DEFAULT_MAX_GEN;
-    }
-    else if (not value.GetIntValue(properties.maxGen))
-    {
-      std::cerr << "Invalid float value specified for maxgen: " << value << "\n";
-      throw std::runtime_error("Invalid float value specified for maxgen.");
-    }
-  }
-
-  if (properties.turnAngle < 0.0F)
-  {
-    if (Value value; not symbolTable.Lookup("delta", value))
-    {
-      properties.turnAngle = DEFAULT_TURN_ANGLE;
-    }
-    else if (not value.GetFloatValue(properties.turnAngle))
-    {
-      std::cerr << "Invalid float value specified for delta: " << value << "\n";
-      throw std::runtime_error("Invalid float value specified for delta.");
-    }
-  }
-
-  if (properties.lineWidth < 0.0F)
-  {
-    if (Value value; not symbolTable.Lookup("width", value))
-    {
-      properties.lineWidth = DEFAULT_LINE_WIDTH;
-    }
-    else if (not value.GetFloatValue(properties.lineWidth))
-    {
-      std::cerr << "Invalid float value specified for width: " << value << "\n";
-      throw std::runtime_error("Invalid float value specified for width.");
-    }
-  }
-
-  if (properties.lineDistance < 0.0F)
-  {
-    if (Value value; not symbolTable.Lookup("distance", value))
-    {
-      properties.lineDistance = DEFAULT_LINE_DISTANCE;
-    }
-    else if (not value.GetFloatValue(properties.lineDistance))
-    {
-      std::cerr << "Invalid float value specified for distance: " << value << "\n";
-      throw std::runtime_error("Invalid float value specified for distance.");
-    }
-  }
-}
-
-// Set override values for symbol table.
-auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& properties) -> void
-{
-  if (properties.maxGen > 0)
-  {
-    symbolTable.Enter("maxgen", Value(properties.maxGen));
-  }
-  if (properties.turnAngle > 0.0F)
-  {
-    symbolTable.Enter("delta", Value(properties.turnAngle));
-  }
-  if (properties.lineWidth > 0.0F)
-  {
-    symbolTable.Enter("width", Value(properties.lineWidth));
-  }
-  if (properties.lineDistance > 0.0F)
-  {
-    symbolTable.Enter("distance", Value(properties.lineDistance));
-  }
-}
-
-[[nodiscard]] auto GetParsedModel(const Properties& properties) -> std::unique_ptr<LSysModel>
-{
-  auto model = std::make_unique<LSysModel>();
-
-  SetSymbolTableValues(model->symbolTable, properties);
-
-  ::set_parser_globals(model.get());
-  ::set_parser_input(properties.inputFilename.c_str());
-
-  ::yyparse(); // Parse input file
-
-  if (model->start == nullptr)
-  {
-    PDebug(PD_MAIN, std::cerr << "No starting module list.\n");
-    throw std::runtime_error("No starting module list.");
-  }
-
-  PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->start << "\n");
-  PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model->rules << "\n");
-
-  return model;
-}
-
-[[nodiscard]] auto GetFormattedHeader(const Properties& properties) -> std::string
+[[nodiscard]] auto GetFormattedHeader(const Properties& properties,
+                                      const std::string& outputFilename,
+                                      const std::string& boundsFilename) -> std::string
 {
   auto strStream = std::ostringstream{};
 
   strStream << "  Input file = " << properties.inputFilename << "\n";
-  strStream << "  Output file = " << properties.outputFilename << "\n";
-  strStream << "  Bounds file = " << properties.boundsFilename << "\n";
+  strStream << "  Output file = " << outputFilename << "\n";
+  strStream << "  Bounds file = " << boundsFilename << "\n";
   strStream << "  Seed = " << properties.seed << "\n";
   strStream << "  MaxGen = " << properties.maxGen << "\n";
   strStream << "  Width = " << properties.lineWidth << "\n";
@@ -216,25 +104,18 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
   return strStream.str();
 }
 
-[[nodiscard]] auto GetGenerator(const Properties& properties) -> std::unique_ptr<IGenerator>
+[[nodiscard]] auto GetGenerator(const Properties& properties,
+                                const std::string& outputFilename,
+                                const std::string& boundsFilename) -> std::unique_ptr<IGenerator>
 {
   //auto generator =
   //     std::make_unique<RadianceGenerator>(properties.outputFilename, properties.boundsFilename);
-  auto generator =
-      std::make_unique<GenericGenerator>(properties.outputFilename, properties.boundsFilename);
-  generator->SetName(GetBaseFilename(properties.outputFilename));
-  generator->SetHeader(GetFormattedHeader(properties));
+  auto generator = std::make_unique<GenericGenerator>(outputFilename, boundsFilename);
+  generator->SetName(GetBaseFilename(outputFilename));
+  generator->SetHeader(GetFormattedHeader(properties, outputFilename, boundsFilename));
 
   return generator;
 }
-
-struct CommandLineArgs
-{
-  bool success = false;
-  Properties properties{};
-  bool display = false;
-  bool stats   = false;
-};
 
 /***
   // Print a message describing program options
@@ -303,16 +184,8 @@ cerr << "    m - main program loop\n"
               &commandLineArgs.properties.lineDistance);
   cmdOpts.Add('w', "width <int>", WIDTH_DESCR, REQUIRED_ARG, &commandLineArgs.properties.lineWidth);
   cmdOpts.Add('s', "seed <int>", SEED_DESCR, REQUIRED_ARG, &commandLineArgs.properties.seed);
-  cmdOpts.Add('o',
-              "output <string>",
-              OUTPUT_DESCR,
-              REQUIRED_ARG,
-              &commandLineArgs.properties.outputFilename);
-  cmdOpts.Add('b',
-              "bounds <string>",
-              BOUNDS_DESCR,
-              REQUIRED_ARG,
-              &commandLineArgs.properties.boundsFilename);
+  cmdOpts.Add('o', "output <string>", OUTPUT_DESCR, REQUIRED_ARG, &commandLineArgs.outputFilename);
+  cmdOpts.Add('b', "bounds <string>", BOUNDS_DESCR, REQUIRED_ARG, &commandLineArgs.boundsFilename);
   //  cmdOpts.Add(' ', "generic", noArgs, &generic);
 
   std::vector<std::string> positionalParams{};
@@ -332,7 +205,7 @@ cerr << "    m - main program loop\n"
     return commandLineArgs;
   }
 
-  if (nullptr == commandLineArgs.properties.outputFilename)
+  if (nullptr == commandLineArgs.outputFilename)
   {
     std::cerr << "\n";
     std::cerr << "Must supply -o (output filename) option\n\n";
@@ -388,37 +261,36 @@ int main(const int argc, const char* argv[])
 {
   try
   {
-    auto [success, properties, display, stats] = GetPropertiesFromCommandLine(argc, argv);
-    if (not success)
+    const auto cmdArgs = GetPropertiesFromCommandLine(argc, argv);
+    if (not cmdArgs.success)
     {
       return 1;
     }
 
     // Initialize random number generator.
-    ::srand48((properties.seed != -1) ? properties.seed : ::time(nullptr));
+    ::srand48((cmdArgs.properties.seed != -1) ? cmdArgs.properties.seed : ::time(nullptr));
 
-    const auto model = GetParsedModel(properties);
-    SetNewDefaults(model->symbolTable, properties);
+    const auto model           = GetParsedModel(cmdArgs.properties);
+    const auto finalProperties = GetFinalProperties(model->symbolTable, cmdArgs.properties);
 
     // For each generation, apply appropriate productions in parallel to all modules.
-    PrintStartInfo(*model, display, stats);
+    PrintStartInfo(*model, cmdArgs.display, cmdArgs.stats);
     auto moduleList = model->start;
-    for (int gen = 1; gen <= properties.maxGen; ++gen)
+    for (int gen = 1; gen <= finalProperties.maxGen; ++gen)
     {
       moduleList = model->Generate(moduleList.get());
-      PrintGenInfo(gen, *moduleList, display, stats);
+      PrintGenInfo(gen, *moduleList, cmdArgs.display, cmdArgs.stats);
     }
 
     // Construct an output generator and apply it to the final module list.
-    auto generator = GetGenerator(properties);
+    auto generator = GetGenerator(finalProperties, cmdArgs.outputFilename, cmdArgs.boundsFilename);
     PrintInterpretStart(generator->GetHeader());
     Interpret(*moduleList,
               *generator,
-              properties.turnAngle,
-              properties.lineWidth,
-              properties.lineDistance);
+              finalProperties.turnAngle,
+              finalProperties.lineWidth,
+              finalProperties.lineDistance);
 
-    PDebug(PD_MAIN, std::cerr << "About to exit.\n");
     return 0;
   }
   catch (const std::exception& e)
