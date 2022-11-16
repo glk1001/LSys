@@ -218,7 +218,7 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 
 [[nodiscard]] auto GetGenerator(const Properties& properties) -> std::unique_ptr<IGenerator>
 {
-  // auto generator =
+  //auto generator =
   //     std::make_unique<RadianceGenerator>(properties.outputFilename, properties.boundsFilename);
   auto generator =
       std::make_unique<GenericGenerator>(properties.outputFilename, properties.boundsFilename);

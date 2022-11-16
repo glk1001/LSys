@@ -437,7 +437,7 @@ auto StartPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIt
     throw std::runtime_error("StartPolygon: polygon stack filled.");
   }
 
-  polygonStack.emplace(L_SYSTEM::Polygon{});
+  polygonStack.emplace();
 }
 
 // .	Add a vertex to the current polygon
@@ -501,15 +501,13 @@ auto EndPolygonImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter
   {
     throw std::runtime_error("EndPolygon: polygon stack too deep, polygon lost.");
   }
-  else
+
+  generator.Polygon(polygonStack.top());
+  polygonStack.pop();
+  // Return to start state if no more polys on stack
+  if (polygonStack.empty())
   {
-    generator.Polygon(polygonStack.top());
-    polygonStack.pop();
-    // Return to start state if no more polys on stack
-    if (polygonStack.empty())
-    {
-      state = State::START;
-    }
+    state = State::START;
   }
 }
 
@@ -542,14 +540,17 @@ auto MultiplyDefaultTurnAngleImpl([[maybe_unused]] const ConstListIterator<Modul
 {
   PDebug(PD_INTERPRET, std::cerr << "MultiplyDefaultTurnAngle  \n");
 
+  const auto currentTurnAngleInDegrees =
+      MATHS::ToDegrees(turtle.GetCurrentState().defaultTurnAngleInRadians);
+
   if (0 == numArgs)
   {
     static constexpr auto MULTIPLIER = 1.1F;
-    turtle.SetDefaultTurnAngle(MULTIPLIER * turtle.GetCurrentState().defaultTurnAngle);
+    turtle.SetDefaultTurnAngleInDegrees(MULTIPLIER * currentTurnAngleInDegrees);
   }
   else
   {
-    turtle.SetDefaultTurnAngle(args[0] * turtle.GetCurrentState().defaultTurnAngle);
+    turtle.SetDefaultTurnAngleInDegrees(args[0] * currentTurnAngleInDegrees);
   }
 }
 
@@ -714,7 +715,7 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
                  [[maybe_unused]] const IGenerator& generator,
                  const int numArgs,
-                 const ArgsArray& args) noexcept -> void
+                 const ArgsArray& args) -> void
 {
   if (0 == numArgs)
   {
@@ -1027,7 +1028,7 @@ auto EndPolygon(ConstListIterator<Module>& moduleIter,
                 [[maybe_unused]] const Turtle& turtle,
                 IGenerator& generator,
                 const int numArgs,
-                const ArgsArray& args) noexcept -> void
+                const ArgsArray& args) -> void
 {
   EndPolygonImpl(moduleIter, generator, numArgs, args);
 }
@@ -1036,7 +1037,7 @@ auto Tropism(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
              const IGenerator& generator,
              const int numArgs,
-             const ArgsArray& args) noexcept -> void
+             const ArgsArray& args) -> void
 {
   TropismImpl(moduleIter, turtle, generator, numArgs, args);
 }

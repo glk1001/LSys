@@ -76,7 +76,7 @@ auto RadianceGenerator::FlushGraphics() -> void
   // Not used.
 }
 
-inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
 {
   //  out << vec[0] << " " << vec[1] << " " << vec[2];
   // Revert to right-handed coord system
@@ -116,14 +116,14 @@ auto RadianceGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
 
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
-  m_output << "  "
+  m_output << " "
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << "  "
+  m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
@@ -154,14 +154,14 @@ auto RadianceGenerator::LineTo() -> void
 
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
-  m_output << "  "
+  m_output << " "
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << "  "
+  m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
@@ -204,14 +204,14 @@ auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const A
 
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
-  m_output << "  "
+  m_output << " "
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << "  "
+  m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << "  "
+  m_output << " "
            << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 

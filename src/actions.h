@@ -209,13 +209,13 @@ auto EndPolygon(ConstListIterator<Module>& moduleIter,
                 const Turtle& turtle,
                 IGenerator& generator,
                 int numArgs,
-                const ArgsArray& args) noexcept -> void;
+                const ArgsArray& args) -> void;
 
 auto Tropism(ConstListIterator<Module>& moduleIter,
              Turtle& turtle,
              const IGenerator& generator,
              int numArgs,
-             const ArgsArray& args) noexcept -> void;
+             const ArgsArray& args) -> void;
 
 auto Flower(ConstListIterator<Module>& moduleIter,
             const Turtle& turtle,
