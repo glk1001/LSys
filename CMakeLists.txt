@@ -35,6 +35,7 @@ add_executable(${TARGET_NAME}
         src/module.cpp
         src/name.cpp
         src/options.cpp
+        src/parsed_model.cpp
         src/parser.cpp
         src/polygon.h
         src/production.cpp

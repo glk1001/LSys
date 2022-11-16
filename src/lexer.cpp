@@ -1938,7 +1938,6 @@ void set_parser_input(const char *ifile)
     yyout= stdout;
   #endif /*pink*/
   if (ifile != NULL) {
-    fprintf(stderr, "Setting yyin to %s\n", ifile);
     if ((yyin= fopen(ifile, "r")) == NULL) {
 	    fprintf(stderr, "Can't open input file %s\n", ifile);
 	    exit(1);
