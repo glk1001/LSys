@@ -127,7 +127,7 @@ auto Interpret(const List<Module>& moduleList,
                const float width,
                const float distance) -> void
 {
-  Turtle turtle(turn, width);
+  Turtle turtle(width, turn);
   turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
   turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X
   turtle.SetUp(Vector(0, 0, 1)); // Up = +Z

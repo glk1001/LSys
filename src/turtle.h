@@ -87,19 +87,19 @@ public:
     NEGATIVE
   };
 
-  explicit Turtle(float turn = 90.0F, float widthScale = 1.0F);
+  explicit Turtle(float widthScale = 1.0F, float turnAngleInDegrees = 90.0F);
 
-  auto SetDefaultDrawingParams(float widthScale, float delta) -> void;
+  auto SetDefaultDrawingParams(float widthScale, float turnAngleInDegrees) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
   struct State
   {
     Vector position{0.0F, 0.0F, 0.0F};
     Matrix frame{};
-    float defaultDistance  = 0.0F;
-    float defaultTurnAngle = 0.0F;
-    float width            = 1.0F;
-    float widthScale       = 1.0F;
+    float defaultDistance           = 0.0F;
+    float defaultTurnAngleInRadians = 0.0F;
+    float width                     = 1.0F;
+    float widthScale                = 1.0F;
     Color color{};
     Color backgroundColor{};
     int texture = 0;
@@ -116,7 +116,7 @@ public:
   auto SetUp(const Vector& up) -> void;
 
   auto SetDefaultDistance(float distance = 1.0F) -> void;
-  auto SetDefaultTurnAngle(float angle = 90.0F) -> void;
+  auto SetDefaultTurnAngleInDegrees(float turnAngleInDegrees = 90.0F) -> void;
 
   auto SetFrame(const Matrix& frame) -> void;
   auto SetGravity(const Vector& gravity) -> void;

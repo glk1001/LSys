@@ -41,9 +41,9 @@ namespace L_SYSTEM
 
 // TODO(glk) -  Make most of these inline.
 
-Turtle::Turtle(const float turn, const float widthScale)
+Turtle::Turtle(const float widthScale, const float turnAngleInDegrees)
 {
-  this->SetDefaultDrawingParams(widthScale, turn);
+  this->SetDefaultDrawingParams(widthScale, turnAngleInDegrees);
 
   // Set up initial frame and position, moving in +X with up in Z
   m_currentState.frame.Identity();
@@ -60,7 +60,7 @@ Turtle::Turtle(const float turn, const float widthScale)
   this->SetColor(0, 0);
   this->SetTexture(0);
   this->SetDefaultDistance(1);
-  this->SetDefaultTurnAngle(turn);
+  this->SetDefaultTurnAngleInDegrees(turnAngleInDegrees);
 }
 
 auto Turtle::GetHeading() const -> Vector
@@ -138,10 +138,10 @@ auto Turtle::SetWidth(const float width) -> void
   m_currentState.width = width;
 }
 
-auto Turtle::SetDefaultDrawingParams(const float widthScale, const float delta) -> void
+auto Turtle::SetDefaultDrawingParams(const float widthScale, const float turnAngleInDegrees) -> void
 {
-  m_currentState.widthScale       = widthScale;
-  m_currentState.defaultTurnAngle = MATHS::ToRadians(delta);
+  m_currentState.widthScale                = widthScale;
+  m_currentState.defaultTurnAngleInRadians = MATHS::ToRadians(turnAngleInDegrees);
 }
 
 auto Turtle::SetDefaultDistance(const float distance) -> void
@@ -149,9 +149,9 @@ auto Turtle::SetDefaultDistance(const float distance) -> void
   m_currentState.defaultDistance = distance;
 }
 
-auto Turtle::SetDefaultTurnAngle(const float angle) -> void
+auto Turtle::SetDefaultTurnAngleInDegrees(const float turnAngleInDegrees) -> void
 {
-  m_currentState.defaultTurnAngle = MATHS::ToRadians(angle);
+  m_currentState.defaultTurnAngleInRadians = MATHS::ToRadians(turnAngleInDegrees);
 }
 
 // Set color index. This is interpreted by the output generator.
@@ -194,11 +194,11 @@ auto Turtle::Turn(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_currentState.frame.Rotate(Matrix::Axis::Z, m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::Z, m_currentState.defaultTurnAngleInRadians);
   }
   else
   {
-    m_currentState.frame.Rotate(Matrix::Axis::Z, -m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::Z, -m_currentState.defaultTurnAngleInRadians);
   }
 }
 
@@ -211,11 +211,11 @@ auto Turtle::Pitch(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_currentState.frame.Rotate(Matrix::Axis::Y, m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::Y, m_currentState.defaultTurnAngleInRadians);
   }
   else
   {
-    m_currentState.frame.Rotate(Matrix::Axis::Y, -m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::Y, -m_currentState.defaultTurnAngleInRadians);
   }
 }
 
@@ -228,11 +228,11 @@ auto Turtle::Roll(const Direction direction) -> void
 {
   if (direction == Direction::POSITIVE)
   {
-    m_currentState.frame.Rotate(Matrix::Axis::X, m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::X, m_currentState.defaultTurnAngleInRadians);
   }
   else
   {
-    m_currentState.frame.Rotate(Matrix::Axis::X, -m_currentState.defaultTurnAngle);
+    m_currentState.frame.Rotate(Matrix::Axis::X, -m_currentState.defaultTurnAngleInRadians);
   }
 }
 
@@ -289,6 +289,8 @@ auto Turtle::Move(const float distance) -> void
   m_currentState.position += distance * this->GetHeading();
   m_boundingBox.Expand(m_currentState.position);
 
+  // TODO(glk) - this seems wrong.
+  //   Compare 'Examples/ternary_tree_a' to ABP figure 2.8a
   // Apply tropism, if enabled.
   // This consists of rotating by the vector (GetHeading ^ T).
   if (m_currentState.tropism.flag and (m_currentState.tropism.susceptibility != 0))

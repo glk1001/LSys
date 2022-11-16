@@ -72,7 +72,7 @@ auto GenericGenerator::FlushGraphics() -> void
   // Not used.
 }
 
-inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
 {
   out << std::setw(10) << MATHS::Round(vec[0], PRECISION) << " " << std::setw(10)
       << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10) << MATHS::Round(vec[2], PRECISION);
