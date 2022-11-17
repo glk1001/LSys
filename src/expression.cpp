@@ -333,9 +333,9 @@ auto Expression::GetExpressionValue(const Name& name, List<Expression>* const fu
            std::cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << "\n");
 
     return {
-        .name  = {.id = name.id(), .funcArgs = nullptr},
-        .value = {},
-        .args  = {},
+        {name.id(), nullptr},
+        {},
+        {},
     };
   }
 
@@ -344,9 +344,9 @@ auto Expression::GetExpressionValue(const Name& name, List<Expression>* const fu
                    << *funcArgs << "\n");
 
   return {
-      .name  = {.id = name.id(), .funcArgs = funcArgs},
-      .value = {},
-      .args  = {},
+      {name.id(), funcArgs},
+      {},
+      {},
   };
 }
 
@@ -354,9 +354,9 @@ auto Expression::GetExpressionValue(const Name& name, List<Expression>* const fu
 Expression::Expression(const Value& value)
   : m_operation{LSYS_VALUE},
     m_expressionValue{
-        .name  = {},
-        .value = value,
-        .args  = {},
+        {},
+        value,
+        {},
     }
 {
   PDebug(PD_EXPRESSION,

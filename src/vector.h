@@ -114,6 +114,7 @@ public:
   friend auto operator-(const Vector& vec1, const Vector& vec2) -> Vector; // Vector subtraction
   friend auto operator^(const Vector& vec1, const Vector& vec2) -> Vector; // Vector cross product
   friend auto operator*(const Vector& vec1, const Vector& vec2) -> float; // Vector inner product
+  friend auto operator==(const Vector& vec1, const Vector& vec2) -> bool;
 
 private:
   std::array<float, 3> m_vec{};
@@ -159,7 +160,12 @@ inline auto operator*(const Vector& vec1, const Vector& vec2) -> float
 
 inline auto operator==(const Vector& vec1, const Vector& vec2) -> bool
 {
-  return (vec1(0) == vec2(0)) and (vec1(1) == vec2(1)) and (vec1(2) == vec2(2));
+  return vec1.m_vec == vec2.m_vec;
+}
+
+inline auto operator!=(const Vector& vec1, const Vector& vec2) -> bool
+{
+  return not(vec1 == vec2);
 }
 
 inline auto Distance(const Vector& vec1, const Vector& vec2) -> float

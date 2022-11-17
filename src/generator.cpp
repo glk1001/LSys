@@ -25,7 +25,7 @@
  *
  */
 
-#define NDEBUG
+//#define NDEBUG
 
 #include "generator.h"
 

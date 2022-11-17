@@ -64,8 +64,8 @@ using L_SYSTEM::SymbolTable;
 using L_SYSTEM::Value;
 using Utilities::CommandLineOptions;
 
-using enum Utilities::CommandLineOptions::OptionTypes;
-using enum Utilities::CommandLineOptions::OptionReturnCode;
+using OptionTypes      = Utilities::CommandLineOptions::OptionTypes;
+using OptionReturnCode = Utilities::CommandLineOptions::OptionReturnCode;
 
 namespace
 {
@@ -170,28 +170,49 @@ cerr << "    m - main program loop\n"
   auto commandLineArgs = CommandLineArgs{};
 
   CommandLineOptions cmdOpts{};
-  cmdOpts.Add('?', "", HELP_DESCR, NO_ARGS, &help1);
-  cmdOpts.Add('H', "help", HELP_DESCR, NO_ARGS, &help2);
-  cmdOpts.Add(' ', "display", DISPLAY_DESCR, NO_ARGS, &commandLineArgs.display);
-  cmdOpts.Add(' ', "stats", STATS_DESCR, NO_ARGS, &commandLineArgs.stats);
-  cmdOpts.Add('m', "maxgen <int>", MAX_GEN_DESCR, REQUIRED_ARG, &commandLineArgs.properties.maxGen);
-  cmdOpts.Add('d', "delta <int>", DELTA_DESCR, REQUIRED_ARG, &commandLineArgs.properties.turnAngle);
+  cmdOpts.Add('?', "", HELP_DESCR, OptionTypes::NO_ARGS, &help1);
+  cmdOpts.Add('H', "help", HELP_DESCR, OptionTypes::NO_ARGS, &help2);
+  cmdOpts.Add(' ', "display", DISPLAY_DESCR, OptionTypes::NO_ARGS, &commandLineArgs.display);
+  cmdOpts.Add(' ', "stats", STATS_DESCR, OptionTypes::NO_ARGS, &commandLineArgs.stats);
+  cmdOpts.Add('m',
+              "maxgen <int>",
+              MAX_GEN_DESCR,
+              OptionTypes::REQUIRED_ARG,
+              &commandLineArgs.properties.maxGen);
+  cmdOpts.Add('d',
+              "delta <int>",
+              DELTA_DESCR,
+              OptionTypes::REQUIRED_ARG,
+              &commandLineArgs.properties.turnAngle);
   cmdOpts.Add(' ',
               "distance <int>",
               DISTANCE_DESCR,
-              REQUIRED_ARG,
+              OptionTypes::REQUIRED_ARG,
               &commandLineArgs.properties.lineDistance);
-  cmdOpts.Add('w', "width <int>", WIDTH_DESCR, REQUIRED_ARG, &commandLineArgs.properties.lineWidth);
-  cmdOpts.Add('s', "seed <int>", SEED_DESCR, REQUIRED_ARG, &commandLineArgs.properties.seed);
-  cmdOpts.Add('o', "output <string>", OUTPUT_DESCR, REQUIRED_ARG, &commandLineArgs.outputFilename);
-  cmdOpts.Add('b', "bounds <string>", BOUNDS_DESCR, REQUIRED_ARG, &commandLineArgs.boundsFilename);
+  cmdOpts.Add('w',
+              "width <int>",
+              WIDTH_DESCR,
+              OptionTypes::REQUIRED_ARG,
+              &commandLineArgs.properties.lineWidth);
+  cmdOpts.Add(
+      's', "seed <int>", SEED_DESCR, OptionTypes::REQUIRED_ARG, &commandLineArgs.properties.seed);
+  cmdOpts.Add('o',
+              "output <string>",
+              OUTPUT_DESCR,
+              OptionTypes::REQUIRED_ARG,
+              &commandLineArgs.outputFilename);
+  cmdOpts.Add('b',
+              "bounds <string>",
+              BOUNDS_DESCR,
+              OptionTypes::REQUIRED_ARG,
+              &commandLineArgs.boundsFilename);
   //  cmdOpts.Add(' ', "generic", noArgs, &generic);
 
   std::vector<std::string> positionalParams{};
   cmdOpts.SetPositional(1, 1, &positionalParams);
 
   if (const CommandLineOptions::OptionReturnCode retCode = cmdOpts.ProcessOptions(argc, argv);
-      retCode != OK)
+      retCode != OptionReturnCode::OK)
   {
     std::cerr << "\n";
     cmdOpts.Usage(std::cerr, "input file...");
