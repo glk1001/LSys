@@ -55,6 +55,7 @@
 using L_SYSTEM::GenericGenerator;
 using L_SYSTEM::GetFinalProperties;
 using L_SYSTEM::IGenerator;
+using L_SYSTEM::Interpreter;
 using L_SYSTEM::List;
 using L_SYSTEM::LSysModel;
 using L_SYSTEM::Module;
@@ -305,11 +306,10 @@ int main(const int argc, const char* argv[])
     // Construct an output generator and apply it to the final module list.
     auto generator = GetGenerator(finalProperties, cmdArgs.outputFilename, cmdArgs.boundsFilename);
     PrintInterpretStart(generator->GetHeader());
-    Interpret(*moduleList,
-              *generator,
-              finalProperties.turnAngle,
-              finalProperties.lineWidth,
-              finalProperties.lineDistance);
+    auto interpreter = Interpreter(*generator);
+    interpreter.SetDefaults(
+        finalProperties.turnAngle, finalProperties.lineWidth, finalProperties.lineDistance);
+    interpreter.InterpretAllModules(*moduleList);
 
     return 0;
   }

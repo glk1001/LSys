@@ -43,11 +43,10 @@
 namespace L_SYSTEM
 {
 
-namespace
-{
+const SymbolTable<ActionFunc> Interpreter::ACTION_SYMBOL_TABLE = GetActionSymbolTable();
 
 // Set up the default actions for interpretation.
-[[nodiscard]] auto GetActionSymbolTable() -> SymbolTable<ActionFunc>
+auto Interpreter::GetActionSymbolTable() -> SymbolTable<ActionFunc>
 {
   SymbolTable<ActionFunc> symbolTable{};
 
@@ -89,7 +88,62 @@ namespace
   return symbolTable;
 }
 
-[[nodiscard]] auto GetModuleName(const Module& mod) -> std::string
+Interpreter::Interpreter(IGenerator& generator)
+  : m_generator{generator}
+{
+  m_generator.SetTurtle(m_turtle);
+}
+
+auto Interpreter::SetDefaults(const float turnAngleInDegrees, const float width, const float defaultDistance)
+    -> void
+{
+  m_turtle.ResetDrawingParamsToDefaults();
+
+  m_turtle.SetDefaultTurnAngleInDegrees(turnAngleInDegrees);
+  m_turtle.SetWidth(width);
+  m_turtle.SetDefaultDistance(defaultDistance);
+
+  m_turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
+  m_turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X
+  m_turtle.SetUp(Vector(0, 0, 1)); // Up = +Z
+  m_turtle.SetGravity(Vector(0, 1, 0));
+}
+
+auto Interpreter::InterpretAllModules(const List<Module>& moduleList) -> void
+{
+  Start(moduleList);
+
+  while (true)
+  {
+    if (not InterpretNext())
+    {
+      break;
+    }
+  }
+
+  Finish();
+}
+
+auto Interpreter::InterpretNextModule(const Module& mod) -> bool
+{
+  ActionFunc actionFunc;
+  if (not ACTION_SYMBOL_TABLE.Lookup(GetModuleName(mod), actionFunc))
+  {
+    std::cerr << "Unknown action for " << mod << "\n";
+    return false;
+    // TODO(glk) - Make failed lookup an exception.
+    throw std::runtime_error("Unknown action.");
+  }
+
+  // Fetch defined parameters
+  const auto [numArgs, args] = GetActionArgsArray(mod);
+  actionFunc(*m_moduleIter, m_turtle, m_generator, numArgs, args);
+  PDebug(PD_INTERPRET, std::cerr << m_turtle);
+
+  return true;
+}
+
+inline auto Interpreter::GetModuleName(const Module& mod) -> std::string
 {
   if (auto moduleName = mod.GetName().str(); moduleName[0] != DRAW_OBJECT_START_CHAR)
   {
@@ -99,7 +153,7 @@ namespace
   return DRAW_OBJECT_START;
 }
 
-[[nodiscard]] auto GetActionArgsArray(const Module& mod) -> std::pair<int, ArgsArray>
+inline auto Interpreter::GetActionArgsArray(const Module& mod) -> std::pair<int, ArgsArray>
 {
   int numArgs = 0;
   ArgsArray args{};
@@ -114,55 +168,6 @@ namespace
   }
 
   return {numArgs, args};
-}
-
-} // namespace
-
-
-// Interpret a bound Left-system, producing output on the specified stream.
-// Default values for line width, movement, and turn angles are specified.
-auto Interpret(const List<Module>& moduleList,
-               IGenerator& generator,
-               const float turn,
-               const float width,
-               const float distance) -> void
-{
-  Turtle turtle(width, turn);
-  turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
-  turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X
-  turtle.SetUp(Vector(0, 0, 1)); // Up = +Z
-  turtle.SetGravity(Vector(0, 1, 0));
-  turtle.SetWidth(width); // ???????????????????????????????????????????????????????
-  turtle.SetDefaultDistance(distance);
-
-  generator.SetTurtle(turtle);
-  generator.Prelude();
-
-  const auto actionSymbolTable = GetActionSymbolTable();
-  auto modList                 = ConstListIterator<Module>{moduleList};
-
-  for (const auto* mod = modList.first(); mod != nullptr; mod = modList.next())
-  {
-    // TODO(glk) - Make failed lookup an exception.
-    ActionFunc actionFunc;
-    if (not actionSymbolTable.Lookup(GetModuleName(*mod), actionFunc))
-    {
-      PDebug(PD_INTERPRET, std::cerr << "Unknown action for " << *mod << "\n");
-      continue;
-      // TODO(glk) - This is what we want in the long term.
-      std::cerr << "Unknown action for " << *mod << "\n";
-      throw std::runtime_error("Unknown action.");
-    }
-
-    // Fetch defined parameters
-    const auto [numArgs, args] = GetActionArgsArray(*mod);
-
-    actionFunc(modList, turtle, generator, numArgs, args);
-
-    PDebug(PD_INTERPRET, std::cerr << turtle);
-  }
-
-  generator.Postscript();
 }
 
 } // namespace L_SYSTEM

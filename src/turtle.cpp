@@ -43,24 +43,30 @@ namespace L_SYSTEM
 
 Turtle::Turtle(const float widthScale, const float turnAngleInDegrees)
 {
-  this->SetDefaultDrawingParams(widthScale, turnAngleInDegrees);
+  ResetDrawingParamsToDefaults();
 
-  // Set up initial frame and position, moving in +X with up in Z
-  m_currentState.frame.Identity();
-  this->SetGravity(this->GetHeading());
+  m_currentState.widthScale = widthScale;
+  SetDefaultTurnAngleInDegrees(turnAngleInDegrees);
+}
+
+auto Turtle::ResetDrawingParamsToDefaults() -> void
+{
+  m_currentState = State{};
+
+  SetDefaultDistance(1.0F);
+  SetDefaultTurnAngleInDegrees(90.0F);
+  SetWidth(1.0F);
+  m_currentState.widthScale = 1.0F;
+  SetColor(0, 0);
+  SetTexture(0);
 
   // Default tropism vector is towards ground, but tropism is disabled
-  this->SetTropismVector(-this->GetHeading());
+  SetTropismVector(-GetHeading());
   static constexpr auto DEFAULT_TROPISM = 0.2F;
-  this->SetTropismVector(DEFAULT_TROPISM);
-  this->DisableTropism();
+  SetTropismVector(DEFAULT_TROPISM);
+  DisableTropism();
 
-  //  this->SetWidth(1);
-  this->SetWidth(widthScale);
-  this->SetColor(0, 0);
-  this->SetTexture(0);
-  this->SetDefaultDistance(1);
-  this->SetDefaultTurnAngleInDegrees(turnAngleInDegrees);
+  SetGravity(GetHeading());
 }
 
 auto Turtle::GetHeading() const -> Vector
@@ -136,12 +142,6 @@ auto Turtle::SetWidth(const float width) -> void
 {
   //  width= w * widthScale * relative_line_width;
   m_currentState.width = width;
-}
-
-auto Turtle::SetDefaultDrawingParams(const float widthScale, const float turnAngleInDegrees) -> void
-{
-  m_currentState.widthScale                = widthScale;
-  m_currentState.defaultTurnAngleInRadians = MATHS::ToRadians(turnAngleInDegrees);
 }
 
 auto Turtle::SetDefaultDistance(const float distance) -> void
@@ -278,7 +278,7 @@ auto Turtle::RollHorizontal() -> void
 
 auto Turtle::Move() -> void
 {
-  this->Move(m_currentState.defaultDistance);
+  Move(m_currentState.defaultDistance);
 }
 
 // Move along heading vector for distance.
@@ -286,7 +286,7 @@ auto Turtle::Move() -> void
 // if that is enabled.
 auto Turtle::Move(const float distance) -> void
 {
-  m_currentState.position += distance * this->GetHeading();
+  m_currentState.position += distance * GetHeading();
   m_boundingBox.Expand(m_currentState.position);
 
   // TODO(glk) - this seems wrong.

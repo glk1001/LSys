@@ -89,7 +89,6 @@ public:
 
   explicit Turtle(float widthScale = 1.0F, float turnAngleInDegrees = 90.0F);
 
-  auto SetDefaultDrawingParams(float widthScale, float turnAngleInDegrees) -> void;
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
   struct State
@@ -97,7 +96,7 @@ public:
     Vector position{0.0F, 0.0F, 0.0F};
     Matrix frame{};
     float defaultDistance           = 0.0F;
-    float defaultTurnAngleInRadians = 0.0F;
+    float defaultTurnAngleInRadians = 90.0F;
     float width                     = 1.0F;
     float widthScale                = 1.0F;
     Color color{};
@@ -106,6 +105,8 @@ public:
     TropismInfo tropism{};
   };
   [[nodiscard]] auto GetCurrentState() const -> const State& { return m_currentState; }
+
+  auto ResetDrawingParamsToDefaults() -> void;
 
   // Methods to modify turtle parameters
   [[nodiscard]] auto GetHeading() const -> Vector;
