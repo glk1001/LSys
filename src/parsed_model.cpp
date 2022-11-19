@@ -3,10 +3,14 @@
 #include "debug.h"
 #include "expression.h"
 #include "l_sys_model.h"
-#include "module.h"
 #include "parser.h"
 
+#include <cassert>
+#include <fstream>
 #include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
 
 int ParseDebug = 0;
 
@@ -125,6 +129,82 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
   PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model->rules << "\n");
 
   return model;
+}
+
+namespace
+{
+
+// TODO(glk) - String utils
+const std::string WHITESPACE = " \n\r\t\f\v";
+
+[[nodiscard]] auto LeftTrim(const std::string& str) -> std::string
+{
+  const auto start = str.find_first_not_of(WHITESPACE);
+  return (start == std::string::npos) ? "" : str.substr(start);
+}
+
+[[nodiscard]] auto RightTrim(const std::string& str) -> std::string
+{
+  const auto end = str.find_last_not_of(WHITESPACE);
+  return (end == std::string::npos) ? "" : str.substr(0, end + 1);
+}
+
+[[nodiscard]] inline auto Trim(const std::string& str) -> std::string
+{
+  return RightTrim(LeftTrim(str));
+}
+
+[[nodiscard]] auto GetTrimmedLine(std::istream& file) -> std::string
+{
+  std::string line;
+  std::getline(file, line);
+  line = Trim(line);
+  return line;
+}
+
+} // namespace
+
+auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
+{
+  auto boundingBox3d = BoundingBox3d{};
+  auto inputFile     = std::make_unique<std::ifstream>(filename);
+  assert(*inputFile);
+
+  while (true)
+  {
+    assert(not inputFile->eof());
+
+    const auto line = GetTrimmedLine(*inputFile);
+
+    if (line.empty())
+    {
+      continue;
+    }
+
+    if (0 == line.rfind("bounds", 0))
+    {
+      auto nextLine = GetTrimmedLine(*inputFile);
+      assert(nextLine.rfind("min: ", 0) == 0);
+      std::string ignore;
+      std::istringstream iss{nextLine};
+      if (not(iss >> ignore >> boundingBox3d.min.x >> boundingBox3d.min.y >> boundingBox3d.min.z))
+      {
+        throw std::runtime_error("Expected boundingBox3d.min.");
+      }
+
+      nextLine = GetTrimmedLine(*inputFile);
+      assert(nextLine.rfind("max: ", 0) == 0);
+      iss = std::istringstream{nextLine};
+      if (not(iss >> ignore >> boundingBox3d.max.x >> boundingBox3d.max.y >> boundingBox3d.max.z))
+      {
+        throw std::runtime_error("Expected boundingBox3d.max.");
+      }
+
+      break;
+    }
+  }
+
+  return boundingBox3d;
 }
 
 } // namespace L_SYSTEM

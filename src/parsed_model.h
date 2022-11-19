@@ -3,6 +3,7 @@
 #include "l_sys_model.h"
 
 #include <memory>
+#include <string>
 
 namespace L_SYSTEM
 {
@@ -23,5 +24,19 @@ struct Properties
 // not overridden by existing properties.
 [[nodiscard]] auto GetFinalProperties(const SymbolTable<Value>& symbolTable,
                                       const Properties& properties) -> Properties;
+
+struct Point3dFlt
+{
+  float x;
+  float y;
+  float z;
+};
+struct BoundingBox3d
+{
+  Point3dFlt min;
+  Point3dFlt max;
+};
+
+[[nodiscard]] auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d;
 
 } // namespace L_SYSTEM
