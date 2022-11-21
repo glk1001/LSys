@@ -73,14 +73,14 @@ auto Module::Conforms(const Module& mod) const -> bool
 
 // Instantiate the module; that is, return a copy with all of the
 //  module's expressions evaluated in the context of the symbol table.
-auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*
+auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> std::unique_ptr<Module>
 {
-  auto* const exprList  = L_SYSTEM::Instantiate(m_param.get(), symbolTable);
-  auto* const newModule = new Module{Name(m_tag), exprList, m_ignoreFlag};
+  auto* const exprList = L_SYSTEM::Instantiate(m_param.get(), symbolTable);
+  auto newModule       = std::make_unique<Module>(Name(m_tag), exprList, m_ignoreFlag);
 
   PDebug(PD_MODULE,
          std::cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *newModule
-                   << " @ " << newModule << "\n");
+                   << " @ " << *newModule << "\n");
   if (exprList != nullptr)
   {
     PDebug(PD_MODULE, std::cerr << "        old elist: " << *exprList << "\n");

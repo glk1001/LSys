@@ -53,7 +53,8 @@ public:
   auto Bind(const Module& values, SymbolTable<Value>& symbolTable) const -> void;
   [[nodiscard]] auto Conforms(const Module& mod) const -> bool;
   [[nodiscard]] auto Ignore() const -> bool { return m_ignoreFlag; }
-  [[nodiscard]] auto Instantiate(const SymbolTable<Value>& symbolTable) const -> Module*;
+  [[nodiscard]] auto Instantiate(const SymbolTable<Value>& symbolTable) const
+      -> std::unique_ptr<Module>;
   [[nodiscard]] auto GetFloat(float& fltValue, unsigned int n = 0) const -> bool;
 
   friend auto operator<<(std::ostream& out, const Module& mod) -> std::ostream&;

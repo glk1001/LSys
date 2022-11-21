@@ -39,6 +39,7 @@ class LSysModel
 {
 public:
   LSysModel() = default;
+  ~LSysModel() noexcept;
 
   [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> std::unique_ptr<List<Module>>;
 

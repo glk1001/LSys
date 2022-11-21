@@ -586,7 +586,7 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
 
   for (const auto* expr = exprIter.first(); expr != nullptr; expr = exprIter.next())
   {
-    auto* const newExpr = new Expression{expr->Evaluate(symbolTable)};
+    auto newExpr = std::make_unique<Expression>(expr->Evaluate(symbolTable));
     newExprList->append(newExpr);
   }
 

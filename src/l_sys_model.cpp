@@ -34,6 +34,8 @@
 namespace L_SYSTEM
 {
 
+LSysModel::~LSysModel() noexcept = default;
+
 // Apply the model to the specified list for one generation, generating a new list.
 auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {
@@ -66,7 +68,8 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
     else
     {
       PDebug(PD_PRODUCTION, std::cerr << "\tno match found, passing production unchanged\n");
-      newModuleList->append(new Module(std::move(*oldMod)));
+      auto oldModPtr = std::make_unique<Module>(*oldMod);
+      newModuleList->append(oldModPtr);
     }
   }
 

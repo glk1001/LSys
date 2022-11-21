@@ -19,7 +19,7 @@ public:
   List() = default;
   List(const List& other) noexcept;
   List(List&&) = delete;
-  ~List();
+  ~List()      = default;
 
   auto operator=(const List&) -> List& = delete;
   auto operator=(List&&) -> List&      = delete;
@@ -28,7 +28,7 @@ public:
 
   [[nodiscard]] auto size() const -> size_t;
 
-  auto append(T* item) -> void;
+  auto append(std::unique_ptr<T>& item) -> void;
 
   // Append a dynamically allocated list; clears the source list.
   auto append(List<T>* list) -> void;
@@ -36,8 +36,8 @@ public:
 private:
   friend class ListIterator<T>;
   friend class ConstListIterator<T>;
-  using ListIter = typename std::vector<T*>::iterator;
-  std::vector<T*> m_stdList{};
+  using ListIter = typename std::vector<std::unique_ptr<T>>::iterator;
+  std::vector<std::unique_ptr<T>> m_stdList{};
   auto Clear() -> void;
 };
 
@@ -54,7 +54,7 @@ public:
   [[nodiscard]] auto previous() -> T*;
 
 private:
-  using ListIter = typename std::vector<T*>::iterator;
+  using ListIter = typename std::vector<std::unique_ptr<T>>::iterator;
   List<T>* m_list;
   ListIter m_listIter;
 };
@@ -72,19 +72,10 @@ public:
   auto previous() -> const T*;
 
 private:
-  using ConstListIter = typename std::vector<T*>::const_iterator;
+  using ConstListIter = typename std::vector<std::unique_ptr<T>>::const_iterator;
   const List<T>* m_list;
   ConstListIter m_listIter;
 };
-
-template<typename T>
-List<T>::~List()
-{
-  for (ListIter i = m_stdList.begin(); i != m_stdList.end(); ++i)
-  {
-    delete *i;
-  }
-}
 
 template<typename T>
 inline List<T>::List(const List<T>& other) noexcept
@@ -98,7 +89,7 @@ inline List<T>::List(const List<T>& other) noexcept
     }
     else
     {
-      m_stdList[i] = new T{*other.m_stdList[i]};
+      m_stdList[i] = std::make_unique<T>(*other.m_stdList[i]);
     }
   }
 }
@@ -117,17 +108,17 @@ inline auto List<T>::size() const -> size_t
 }
 
 template<typename T>
-inline auto List<T>::append(T* const item) -> void
+inline auto List<T>::append(std::unique_ptr<T>& item) -> void
 {
-  m_stdList.push_back(item);
+  m_stdList.emplace_back(std::move(item));
 }
 
 template<typename T>
-inline auto List<T>::append(List<T>* const list) -> void
+inline auto List<T>::append(List<T>* list) -> void
 {
   for (ListIter i = list->m_stdList.begin(); i != list->m_stdList.end(); ++i)
   {
-    m_stdList.push_back(*i);
+    m_stdList.emplace_back(std::move(*i));
   }
   list->Clear();
 }
@@ -176,7 +167,7 @@ inline auto ListIterator<T>::next() -> T*
   {
     return nullptr;
   }
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -192,7 +183,7 @@ inline auto ListIterator<T>::previous() -> T*
     return nullptr;
   }
   --m_listIter;
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -204,7 +195,7 @@ inline auto ListIterator<T>::first() -> T*
     return nullptr;
   }
   m_listIter = m_list->m_stdList.begin();
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -216,20 +207,20 @@ inline auto ListIterator<T>::last() -> T*
     return nullptr;
   }
   m_listIter = m_list->m_stdList.end() - 1;
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 
 template<typename T>
 inline ConstListIterator<T>::ConstListIterator(const List<T>& list)
-  : m_list(&list), m_listIter(list.m_stdList.begin())
+  : m_list{&list}, m_listIter(list.m_stdList.begin())
 {
 }
 
 template<typename T>
 inline auto ConstListIterator<T>::current() const -> const T*
 {
-  return (m_listIter != m_list->m_stdList.end()) ? *m_listIter : nullptr;
+  return (m_listIter != m_list->m_stdList.end()) ? m_listIter->get() : nullptr;
 }
 
 template<typename T>
@@ -244,7 +235,7 @@ inline auto ConstListIterator<T>::next() -> const T*
   {
     return nullptr;
   }
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -259,7 +250,7 @@ inline auto ConstListIterator<T>::previous() -> const T*
     return nullptr;
   }
   --m_listIter;
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -271,7 +262,7 @@ inline auto ConstListIterator<T>::first() -> const T*
     return nullptr;
   }
   m_listIter = m_list->m_stdList.begin();
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 template<typename T>
@@ -283,7 +274,7 @@ inline auto ConstListIterator<T>::last() -> const T*
     return nullptr;
   }
   m_listIter = m_list->m_stdList.end() - 1;
-  return *m_listIter;
+  return m_listIter->get();
 }
 
 } // namespace L_SYSTEM

@@ -340,7 +340,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   auto modIter = ConstListIterator<Module>{*modList};
   for (const auto* mod = modIter.first(); mod != nullptr; mod = modIter.next())
   {
-    Module* const newModule = mod->Instantiate(symbolTable);
+    auto newModule = mod->Instantiate(symbolTable);
     moduleList->append(newModule);
   }
 
