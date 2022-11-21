@@ -16,7 +16,7 @@
  * name of the person performing the modification, the date of modification,
  * and the reason for such modification.
  *
- * $Log:	Expression.h,v $
+ * $Log: Expression.h,v $
  * Revision 1.5  95/05/24  17:13:21  leech
  * Fix for const-correctness.
  *
@@ -46,13 +46,16 @@ class Expression
 {
 public:
   Expression(int operation, Expression* lop, Expression* rop);
-  explicit Expression(const Name& name, List<Expression>* funcArgs = nullptr);
+  Expression(int operation, std::unique_ptr<Expression>& lop, std::unique_ptr<Expression>& rop);
+  Expression(const Name& name, List<Expression>* funcArgs);
+  explicit Expression(const Name& name);
+  Expression(const Name& name, std::unique_ptr<List<Expression>>& funcArgs);
   explicit Expression(const Value& value);
-  Expression(const Expression&);
+  Expression(const Expression& other);
   Expression(Expression&&) = default;
   ~Expression();
 
-  auto operator=(const Expression&) -> Expression& = default;
+  auto operator=(const Expression&) -> Expression& = delete;
   auto operator=(Expression&&) -> Expression&      = default;
 
   // Access methods
@@ -74,15 +77,15 @@ private:
     struct Name
     {
       int id{};
-      List<Expression>* funcArgs{};
+      std::unique_ptr<List<Expression>> funcArgs{};
     };
     Name name{};
     Value value{}; // Ensure union is big enough for a Value
-    std::array<Expression*, 2> args{}; // Child expressions
+    std::array<std::unique_ptr<Expression>, 2> args{}; // Child expressions
   };
   ExpressionValue m_expressionValue{};
-  [[nodiscard]] static auto GetExpressionValue(const Name& name, List<Expression>* funcArgs)
-      -> ExpressionValue;
+  [[nodiscard]] static auto GetArgs(const std::array<std::unique_ptr<Expression>, 2>& args) noexcept
+      -> std::array<std::unique_ptr<Expression>, 2>;
 
   [[nodiscard]] auto GetVarName() const -> Name;
   [[nodiscard]] auto GetValue() const -> Value;
@@ -97,6 +100,7 @@ private:
                         SymbolTable<Value>& symbolTable) -> bool;
 [[nodiscard]] auto Conforms(const List<Expression>* formals, const List<Expression>* values)
     -> bool;
+//TODO(glk) Use unique_ptr.
 [[nodiscard]] auto Instantiate(const List<Expression>* before,
                                const SymbolTable<Value>& symbolTable) -> List<Expression>*;
 [[nodiscard]] auto GetFloat(const SymbolTable<Value>& symbolTable,
@@ -130,12 +134,12 @@ inline auto Expression::GetValue() const -> Value
 
 inline auto Expression::GetLChild() const -> Expression*
 {
-  return m_expressionValue.args[0];
+  return m_expressionValue.args[0].get();
 }
 
 inline auto Expression::GetRChild() const -> Expression*
 {
-  return m_expressionValue.args[1];
+  return m_expressionValue.args[1].get();
 }
 
 inline auto Expression::GetFuncName() const -> Name
@@ -145,7 +149,7 @@ inline auto Expression::GetFuncName() const -> Name
 
 inline auto Expression::GetFuncArgs() const -> List<Expression>*
 {
-  return m_expressionValue.name.funcArgs;
+  return m_expressionValue.name.funcArgs.get();
 }
 
 } // namespace L_SYSTEM

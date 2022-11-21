@@ -323,49 +323,80 @@ std::ostream& operator<<(std::ostream& out, const Expression& expression)
   return out;
 }
 
-Expression::Expression(const int operation, Expression* const lop, Expression* const rop)
+Expression::Expression(const int operation,
+                       Expression* const lop,
+                       Expression* const rop)
   : m_operation{operation}
 {
   PDebug(PD_EXPRESSION,
          std::cerr << "Creating expression w/op " << operation << "='"
                    << static_cast<char>(operation) << "'"
-                   << " &lhs= " << lop << " &rhs= " << rop << "\n");
+                   << " &lhs= " << *lop << " &rhs= " << *rop << "\n");
 
-  m_expressionValue.args[0] = lop;
-  m_expressionValue.args[1] = rop;
+  m_expressionValue.args[0].reset(lop);
+  m_expressionValue.args[1].reset(rop);
 }
 
-// Create a function call node, or a named variable node if there are no arguments.
-Expression::Expression(const Name& name, List<Expression>* const funcArgs)
-  : m_operation{nullptr == funcArgs ? LSYS_NAME : LSYS_FUNCTION},
-    m_expressionValue{GetExpressionValue(name, funcArgs)}
+Expression::Expression(const int operation,
+                       std::unique_ptr<Expression>& lop,
+                       std::unique_ptr<Expression>& rop)
+  : m_operation{operation}
 {
+  PDebug(PD_EXPRESSION,
+         std::cerr << "Creating expression w/op " << operation << "='"
+                   << static_cast<char>(operation) << "'"
+                   << " &lhs= " << *lop << " &rhs= " << *rop << "\n");
+
+  m_expressionValue.args[0] = std::move(lop);
+  m_expressionValue.args[1] = std::move(rop);
 }
 
-auto Expression::GetExpressionValue(const Name& name, List<Expression>* const funcArgs)
-    -> ExpressionValue
+// Create a named variable node.
+Expression::Expression(const Name& name)
+  : m_operation{LSYS_NAME},
+    m_expressionValue{
+      {name.id(), nullptr},
+      {},
+      {},
+}
 {
-  if (nullptr == funcArgs)
+  PDebug(PD_EXPRESSION,
+         std::cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << "\n");
+}
+
+Expression::Expression(const Name& name, List<Expression>* funcArgs)
+  : m_operation{funcArgs == nullptr ? LSYS_NAME : LSYS_FUNCTION},
+    m_expressionValue{
+        {name.id(), {funcArgs == nullptr ? nullptr :
+             std::unique_ptr<List<Expression>>{funcArgs}}},
+        {},
+        {},
+    }
+{
+  if (m_operation == LSYS_NAME)
   {
     PDebug(PD_EXPRESSION,
            std::cerr << "Creating expression w/op " << LSYS_NAME << " GetName " << name << "\n");
-
-    return {
-        {name.id(), nullptr},
-        {},
-        {},
-    };
   }
+  else
+  {
+    PDebug(PD_EXPRESSION,
+           std::cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name
+                     << *funcArgs << "\n");
+  }
+}
 
+// Create a function call node.
+Expression::Expression(const Name& name, std::unique_ptr<List<Expression>>& funcArgs)
+  : m_operation{LSYS_FUNCTION},
+    m_expressionValue{      {name.id(), std::move(funcArgs)},
+        {},
+        {},
+    }
+{
   PDebug(PD_EXPRESSION,
          std::cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name
                    << *funcArgs << "\n");
-
-  return {
-      {name.id(), funcArgs},
-      {},
-      {},
-  };
 }
 
 // Create a value node.
@@ -381,40 +412,30 @@ Expression::Expression(const Value& value)
          std::cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << "\n");
 }
 
-Expression::Expression(const Expression& other)
-  : m_operation{other.m_operation}, m_expressionValue{other.m_expressionValue}
+Expression::Expression(const Expression& other) : m_operation{other.m_operation},
+    m_expressionValue{
+  {other.m_expressionValue.name.id, nullptr}, other.m_expressionValue.value,
+        GetArgs(other.m_expressionValue.args)}
 {
   if (m_operation == LSYS_FUNCTION)
   {
-    m_expressionValue.name.funcArgs = new List<Expression>{*other.m_expressionValue.name.funcArgs};
+    m_expressionValue.name.funcArgs =
+        std::make_unique<List<Expression>>(*other.m_expressionValue.name.funcArgs);
   }
 }
 
-Expression::~Expression()
+auto Expression::GetArgs(const std::array<std::unique_ptr<Expression>, 2>& args) noexcept
+    -> std::array<std::unique_ptr<Expression>, 2>
 {
-  switch (m_operation)
+  auto newArgs = std::array<std::unique_ptr<Expression>, 2>
   {
-    case LSYS_NAME:
-      PDebug(PD_EXPRESSION, std::cerr << "Deleting expression::GetName (not dynamic)\n");
-      break;
-    case LSYS_FUNCTION:
-      PDebug(PD_EXPRESSION,
-             std::cerr << "Deleting expression::function " << GetVarName() << "args @ "
-                       << GetFuncArgs() << "\n");
-      delete GetFuncArgs();
-      break;
-    case LSYS_VALUE:
-      PDebug(PD_EXPRESSION, std::cerr << "Deleting expression::GetValue (not dynamic)\n");
-      break;
-    default:
-      PDebug(PD_EXPRESSION,
-             std::cerr << "Deleting expression::op= " << m_operation << " kids @ " << GetLChild()
-                       << " @ " << GetRChild() << "\n");
-      delete GetLChild();
-      delete GetRChild();
-      break;
-  }
+    args[0] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[1]),
+        args[1] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[0]),
+  };
+  return newArgs;
 }
+
+Expression::~Expression() = default;
 
 auto Expression::GetName() const -> Name
 {
