@@ -705,12 +705,6 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
 // t(0)		- disable tropism
 // t(1)		- re-enable tropism with last (T,e) parameters
 
-auto TropismError() -> void
-{
-  throw std::runtime_error("Tropism error: expect arguments (x,y,z,e) or (e).");
-}
-
-
 auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
                  [[maybe_unused]] const IGenerator& generator,
@@ -719,8 +713,7 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 {
   if (0 == numArgs)
   {
-    TropismError();
-    return;
+    throw std::runtime_error("Tropism error: no arguments.");
   }
 
   if (1 == numArgs)
@@ -742,8 +735,7 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   if (numArgs < 4)
   {
-    TropismError();
-    return;
+    throw std::runtime_error("Tropism error: not enough arguments.");
   }
 
   // Construct the tropism vector

@@ -112,21 +112,21 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 {
   auto model = std::make_unique<LSysModel>();
 
-  SetSymbolTableValues(model->symbolTable, properties);
+  SetSymbolTableValues(model->GetSymbolTable(), properties);
 
   ::set_parser_globals(model.get());
   ::set_parser_input(properties.inputFilename.c_str());
 
   ::yyparse(); // Parse input file
 
-  if (model->start == nullptr)
+  if (model->GetStartModuleList() == nullptr)
   {
     PDebug(PD_MAIN, std::cerr << "No starting module list.\n");
     throw std::runtime_error("No starting module list.");
   }
 
-  PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->start << "\n");
-  PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model->rules << "\n");
+  PDebug(PD_MAIN, std::cerr << "Starting module list: " << *model->GetStartModuleList() << "\n");
+  PDebug(PD_PRODUCTION, std::cerr << "\nProductions:\n" << model->GetRules() << "\n");
 
   return model;
 }

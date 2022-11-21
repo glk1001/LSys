@@ -35,17 +35,51 @@
 namespace L_SYSTEM
 {
 
-struct LSysModel
+class LSysModel
 {
+public:
   LSysModel() = default;
 
   [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> std::unique_ptr<List<Module>>;
 
+  [[nodiscard]] auto GetSymbolTable() noexcept -> SymbolTable<Value>&;
+  [[nodiscard]] auto GetIgnoreTable() noexcept -> SymbolTable<Value>&;
+  [[nodiscard]] auto GetRules() noexcept -> List<Production>&;
+
+  auto ResetStartModuleList(List<Module>* moduleList) noexcept;
+  [[nodiscard]] auto GetStartModuleList() const noexcept -> const List<Module>*;
+
+private:
   SymbolTable<Value> ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
   SymbolTable<Value> symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
   List<Production> rules         = List<Production>{};
 
   std::shared_ptr<List<Module>> start{};
 };
+
+inline auto LSysModel::GetSymbolTable() noexcept -> SymbolTable<Value>&
+{
+  return symbolTable;
+}
+
+inline auto LSysModel::GetIgnoreTable() noexcept -> SymbolTable<Value>&
+{
+  return ignoreTable;
+}
+
+inline auto LSysModel::GetRules() noexcept -> List<Production>&
+{
+  return rules;
+}
+
+inline auto LSysModel::ResetStartModuleList(List<Module>* moduleList) noexcept
+{
+  start.reset(moduleList);
+}
+
+inline auto LSysModel::GetStartModuleList() const noexcept -> const List<Module>*
+{
+  return start.get();
+}
 
 } // namespace L_SYSTEM

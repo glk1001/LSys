@@ -298,10 +298,28 @@ std::ostream& operator<<(std::ostream& out, const Expression& expression)
       out << GetOpName(expression.m_operation) << *expression.GetLChild();
       break;
     default:
-      out << '(' << *expression.GetLChild() << GetOpName(expression.m_operation)
-          << *expression.GetRChild() << ')';
+      out << '(';
+      if (expression.GetLChild() == nullptr)
+      {
+        out << '(' << " nullptr ";
+      }
+      else
+      {
+        out << *expression.GetLChild();
+      }
+      out << GetOpName(expression.m_operation);
+      if (expression.GetRChild() == nullptr)
+      {
+        out << '(' << " nullptr ";
+      }
+      else
+      {
+        out << *expression.GetRChild();
+      }
+      out << ')';
       break;
   }
+
   return out;
 }
 
@@ -361,6 +379,15 @@ Expression::Expression(const Value& value)
 {
   PDebug(PD_EXPRESSION,
          std::cerr << "Creating expression w/op " << LSYS_VALUE << " GetValue " << value << "\n");
+}
+
+Expression::Expression(const Expression& other)
+  : m_operation{other.m_operation}, m_expressionValue{other.m_expressionValue}
+{
+  if (m_operation == LSYS_FUNCTION)
+  {
+    m_expressionValue.name.funcArgs = new List<Expression>{*other.m_expressionValue.name.funcArgs};
+  }
 }
 
 Expression::~Expression()

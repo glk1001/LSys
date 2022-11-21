@@ -88,14 +88,14 @@ auto Interpreter::GetActionSymbolTable() -> SymbolTable<ActionFunc>
   return symbolTable;
 }
 
-Interpreter::Interpreter(IGenerator& generator)
-  : m_generator{generator}
+Interpreter::Interpreter(IGenerator& generator) : m_generator{generator}
 {
   m_generator.SetTurtle(m_turtle);
 }
 
-auto Interpreter::SetDefaults(const float turnAngleInDegrees, const float width, const float defaultDistance)
-    -> void
+auto Interpreter::SetDefaults(const float turnAngleInDegrees,
+                              const float width,
+                              const float defaultDistance) -> void
 {
   m_turtle.ResetDrawingParamsToDefaults();
 
@@ -126,12 +126,14 @@ auto Interpreter::InterpretAllModules(const List<Module>& moduleList) -> void
 
 auto Interpreter::InterpretNextModule(const Module& mod) -> bool
 {
+  PDebug(PD_INTERPRET, std::cerr << "Interpreting module " << mod << "\n");
+
   ActionFunc actionFunc;
   if (not ACTION_SYMBOL_TABLE.Lookup(GetModuleName(mod), actionFunc))
   {
-    std::cerr << "Unknown action for " << mod << "\n";
+    PDebug(PD_INTERPRET, std::cerr << "No action for module " << mod << "\n");
     return false;
-    // TODO(glk) - Make failed lookup an exception.
+    // TODO(glk) - Should this be a failed lookup?
     throw std::runtime_error("Unknown action.");
   }
 

@@ -1124,7 +1124,7 @@ case 11:
 #line 165 "lsys.y"
 { BindExpression = false;
 		      lex_popstate();
-		      parserStart.reset(yyvsp[-1].moduleList);
+          parserStartReset(yyvsp[-1].moduleList);
 		    ;
     break;}
 case 13:

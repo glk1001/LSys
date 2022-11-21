@@ -37,10 +37,11 @@
 #include "production.h"
 #include "value.h"
 
-#define parserRules (parseInfo->rules)
-#define parserSymbolTable (parseInfo->symbolTable)
-#define parserIgnoreTable (parseInfo->ignoreTable)
-#define parserStart (parseInfo->start)
+#define parserRules (parseInfo->GetRules())
+#define parserSymbolTable (parseInfo->GetSymbolTable())
+#define parserIgnoreTable (parseInfo->GetIgnoreTable())
+#define parserStart (parseInfo->GetStartModuleList())
+#define parserStartReset(moduleList) (parseInfo->ResetStartModuleList(moduleList))
 
 // In lex.l, for setting input stream
 void set_parser_input(const char* ifile);

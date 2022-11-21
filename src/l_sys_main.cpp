@@ -244,7 +244,7 @@ auto PrintStartInfo(const LSysModel& model, const bool display, const bool stats
 {
   if (display)
   {
-    std::cout << "Gen 0: " << *model.start << "\n";
+    std::cout << "Gen 0: " << *model.GetStartModuleList() << "\n";
   }
   if (stats)
   {
@@ -292,11 +292,11 @@ int main(const int argc, const char* argv[])
     ::srand48((cmdArgs.properties.seed != -1) ? cmdArgs.properties.seed : ::time(nullptr));
 
     const auto model           = GetParsedModel(cmdArgs.properties);
-    const auto finalProperties = GetFinalProperties(model->symbolTable, cmdArgs.properties);
+    const auto finalProperties = GetFinalProperties(model->GetSymbolTable(), cmdArgs.properties);
 
     // For each generation, apply appropriate productions in parallel to all modules.
     PrintStartInfo(*model, cmdArgs.display, cmdArgs.stats);
-    auto moduleList = model->start;
+    auto moduleList = model->GetStartModuleList()->Clone();
     for (int gen = 1; gen <= finalProperties.maxGen; ++gen)
     {
       moduleList = model->Generate(moduleList.get());

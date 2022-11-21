@@ -46,6 +46,7 @@ class Module
 {
 public:
   Module(const Name& name, List<Expression>* expressionList, bool ignoreFlag = false);
+  Module(const Module& other) noexcept;
 
   [[nodiscard]] auto GetName() const -> Name { return Name(m_tag); }
 
@@ -66,5 +67,13 @@ private:
 // These Names are used in context matching to ascend/descend tree levels.
 inline const Name LEFT_BRACKET{"["};
 inline const Name RIGHT_BRACKET{"]"};
+
+inline Module::Module(const Module& other) noexcept
+  : m_tag{other.m_tag},
+    m_ignoreFlag{other.m_ignoreFlag},
+    m_param{other.m_param == nullptr ? std::make_unique<List<Expression>>()
+                                     : std::make_unique<List<Expression>>(*other.m_param)}
+{
+}
 
 } // namespace L_SYSTEM

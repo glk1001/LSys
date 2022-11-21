@@ -48,8 +48,8 @@ public:
   Expression(int operation, Expression* lop, Expression* rop);
   explicit Expression(const Name& name, List<Expression>* funcArgs = nullptr);
   explicit Expression(const Value& value);
-  Expression(const Expression&) = default;
-  Expression(Expression&&)      = default;
+  Expression(const Expression&);
+  Expression(Expression&&) = default;
   ~Expression();
 
   auto operator=(const Expression&) -> Expression& = default;

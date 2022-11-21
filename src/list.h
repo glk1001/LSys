@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <vector>
 
 namespace L_SYSTEM
@@ -15,13 +16,15 @@ template<typename T>
 class List
 {
 public:
-  List()            = default;
-  List(const List&) = delete;
-  List(List&&)      = delete;
+  List() = default;
+  List(const List& other) noexcept;
+  List(List&&) = delete;
   ~List();
 
   auto operator=(const List&) -> List& = delete;
   auto operator=(List&&) -> List&      = delete;
+
+  [[nodiscard]] auto Clone() const -> std::unique_ptr<List<T>>;
 
   [[nodiscard]] auto size() const -> size_t;
 
@@ -81,6 +84,30 @@ List<T>::~List()
   {
     delete *i;
   }
+}
+
+template<typename T>
+inline List<T>::List(const List<T>& other) noexcept
+{
+  m_stdList.resize(other.m_stdList.size());
+  for (auto i = 0U; i < m_stdList.size(); ++i)
+  {
+    if (other.m_stdList[i] == nullptr)
+    {
+      m_stdList[i] = nullptr;
+    }
+    else
+    {
+      m_stdList[i] = new T{*other.m_stdList[i]};
+    }
+  }
+}
+
+template<typename T>
+inline auto List<T>::Clone() const -> std::unique_ptr<List<T>>
+{
+  auto newList = std::make_unique<List<T>>(*this);
+  return newList;
 }
 
 template<typename T>
