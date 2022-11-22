@@ -296,7 +296,7 @@ int main(const int argc, const char* argv[])
 
     // For each generation, apply appropriate productions in parallel to all modules.
     PrintStartInfo(*model, cmdArgs.display, cmdArgs.stats);
-    auto moduleList = model->GetStartModuleList()->Clone();
+    auto moduleList = std::make_unique<List<Module>>(*model->GetStartModuleList());
     for (int gen = 1; gen <= finalProperties.maxGen; ++gen)
     {
       moduleList = model->Generate(moduleList.get());

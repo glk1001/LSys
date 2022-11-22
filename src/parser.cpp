@@ -1150,9 +1150,9 @@ case 16:
 		      auto p = std::make_unique<Production>(Name{yyvsp[-5].name}, yyvsp[-2].predecessor, yyvsp[-1].expression, yyvsp[0].successors);
 		      PDebug(PD_PARSER, std::cerr << "Parsed production: " << *p << std::endl);
 		      if (p->IsContextFree())
-			Context_free_rules.append(p);
+			Context_free_rules.append(std::move(p));
 		      else
-			parserRules.append(p);
+			parserRules.append(std::move(p));
 		    ;
     break;}
 case 19:
@@ -1166,7 +1166,7 @@ case 20:
 #line 219 "lsys.y"
 { yyval.successors = new L_SYSTEM::List<Successor>;
     auto succ = std::unique_ptr<Successor>(yyvsp[-1].successor);
-		      yyval.successors->append(succ);
+		      yyval.successors->append(std::move(succ));
 		      yyval.successors->append(yyvsp[0].successors);
 		      delete yyvsp[0].successors;
 		    ;
@@ -1175,7 +1175,7 @@ case 21:
 #line 228 "lsys.y"
 { yyval.successors = yyvsp[-1].successors;
     auto succ = std::unique_ptr<Successor>(yyvsp[0].successor);
-		      yyval.successors->append(succ);
+		      yyval.successors->append(std::move(succ));
 		    ;
     break;}
 case 22:
@@ -1254,7 +1254,7 @@ case 32:
 #line 296 "lsys.y"
 {
     auto mod = std::unique_ptr<Module>(yyvsp[0].module);
-    yyvsp[-1].moduleList->append(mod);
+    yyvsp[-1].moduleList->append(std::move(mod));
 		      yyval.moduleList = yyvsp[-1].moduleList;
 		    ;
     break;}
@@ -1289,10 +1289,10 @@ case 38:
 { if (BindExpression == true) {
 			Value v = yyvsp[0].expression->Evaluate(parserSymbolTable);
       auto expr = std::make_unique<Expression>(v);
-			yyvsp[-2].expressionList->append(expr);
+			yyvsp[-2].expressionList->append(std::move(expr));
 		      } else {
       auto expr = std::unique_ptr<Expression>(yyvsp[0].expression);
-			yyvsp[-2].expressionList->append(expr);
+			yyvsp[-2].expressionList->append(std::move(expr));
 		      }
 		      PDebug(PD_PARSER, std::cerr << "Parsed additional expression: " << *yyvsp[0].expression << std::endl);
 		      yyval.expressionList = yyvsp[-2].expressionList;
@@ -1305,10 +1305,10 @@ case 39:
 		      if (BindExpression == true) {
 			Value v = yyvsp[0].expression->Evaluate(parserSymbolTable);
       auto expr = std::make_unique<Expression>(v);
-			yyval.expressionList->append(expr);
+			yyval.expressionList->append(std::move(expr));
 		      } else {
       auto expr = std::unique_ptr<Expression>(yyvsp[0].expression);
-			yyval.expressionList->append(expr);
+			yyval.expressionList->append(std::move(expr));
 		      }
 		    ;
     break;}

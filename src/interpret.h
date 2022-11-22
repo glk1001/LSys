@@ -70,14 +70,14 @@ private:
 inline auto Interpreter::Start(const List<Module>& moduleList) -> void
 {
   m_generator.Prelude();
-  m_moduleIter = std::make_unique<ConstListIterator<Module>>(moduleList);
+  m_moduleIter    = std::make_unique<ConstListIterator<Module>>(moduleList);
   m_currentModule = m_moduleIter->first();
 }
 
 inline auto Interpreter::Finish() -> void
 {
   m_currentModule = nullptr;
-  m_moduleIter = nullptr;
+  m_moduleIter    = nullptr;
   m_generator.Postscript();
 }
 

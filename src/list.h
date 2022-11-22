@@ -24,11 +24,9 @@ public:
   auto operator=(const List&) -> List& = delete;
   auto operator=(List&&) -> List&      = delete;
 
-  [[nodiscard]] auto Clone() const -> std::unique_ptr<List<T>>;
-
   [[nodiscard]] auto size() const -> size_t;
 
-  auto append(std::unique_ptr<T>& item) -> void;
+  auto append(std::unique_ptr<T> item) -> void;
 
   // Append a dynamically allocated list; clears the source list.
   auto append(List<T>* list) -> void;
@@ -95,20 +93,13 @@ inline List<T>::List(const List<T>& other) noexcept
 }
 
 template<typename T>
-inline auto List<T>::Clone() const -> std::unique_ptr<List<T>>
-{
-  auto newList = std::make_unique<List<T>>(*this);
-  return newList;
-}
-
-template<typename T>
 inline auto List<T>::size() const -> size_t
 {
   return m_stdList.size();
 }
 
 template<typename T>
-inline auto List<T>::append(std::unique_ptr<T>& item) -> void
+inline auto List<T>::append(std::unique_ptr<T> item) -> void
 {
   m_stdList.emplace_back(std::move(item));
 }

@@ -341,7 +341,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   for (const auto* mod = modIter.first(); mod != nullptr; mod = modIter.next())
   {
     auto newModule = mod->Instantiate(symbolTable);
-    moduleList->append(newModule);
+    moduleList->append(std::move(newModule));
   }
 
   PDebug(PD_PRODUCTION,

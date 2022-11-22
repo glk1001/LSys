@@ -323,9 +323,7 @@ std::ostream& operator<<(std::ostream& out, const Expression& expression)
   return out;
 }
 
-Expression::Expression(const int operation,
-                       Expression* const lop,
-                       Expression* const rop)
+Expression::Expression(const int operation, Expression* const lop, Expression* const rop)
   : m_operation{operation}
 {
   PDebug(PD_EXPRESSION,
@@ -338,8 +336,8 @@ Expression::Expression(const int operation,
 }
 
 Expression::Expression(const int operation,
-                       std::unique_ptr<Expression>& lop,
-                       std::unique_ptr<Expression>& rop)
+                       std::unique_ptr<Expression> lop,
+                       std::unique_ptr<Expression> rop)
   : m_operation{operation}
 {
   PDebug(PD_EXPRESSION,
@@ -387,7 +385,7 @@ Expression::Expression(const Name& name, List<Expression>* funcArgs)
 }
 
 // Create a function call node.
-Expression::Expression(const Name& name, std::unique_ptr<List<Expression>>& funcArgs)
+Expression::Expression(const Name& name, std::unique_ptr<List<Expression>> funcArgs)
   : m_operation{LSYS_FUNCTION},
     m_expressionValue{      {name.id(), std::move(funcArgs)},
         {},
@@ -427,10 +425,9 @@ Expression::Expression(const Expression& other) : m_operation{other.m_operation}
 auto Expression::GetArgs(const std::array<std::unique_ptr<Expression>, 2>& args) noexcept
     -> std::array<std::unique_ptr<Expression>, 2>
 {
-  auto newArgs = std::array<std::unique_ptr<Expression>, 2>
-  {
-    args[0] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[1]),
-        args[1] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[0]),
+  auto newArgs = std::array<std::unique_ptr<Expression>, 2>{
+      args[0] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[1]),
+      args[1] == nullptr ? std::unique_ptr<Expression>{} : std::make_unique<Expression>(*args[0]),
   };
   return newArgs;
 }
@@ -608,7 +605,7 @@ auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>&
   for (const auto* expr = exprIter.first(); expr != nullptr; expr = exprIter.next())
   {
     auto newExpr = std::make_unique<Expression>(expr->Evaluate(symbolTable));
-    newExprList->append(newExpr);
+    newExprList->append(std::move(newExpr));
   }
 
   return newExprList;

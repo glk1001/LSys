@@ -69,7 +69,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
     {
       PDebug(PD_PRODUCTION, std::cerr << "\tno match found, passing production unchanged\n");
       auto oldModPtr = std::make_unique<Module>(*oldMod);
-      newModuleList->append(oldModPtr);
+      newModuleList->append(std::move(oldModPtr));
     }
   }
 

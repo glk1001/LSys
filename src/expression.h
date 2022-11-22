@@ -46,10 +46,10 @@ class Expression
 {
 public:
   Expression(int operation, Expression* lop, Expression* rop);
-  Expression(int operation, std::unique_ptr<Expression>& lop, std::unique_ptr<Expression>& rop);
+  Expression(int operation, std::unique_ptr<Expression> lop, std::unique_ptr<Expression> rop);
   Expression(const Name& name, List<Expression>* funcArgs);
   explicit Expression(const Name& name);
-  Expression(const Name& name, std::unique_ptr<List<Expression>>& funcArgs);
+  Expression(const Name& name, std::unique_ptr<List<Expression>> funcArgs);
   explicit Expression(const Value& value);
   Expression(const Expression& other);
   Expression(Expression&&) = default;
