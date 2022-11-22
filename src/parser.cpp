@@ -1147,7 +1147,10 @@ case 15:
 case 16:
 #line 189 "lsys.y"
 { lex_popstate();
-		      auto p = std::make_unique<Production>(Name{yyvsp[-5].name}, yyvsp[-2].predecessor, yyvsp[-1].expression, yyvsp[0].successors);
+		      auto p = std::make_unique<Production>(Name{yyvsp[-5].name},
+                                          std::unique_ptr<Predecessor>{yyvsp[-2].predecessor},
+                                          std::unique_ptr<const Expression>{yyvsp[-1].expression},
+                                          std::unique_ptr<const List<Successor>>{yyvsp[0].successors});
 		      PDebug(PD_PARSER, std::cerr << "Parsed production: " << *p << std::endl);
 		      if (p->IsContextFree())
 			Context_free_rules.append(std::move(p));
@@ -1184,7 +1187,7 @@ case 22:
     break;}
 case 23:
 #line 236 "lsys.y"
-{ yyval.successor = new Successor(yyvsp[-1].moduleList, yyvsp[-2].probability);
+{ yyval.successor = new Successor(std::unique_ptr<const List<Module>>{yyvsp[-1].moduleList}, yyvsp[-2].probability);
 		      PDebug(PD_PARSER, std::cerr << "Parsed successor: " << *yyval.successor << std::endl);
 		    ;
     break;}
@@ -1221,7 +1224,7 @@ case 27:
 			//  delete the list after removing that module.
 
       L_SYSTEM::ListIterator<Module> mi(yyvsp[-2].moduleList);
-			yyval.predecessor->center = mi.first();
+			yyval.predecessor->center.reset(mi.first());
 			PDebug(PD_PARSER, std::cerr << "Predecessor (no context) is: " << *yyval.predecessor << std::endl);
 		      } else {
 			// Two possibilities:
@@ -1229,18 +1232,22 @@ case 27:
 			//  A < B > C
 			// In both cases, 'modules' is left context
 
-			yyval.predecessor->left = yyvsp[-2].moduleList;
+			yyval.predecessor->left.reset(yyvsp[-2].moduleList);
 			PDebug(PD_PARSER, std::cerr << "Predecessor (context) is: " << *yyval.predecessor << std::endl);
 		      }
 		    ;
     break;}
 case 28:
 #line 284 "lsys.y"
-{ yyval.predecessor = new Predecessor(NULL, yyvsp[-1].module, yyvsp[0].moduleList); ;
+{ yyval.predecessor = new Predecessor(std::unique_ptr<List<Module>>{},
+                                      std::unique_ptr<Module>{yyvsp[-1].module},
+                                      std::unique_ptr<List<Module>>{yyvsp[0].moduleList}); ;
     break;}
 case 29:
 #line 286 "lsys.y"
-{ yyval.predecessor = new Predecessor(NULL, NULL, yyvsp[0].moduleList); ;
+{ yyval.predecessor = new Predecessor(std::unique_ptr<List<Module>>{},
+                                      std::unique_ptr<Module>{},
+                                      std::unique_ptr<List<Module>>{yyvsp[0].moduleList}); ;
     break;}
 case 30:
 #line 290 "lsys.y"

@@ -41,29 +41,18 @@ namespace L_SYSTEM
 // so it's declared public.
 struct Predecessor
 {
-  explicit Predecessor(List<Module>* const l = nullptr,
-                       Module* const c       = nullptr,
-                       List<Module>* const r = nullptr)
-    : left(l), center(c), right(r)
+  Predecessor(std::unique_ptr<List<Module>> lft,
+              std::unique_ptr<Module> cen,
+              std::unique_ptr<List<Module>> rgt)
+    : left{std::move(lft)}, center{std::move(cen)}, right{std::move(rgt)}
   {
   }
-  Predecessor(const Predecessor&) = delete;
-  Predecessor(Predecessor&&)      = delete;
-  ~Predecessor()
-  {
-    delete left;
-    delete center;
-    delete right;
-  }
-
-  auto operator=(const Predecessor&) -> Predecessor& = delete;
-  auto operator=(Predecessor&&) -> Predecessor&      = delete;
 
   friend auto operator<<(std::ostream& out, const Predecessor& predecessor) -> std::ostream&;
 
-  List<Module>* left;
-  Module* center;
-  List<Module>* right;
+  std::unique_ptr<List<Module>> left;
+  std::unique_ptr<Module> center;
+  std::unique_ptr<List<Module>> right;
 };
 
 // A Successor is the right-hand side of a production; it contains
@@ -74,23 +63,17 @@ struct Predecessor
 class Successor
 {
 public:
-  explicit Successor(const List<Module>* const moduleList, const float probability = 1.0F)
-    : m_probability(probability), m_moduleList(moduleList)
+  explicit Successor(std::unique_ptr<const List<Module>> moduleList, const float probability = 1.0F)
+    : m_probability{probability}, m_moduleList{std::move(moduleList)}
   {
   }
-  Successor(const Successor&) = delete;
-  Successor(Successor&&)      = delete;
-  ~Successor() { delete m_moduleList; }
-
-  auto operator=(const Successor&) -> Successor& = delete;
-  auto operator=(Successor&&) -> Successor&      = delete;
 
   friend class Production;
   friend auto operator<<(std::ostream& out, const Successor& successor) -> std::ostream&;
 
 private:
   float m_probability;
-  const List<Module>* m_moduleList;
+  std::unique_ptr<const List<Module>> m_moduleList;
 };
 
 // A Production is applied to a Module to produce a new list of Modules.
@@ -99,15 +82,9 @@ class Production
 {
 public:
   Production(const Name& name,
-             Predecessor* lhs,
-             const Expression* cond,
-             const List<Successor>* rhs);
-  Production(const Production&) = delete;
-  Production(Production&&)      = delete;
-  ~Production();
-
-  auto operator=(const Production&) -> Production& = delete;
-  auto operator=(Production&&) -> Production&      = delete;
+             std::unique_ptr<Predecessor> input,
+             std::unique_ptr<const Expression> condition,
+             std::unique_ptr<const List<Successor>> successors);
 
   auto IsContextFree() const -> bool { return m_contextFree; }
   auto Matches(const ListIterator<Module>& modIter,
@@ -121,9 +98,9 @@ public:
 private:
   Name m_productionName;
   bool m_contextFree = false; // Is the production context-free?
-  const Predecessor* m_input;
-  const Expression* m_condition;
-  const List<Successor>* m_successors;
+  std::unique_ptr<Predecessor> m_input;
+  std::unique_ptr<const Expression> m_condition;
+  std::unique_ptr<const List<Successor>> m_successors;
 };
 
 } // namespace L_SYSTEM

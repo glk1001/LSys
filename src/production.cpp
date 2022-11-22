@@ -34,39 +34,33 @@
 #include "symbol_table.h"
 #include "value.h"
 
-#include <cstdlib>
+#include <stdexcept>
 
 namespace L_SYSTEM
 {
 
 Production::Production(const Name& name,
-                       Predecessor* const lhs,
-                       const Expression* const cond,
-                       const List<Successor>* const rhs)
-  : m_productionName{name}, m_input{lhs}, m_condition{cond}, m_successors{rhs}
+                       std::unique_ptr<Predecessor> input,
+                       std::unique_ptr<const Expression> condition,
+                       std::unique_ptr<const List<Successor>> successors)
+  : m_productionName{name},
+    m_input{std::move(input)},
+    m_condition{std::move(condition)},
+    m_successors{std::move(successors)}
 {
   // Ensure that empty context lists are represented by 0 pointers
-  if ((lhs->left != nullptr) and (0 == lhs->left->size()))
+  if ((m_input->left != nullptr) and (0 == m_input->left->size()))
   {
-    delete lhs->left;
-    lhs->left = nullptr;
+    m_input->left = nullptr;
   }
-  if ((lhs->right != nullptr) and (0 == lhs->right->size()))
+  if ((m_input->right != nullptr) and (0 == m_input->right->size()))
   {
-    delete lhs->right;
-    lhs->right = nullptr;
+    m_input->right = nullptr;
   }
 
-  m_contextFree = (nullptr == lhs->left) and (nullptr == lhs->right);
+  m_contextFree = (nullptr == m_input->left) and (nullptr == m_input->right);
 
   PDebug(PD_PRODUCTION, std::cerr << "Production::Production: created " << *this << "\n");
-}
-
-Production::~Production()
-{
-  delete m_input;
-  delete m_condition;
-  delete m_successors;
 }
 
 // See if module m matches the left hand side of this production and
@@ -99,7 +93,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
   {
     PDebug(PD_PRODUCTION, std::cerr << "    [left context]\n");
     // Scan each list in Reverse order
-    auto listIterFormal = ListIterator<Module>{m_input->left};
+    auto listIterFormal = ListIterator<Module>{*m_input->left};
     auto listIterValue  = ListIterator<Module>{modIter};
     const Module* formal;
     const Module* value;
@@ -140,7 +134,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
       }
 
       // If start of string was reached without finding a potentially
-      //	matching module, context matching failed.
+      // matching module, context matching failed.
       if (nullptr == value)
       {
         return false;
@@ -169,7 +163,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
   // Right context
   if (m_input->right != nullptr)
   {
-    auto listIterFormal = ListIterator<Module>{m_input->right};
+    auto listIterFormal = ListIterator<Module>{*m_input->right};
     auto listIterValue  = ListIterator<Module>{modIter};
     const Module* formal;
     const Module* value;
@@ -307,8 +301,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   //	or return a copy of the predecessor).
   if (0 == m_successors->size())
   {
-    std::cerr << "Error in Production::Produce: production has no successors:\n" << *this << "\n";
-    std::exit(1);
+    throw std::runtime_error("Production::Produce: Error: production has no successors");
   }
 
   // Pick one of the successors of the production at random.
@@ -324,7 +317,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
     cumulativeProbability += succ->m_probability;
     if (randomVar <= cumulativeProbability)
     {
-      modList = succ->m_moduleList;
+      modList = succ->m_moduleList.get();
       break;
     }
   }
