@@ -38,8 +38,10 @@
 namespace L_SYSTEM
 {
 
-Module::Module(const Name& name, List<Expression>* const expressionList, const bool ignoreFlag)
-  : m_tag(name.id()), m_ignoreFlag{ignoreFlag}, m_param{expressionList}
+Module::Module(const Name& name,
+               std::unique_ptr<List<Expression>> expressionList,
+               const bool ignoreFlag)
+  : m_tag(name.id()), m_ignoreFlag{ignoreFlag}, m_param{std::move(expressionList)}
 {
   PDebug(PD_MODULE, std::cerr << "Creating module " << *this << " @ " << this << "\n");
 }
@@ -75,8 +77,9 @@ auto Module::Conforms(const Module& mod) const -> bool
 //  module's expressions evaluated in the context of the symbol table.
 auto Module::Instantiate(const SymbolTable<Value>& symbolTable) const -> std::unique_ptr<Module>
 {
-  auto* const exprList = L_SYSTEM::Instantiate(m_param.get(), symbolTable);
-  auto newModule       = std::make_unique<Module>(Name(m_tag), exprList, m_ignoreFlag);
+  auto exprList =
+      std::unique_ptr<List<Expression>>{L_SYSTEM::Instantiate(m_param.get(), symbolTable)};
+  auto newModule = std::make_unique<Module>(Name(m_tag), std::move(exprList), m_ignoreFlag);
 
   PDebug(PD_MODULE,
          std::cerr << "Module::Instantiate: " << *this << " @ " << this << " -> " << *newModule

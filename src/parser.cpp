@@ -71,6 +71,7 @@
 #include <malloc.h>
 
 using L_SYSTEM::Expression;
+using L_SYSTEM::List;
 using L_SYSTEM::LSysModel;
 using L_SYSTEM::Module;
 using L_SYSTEM::Name;
@@ -1266,7 +1267,7 @@ case 34:
 { Value v;
 		      bool ignore = parserIgnoreTable.Lookup(Name{yyvsp[-1].name}.str(), v);
 
-		      yyval.module = new Module(Name{yyvsp[-1].name}, yyvsp[0].expressionList, ignore);
+		      yyval.module = new Module(Name{yyvsp[-1].name}, std::unique_ptr<List<Expression>>{yyvsp[0].expressionList}, ignore);
 		    ;
     break;}
 case 35:

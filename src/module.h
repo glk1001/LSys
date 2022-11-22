@@ -45,7 +45,7 @@ namespace L_SYSTEM
 class Module
 {
 public:
-  Module(const Name& name, List<Expression>* expressionList, bool ignoreFlag = false);
+  Module(const Name& name, std::unique_ptr<List<Expression>> expressionList, bool ignoreFlag = false);
   Module(const Module& other) noexcept;
 
   [[nodiscard]] auto GetName() const -> Name { return Name(m_tag); }
