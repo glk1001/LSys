@@ -39,7 +39,12 @@ class LSysModel
 {
 public:
   LSysModel() = default;
+  LSysModel(const LSysModel&) = delete;
+  LSysModel(LSysModel&&) = delete;
   ~LSysModel() noexcept;
+
+  auto operator=(const LSysModel&) -> LSysModel& = delete;
+  auto operator=(LSysModel&&) -> LSysModel& = delete;
 
   [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> std::unique_ptr<List<Module>>;
 
@@ -51,36 +56,36 @@ public:
   [[nodiscard]] auto GetStartModuleList() const noexcept -> const List<Module>*;
 
 private:
-  SymbolTable<Value> ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
-  SymbolTable<Value> symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
-  List<Production> rules         = List<Production>{};
+  SymbolTable<Value> m_symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
+  SymbolTable<Value> m_ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
+  List<Production> m_rules         = List<Production>{};
 
-  std::shared_ptr<List<Module>> start{};
+  std::unique_ptr<List<Module>> m_start{};
 };
 
 inline auto LSysModel::GetSymbolTable() noexcept -> SymbolTable<Value>&
 {
-  return symbolTable;
+  return m_symbolTable;
 }
 
 inline auto LSysModel::GetIgnoreTable() noexcept -> SymbolTable<Value>&
 {
-  return ignoreTable;
+  return m_ignoreTable;
 }
 
 inline auto LSysModel::GetRules() noexcept -> List<Production>&
 {
-  return rules;
+  return m_rules;
 }
 
-inline auto LSysModel::ResetStartModuleList(List<Module>* moduleList) noexcept
+inline auto LSysModel::ResetStartModuleList(List<Module>* const moduleList) noexcept
 {
-  start.reset(moduleList);
+  m_start.reset(moduleList);
 }
 
 inline auto LSysModel::GetStartModuleList() const noexcept -> const List<Module>*
 {
-  return start.get();
+  return m_start.get();
 }
 
 } // namespace L_SYSTEM

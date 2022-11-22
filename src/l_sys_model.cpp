@@ -39,7 +39,7 @@ LSysModel::~LSysModel() noexcept = default;
 // Apply the model to the specified list for one generation, generating a new list.
 auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {
-  auto ruleIter      = ListIterator<Production>{&rules};
+  auto ruleIter      = ListIterator<Production>{&m_rules};
   auto newModuleList = std::make_unique<List<Module>>();
 
   auto oldModIter = ListIterator<Module>{*oldModuleList};
@@ -52,7 +52,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
     Production* rule;
     for (rule = ruleIter.first(); rule != nullptr; rule = ruleIter.next())
     {
-      if (rule->Matches(oldModIter, oldMod, symbolTable))
+      if (rule->Matches(oldModIter, oldMod, m_symbolTable))
       {
         PDebug(PD_PRODUCTION, std::cerr << "\tmatched by: " << *rule << "\n");
         break;
@@ -61,7 +61,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
     // If we found one, replace the module by its successor.
     if (rule != nullptr)
     {
-      auto result = rule->Produce(oldMod, symbolTable);
+      const auto result = rule->Produce(oldMod, m_symbolTable);
       PDebug(PD_PRODUCTION, std::cerr << "\tapplied production yielding: " << *result << "\n");
       newModuleList->append(result.get());
     }

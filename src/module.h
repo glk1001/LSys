@@ -49,6 +49,11 @@ public:
          std::unique_ptr<List<Expression>> expressionList,
          bool ignoreFlag = false);
   Module(const Module& other) noexcept;
+  Module(Module&&) = default;
+  ~Module()        = default;
+
+  auto operator=(const Module&) -> Module& = delete;
+  auto operator=(Module&&) -> Module&      = default;
 
   [[nodiscard]] auto GetName() const -> Name { return Name(m_tag); }
 

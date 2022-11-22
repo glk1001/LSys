@@ -38,6 +38,7 @@
 #include "value.h"
 
 #include <array>
+#include <memory>
 
 namespace L_SYSTEM
 {
@@ -102,7 +103,8 @@ private:
     -> bool;
 //TODO(glk) Use unique_ptr.
 [[nodiscard]] auto Instantiate(const List<Expression>* before,
-                               const SymbolTable<Value>& symbolTable) -> List<Expression>*;
+                               const SymbolTable<Value>& symbolTable) noexcept
+    -> std::unique_ptr<List<Expression>>;
 [[nodiscard]] auto GetFloat(const SymbolTable<Value>& symbolTable,
                             const List<Expression>& expressionList,
                             float& fltValue,

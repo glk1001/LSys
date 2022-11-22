@@ -583,24 +583,25 @@ auto Bind(const List<Expression>* const formals,
 // that they have the same number of expressions.
 auto Conforms(const List<Expression>* const formals, const List<Expression>* const values) -> bool
 {
-  const auto formalsSize = (formals != nullptr) ? formals->size() : 0U;
-  const auto valuesSize  = (values != nullptr) ? values->size() : 0U;
+  const auto formalsSize = (formals == nullptr) ? 0U : formals->size();
+  const auto valuesSize  = (values == nullptr) ? 0U : values->size();
   return formalsSize == valuesSize;
 }
 
 // Instantiate the list; that is, return a copy with all the
 // expressions evaluated in the context of the symbol table.
 // Return a NULL expression list if a NULL list is passed
-auto Instantiate(const List<Expression>* const before, const SymbolTable<Value>& symbolTable)
-    -> List<Expression>*
+auto Instantiate(const List<Expression>* const before,
+                 const SymbolTable<Value>& symbolTable) noexcept
+    -> std::unique_ptr<List<Expression>>
 {
   if (nullptr == before)
   {
-    return nullptr;
+    return std::unique_ptr<List<Expression>>{};
   }
 
-  auto* const newExprList = new List<Expression>{};
-  auto exprIter           = ConstListIterator<Expression>{*before};
+  auto newExprList = std::make_unique<List<Expression>>();
+  auto exprIter    = ConstListIterator<Expression>{*before};
 
   for (const auto* expr = exprIter.first(); expr != nullptr; expr = exprIter.next())
   {
