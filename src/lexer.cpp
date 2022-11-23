@@ -1,10 +1,3 @@
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#pragma GCC diagnostic ignored "-Wunused-function"
-
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>

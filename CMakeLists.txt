@@ -59,10 +59,49 @@ target_link_libraries(${TARGET_NAME}
 
 set_project_warnings(${TARGET_NAME})
 
+set(MSVC_WARNINGS_OFF
+        -Wno-date-time # TODO(glk) fix these
+        )
+set(CLANG_WARNINGS_OFF
+        -Wno-extra
+        -Wno-date-time
+        -Wno-old-style-cast
+        -Wno-conversion
+        -Wno-sign-conversion
+        -Wno-implicit-fallthrough
+        -Wno-register
+        -Wno-unused-function
+        -Wno-write-strings
+        )
+set(GCC_WARNINGS_OFF
+        ${CLANG_WARNINGS_OFF}
+        -Wno-useless-cast
+        -Wno-effc++
+        )
+
+if (MSVC)
+    set(SOME_WARNINGS_OFF "${MSVC_WARNINGS_OFF}")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    set(SOME_WARNINGS_OFF "${CLANG_WARNINGS_OFF}")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(SOME_WARNINGS_OFF "${GCC_WARNINGS_OFF}")
+endif ()
+STRING(REPLACE ";" " " SOME_WARNINGS_OFF "${SOME_WARNINGS_OFF}")
+
+set_source_files_properties(
+        src/command_line_options.cpp
+        src/lexer.cpp
+        src/options.cpp
+        src/parser.cpp
+        PROPERTIES
+        COMPILE_FLAGS "${SOME_WARNINGS_OFF}"
+)
+
 message(STATUS "LSys: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "LSys: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "LSys: CMAKE_BUILD_TYPE = \"${CMAKE_BUILD_TYPE}\".")
 message(STATUS "LSys: WARNINGS_AS_ERRORS = \"${WARNINGS_AS_ERRORS}\".")
+message(STATUS "LSys: SOME_WARNINGS_OFF = \"${SOME_WARNINGS_OFF}\".")
 message(STATUS "LSys: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "LSys: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "LSys: CMAKE_GENERATOR = \"${CMAKE_GENERATOR}\".")

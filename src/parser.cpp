@@ -1,11 +1,3 @@
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Wregister"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wextra"
-#pragma GCC diagnostic ignored "-Wwrite-strings"
-
 /* A Bison parser, made from lsys.y
    by GNU bison 1.35.  */
 
@@ -67,8 +59,6 @@
 #include "debug.h"
 
 #include <cstdlib>
-#include <ctype.h>
-#include <malloc.h>
 
 using L_SYSTEM::Expression;
 using L_SYSTEM::List;

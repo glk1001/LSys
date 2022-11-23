@@ -224,7 +224,7 @@ enum kwdmatch_t
 // ^^-------------------------------------------------------------------------
 kwdmatch_t kwdmatch(const char* src, const char* attempt, int len = 0);
 
-}; // namespace
+} // namespace
 
 
 // ******************************************************************* Options
@@ -519,10 +519,7 @@ int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
       nextchar -= 1;
       optctrls |= (Options::Quiet | Options::NoGuessing);
       int optchar = ParseLongOpt(iter, optarg, longOpt);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-      optctrls = save_ctrls;
-#pragma GCC diagnostic pop
+      optctrls    = save_ctrls;
       if (optchar > 0)
       {
         return optchar;
@@ -642,10 +639,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
       const char* save_nextchar = nextchar;
       optctrls |= (Options::Quiet | Options::NoGuessing);
       int optchar = ParseOpt(iter, optarg, longOpt);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-      optctrls = save_ctrls;
-#pragma GCC diagnostic pop
+      optctrls    = save_ctrls;
       if (optchar > 0)
       {
         return optchar;
@@ -925,7 +919,7 @@ kwdmatch_t kwdmatch(const char* src, const char* attempt, int len)
   return (src[i]) ? PARTIAL_MATCH : EXACT_MATCH;
 }
 
-}; // namespace
+} // namespace
 
 
 const char OptionSpec::Null_spec[] = "\0\0\0";
@@ -1275,4 +1269,4 @@ void OptIstreamIter::Fill()
 }
 
 
-}; // namespace Utilities
+} // namespace Utilities

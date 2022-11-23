@@ -61,11 +61,8 @@ public:
   [[nodiscard]] auto Abs() const -> Value;
   [[nodiscard]] auto operator&(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator|(const Value& otherValue) const -> Value;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
   [[nodiscard]] auto operator&&(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator||(const Value& otherValue) const -> Value;
-#pragma GCC diagnostic pop
   [[nodiscard]] auto operator==(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator!=(const Value& otherValue) const -> Value;
   [[nodiscard]] auto operator<(const Value& otherValue) const -> Value;

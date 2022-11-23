@@ -258,4 +258,4 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
 }
 
 
-}; // namespace Utilities
+} // namespace Utilities

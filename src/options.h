@@ -253,10 +253,7 @@ public:
   unsigned Controls() const { return optctrls; }
 
   // Controls() (with 1 argument) sets new control settings
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
   void Controls(unsigned int newctrls) { optctrls = newctrls; }
-#pragma GCC diagnostic pop
   void Controls(const char* flagsStr);
 
   // reset for another pass to parse for options
@@ -310,7 +307,6 @@ private:
   const char* nextchar; // next option-character to process
   const char* listopt; // last list-option we matched
   const char* cmdname; // name of the command
-  bool autoSetControlFlags;
   void CheckSyntax() const;
   OptionSpec MatchOpt(char opt, int ignore_case = 0) const;
   OptionSpec MatchLongOpt(const char* opt, int len, int& ambiguous) const;
