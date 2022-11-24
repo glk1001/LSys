@@ -196,9 +196,9 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(static_cast<double>(x) * drand48());
+    return Value(static_cast<double>(x) * GetRandDouble());
   }
-  return Value(drand48());
+  return Value(GetRandDouble());
 }
 
 // Reseed the random number generator and return the seed;
@@ -218,7 +218,7 @@ using ExprFunc =
     seed = ::time(nullptr);
   }
 
-  srand48(static_cast<uint32_t>(seed));
+  SetRandSeed(static_cast<uint32_t>(seed));
   return Value(static_cast<int>(seed));
 }
 

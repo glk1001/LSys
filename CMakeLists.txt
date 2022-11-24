@@ -38,6 +38,7 @@ add_executable(${TARGET_NAME}
         src/parser.cpp
         src/polygon.h
         src/production.cpp
+        src/rand.cpp
         src/radiance_generator.cpp
         src/symbol_table.h
         src/token.h

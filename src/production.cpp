@@ -305,7 +305,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   }
 
   // Pick one of the successors of the production at random.
-  const auto randomVar       = static_cast<float>(drand48());
+  const auto randomVar       = static_cast<float>(GetRandDouble());
   auto cumulativeProbability = 0.0F;
 
   const List<Module>* modList;

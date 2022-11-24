@@ -1,18 +1,18 @@
 #pragma once
 
-#include <cstdlib>
+#include <cstdint>
+#include <functional>
 
 namespace L_SYSTEM
 {
 
-inline double drand48()
-{
-  return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
-}
+using SetRandFunc       = std::function<void(uint64_t seed)>;
+using GetRandDoubleFunc = std::function<double()>;
 
-inline void srand48(unsigned int seed)
-{
-  srand(seed);
-}
+auto SetRandFuncs(const SetRandFunc& setRandFunc, const GetRandDoubleFunc& getRandDoubleFunc)
+    -> void;
+
+[[nodiscard]] auto GetRandDouble() -> double;
+auto SetRandSeed(uint64_t seed) -> void;
 
 } // namespace L_SYSTEM
