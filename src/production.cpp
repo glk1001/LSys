@@ -326,7 +326,8 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   if (nullptr == modList)
   {
     std::cerr << "Error in Production::Produce: no successor was chosen:\n" << *this << "\n";
-    return moduleList;
+    throw std::runtime_error("Error in Production::Produce: no successor was chosen");
+//    return moduleList;
   }
 
   // For each module in the successor side, instantiate it and add to the list.
