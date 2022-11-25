@@ -15,7 +15,6 @@ struct Properties
   float turnAngle           = -1.0F;
   float lineWidth           = -1.0F;
   float lineDistance        = -1.0F;
-  int64_t seed              = -1L; // Seed for random numbers: -1 means use time
 };
 
 [[nodiscard]] auto GetParsedModel(const Properties& properties) -> std::unique_ptr<LSysModel>;

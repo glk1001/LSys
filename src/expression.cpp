@@ -196,30 +196,9 @@ using ExprFunc =
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
-    return Value(static_cast<double>(x) * GetRandDouble());
+    return Value(static_cast<double>(x) * GetRandDoubleInUnitInterval());
   }
-  return Value(GetRandDouble());
-}
-
-// Reseed the random number generator and return the seed;
-//  srand() sets the seed to the current time, while
-//  srand(value) sets it to the specified value.
-[[nodiscard]] auto ExprSRand(const SymbolTable<Value>& symbolTable,
-                             List<Expression>& expressionList) -> Value
-{
-  int64_t seed;
-  // Should have getint()
-  if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
-  {
-    seed = static_cast<int64_t>(x);
-  }
-  else
-  {
-    seed = ::time(nullptr);
-  }
-
-  SetRandSeed(static_cast<uint32_t>(seed));
-  return Value(static_cast<int>(seed));
+  return Value(GetRandDoubleInUnitInterval());
 }
 
 // The function table for function terms in expressions.
@@ -241,7 +220,6 @@ auto GetFunctionSymbolTable() -> SymbolTable<ExprFunc>
   symbolTable.Enter("log", ExprLog);
   symbolTable.Enter("log10", ExprLog10);
   symbolTable.Enter("rand", ExprRand);
-  symbolTable.Enter("srand", ExprSRand);
 
   return symbolTable;
 }

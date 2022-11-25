@@ -305,7 +305,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   }
 
   // Pick one of the successors of the production at random.
-  const auto randomVar       = static_cast<float>(GetRandDouble());
+  const auto randomVar       = static_cast<float>(GetRandDoubleInUnitInterval());
   auto cumulativeProbability = 0.0F;
 
   const List<Module>* modList;
@@ -327,7 +327,7 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   {
     std::cerr << "Error in Production::Produce: no successor was chosen:\n" << *this << "\n";
     throw std::runtime_error("Error in Production::Produce: no successor was chosen");
-//    return moduleList;
+    //    return moduleList;
   }
 
   // For each module in the successor side, instantiate it and add to the list.

@@ -62,8 +62,7 @@ using L_SYSTEM::LSysModel;
 using L_SYSTEM::Module;
 using L_SYSTEM::Properties;
 using L_SYSTEM::RadianceGenerator;
-using L_SYSTEM::SetRandFuncs;
-using L_SYSTEM::SetRandSeed;
+using L_SYSTEM::SetRandFunc;
 using Utilities::CommandLineOptions;
 
 using OptionTypes      = Utilities::CommandLineOptions::OptionTypes;
@@ -290,10 +289,8 @@ int main(const int argc, const char* argv[])
     }
 
     // Initialize random number generator.
-    SetRandFuncs([](const uint64_t seed) { ::srand48(static_cast<long>(seed)); },
-                 []() { return static_cast<double>(rand()) / static_cast<double>(RAND_MAX); });
-    SetRandSeed(static_cast<uint64_t>(
-        (cmdArgs.properties.seed != -1) ? cmdArgs.properties.seed : ::time(nullptr)));
+    ::srand48((cmdArgs.properties.seed != -1) ? cmdArgs.properties.seed : ::time(nullptr));
+    SetRandFunc([]() { return static_cast<double>(rand()) / static_cast<double>(RAND_MAX); });
 
     const auto model           = GetParsedModel(cmdArgs.properties);
     const auto finalProperties = GetFinalProperties(model->GetSymbolTable(), cmdArgs.properties);
