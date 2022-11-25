@@ -26,8 +26,6 @@
 
 #ifdef __cplusplus
 
-#include <unistd.h>
-
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
 
@@ -168,13 +166,6 @@ struct yy_buffer_state
 	 */
 	int yy_is_our_buffer;
 
-	/* Whether this is an "interactive" input source; if so, and
-	 * if we're using stdio for input, then we want to use getc()
-	 * instead of fread(), to make sure we stop fetching input after
-	 * each newline.
-	 */
-	int yy_is_interactive;
-
 	/* Whether we're considered to be at the beginning of a line.
 	 * If so, '^' rules will be active on the next match, otherwise
 	 * not.
@@ -248,13 +239,6 @@ static void *yy_flex_realloc YY_PROTO(( void *, yy_size_t ));
 static void yy_flex_free YY_PROTO(( void * ));
 
 #define yy_new_buffer yy_create_buffer
-
-#define yy_set_interactive(is_interactive) \
-	{ \
-	if ( ! yy_current_buffer ) \
-		yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
-	yy_current_buffer->yy_is_interactive = is_interactive; \
-	}
 
 #define yy_set_bol(at_bol) \
 	{ \
@@ -605,19 +589,7 @@ YY_MALLOC_DECL
  */
 #ifndef YY_INPUT
 #define YY_INPUT(buf,result,max_size) \
-	if ( yy_current_buffer->yy_is_interactive ) \
-		{ \
-		int c = '*', n; \
-		for ( n = 0; n < max_size && \
-			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
-			buf[n] = (char) c; \
-		if ( c == '\n' ) \
-			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( yyin ) ) \
-			YY_FATAL_ERROR( "input in flex scanner failed" ); \
-		result = n; \
-		} \
-	else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
+	if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
 		  && ferror( yyin ) ) \
 		YY_FATAL_ERROR( "input in flex scanner failed" );
 #endif
@@ -1505,12 +1477,6 @@ YY_BUFFER_STATE b;
 	}
 
 
-#ifndef YY_ALWAYS_INTERACTIVE
-#ifndef YY_NEVER_INTERACTIVE
-extern int isatty YY_PROTO(( int ));
-#endif
-#endif
-
 #ifdef YY_USE_PROTOS
 void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )
 #else
@@ -1526,15 +1492,6 @@ FILE *file;
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
 
-#if YY_ALWAYS_INTERACTIVE
-	b->yy_is_interactive = 1;
-#else
-#if YY_NEVER_INTERACTIVE
-	b->yy_is_interactive = 0;
-#else
-	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
-#endif
-#endif
 	}
 
 
@@ -1594,7 +1551,6 @@ yy_size_t size;
 	b->yy_is_our_buffer = 0;
 	b->yy_input_file = 0;
 	b->yy_n_chars = b->yy_buf_size;
-	b->yy_is_interactive = 0;
 	b->yy_at_bol = 1;
 	b->yy_fill_buffer = 0;
 	b->yy_buffer_status = YY_BUFFER_NEW;

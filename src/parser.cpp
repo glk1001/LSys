@@ -71,7 +71,7 @@ using L_SYSTEM::Successor;
 using L_SYSTEM::Value;
 
 /* default version in liby:yyerror.o as extern "C" void yyerror(char *); */
-void yyerror(char *);
+void yyerror(const char *);
 
 /* lexical scanner (in lex.yy.o when automatically produced by lex) */
 #include "lexdefs.h"
@@ -1674,7 +1674,7 @@ yyreturn:
 #line 424 "lsys.y"
 
 
-void yyerror(char *msg) {
+void yyerror(const char *msg) {
     std::cout << std::flush;
     std::cerr << msg << " at line " << lexline << ", column "
 	 << lexcol << "\n" << std::flush;
