@@ -1,2 +1,0 @@
-"f:\program files\flex\bin\flex" -oLexer.cpp lex.l
-"f:\program files\bison\bin\bison.exe" --defines=Token.inc -o Parser.cpp lsys.y
