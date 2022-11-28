@@ -309,7 +309,7 @@ int main(const int argc, const char* argv[])
     PrintInterpretStart(generator->GetHeader());
     auto interpreter = Interpreter(*generator);
     interpreter.SetDefaults(
-        finalProperties.turnAngle, finalProperties.lineWidth, finalProperties.lineDistance);
+        {finalProperties.turnAngle, finalProperties.lineWidth, finalProperties.lineDistance});
     interpreter.InterpretAllModules(*moduleList);
 
     return 0;

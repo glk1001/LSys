@@ -93,15 +93,13 @@ Interpreter::Interpreter(IGenerator& generator) : m_generator{generator}
   m_generator.SetTurtle(m_turtle);
 }
 
-auto Interpreter::SetDefaults(const float turnAngleInDegrees,
-                              const float width,
-                              const float defaultDistance) -> void
+auto Interpreter::SetDefaults(const DefaultParams& defaultParams) -> void
 {
   m_turtle.ResetDrawingParamsToDefaults();
 
-  m_turtle.SetDefaultTurnAngleInDegrees(turnAngleInDegrees);
-  m_turtle.SetWidth(width);
-  m_turtle.SetDefaultDistance(defaultDistance);
+  m_turtle.SetDefaultTurnAngleInDegrees(defaultParams.turnAngleInDegrees);
+  m_turtle.SetWidth(defaultParams.width);
+  m_turtle.SetDefaultDistance(defaultParams.distance);
 
   m_turtle.SetHeading(Vector(0, 1, 0)); // H = +Y
   m_turtle.SetLeft(Vector(-1, 0, 0)); // Left = -X

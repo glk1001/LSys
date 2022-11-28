@@ -41,9 +41,13 @@ class Interpreter
 public:
   explicit Interpreter(IGenerator& generator);
 
-  auto SetDefaults(float turnAngleInDegrees = 90.0F,
-                   float width              = 1.0F,
-                   float defaultDistance    = 1.0F) -> void;
+  struct DefaultParams
+  {
+    float turnAngleInDegrees = 90.0F;
+    float width = 1.0F;
+    float distance = 1.0F;
+  };
+  auto SetDefaults(const DefaultParams& defaultParams) -> void;
 
   // Iteratively interpret a bound left-system, producing output to the specified generator.
   auto Start(const List<Module>& moduleList) -> void;
