@@ -33,6 +33,9 @@
 
 #include "turtle.h"
 
+#include "debug.h"
+
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
 
@@ -60,10 +63,10 @@ auto Turtle::ResetDrawingParamsToDefaults() -> void
   SetColor(0, 0);
   SetTexture(0);
 
-  // Default tropism vector is towards ground, but tropism is disabled
+  // Default tropism vector is towards ground, but tropism is disabled.
   SetTropismVector(-GetHeading());
   static constexpr auto DEFAULT_TROPISM = 0.2F;
-  SetTropismVector(DEFAULT_TROPISM);
+  SetTropismSusceptibility(DEFAULT_TROPISM);
   DisableTropism();
 
   SetGravity(GetHeading());
@@ -123,8 +126,10 @@ auto Turtle::SetTropismVector(const Vector& vector) -> void
   m_currentState.tropism.tropismVector = vector;
 }
 
-auto Turtle::SetTropismVector(const float susceptibility) -> void
+auto Turtle::SetTropismSusceptibility(const float susceptibility) -> void
 {
+  assert(0.0F <= susceptibility);
+  assert(1.0F >= susceptibility);
   m_currentState.tropism.susceptibility = susceptibility;
 }
 

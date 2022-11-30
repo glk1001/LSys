@@ -701,9 +701,9 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
 
 // t	Enable/disable tropism corrections after each Move
 // t(x,y,z,e)	- enable tropism; tropism vector is T= (x,y,z),
-// e is `susceptibility parameter', preferably between 0 and 1.
-// t(0)		- disable tropism
-// t(1)		- re-enable tropism with last (T,e) parameters
+//              'e' is the 'susceptibility parameter', between 0 and 1.
+// t(0)       - disable tropism
+// t(1)       - re-enable tropism with last (T,e) parameters
 
 auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
                  Turtle& turtle,
@@ -724,11 +724,10 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
     {
       turtle.DisableTropism();
     }
-    // TODO(glk) - Is this check for 1 OK?
-    else if (std::fabs(susceptibility - 1.0F) < MATHS::SMALL_FLOAT)
+    else
     {
-      turtle.SetTropismVector(susceptibility);
       turtle.EnableTropism();
+      turtle.SetTropismSusceptibility(susceptibility);
     }
     return;
   }
@@ -740,7 +739,7 @@ auto TropismImpl([[maybe_unused]] const ConstListIterator<Module>& moduleIter,
 
   // Construct the tropism vector
   turtle.SetTropismVector(Vector(args.at(0), args.at(1), args.at(2)));
-  turtle.SetTropismVector(args.at(3));
+  turtle.SetTropismSusceptibility(args.at(3));
   turtle.EnableTropism();
 }
 

@@ -132,7 +132,7 @@ public:
   // Functions for enabling/disabling application of tropism
   // after each segment is drawn.
   auto SetTropismVector(const Vector& vector) -> void;
-  auto SetTropismVector(float susceptibility) -> void;
+  auto SetTropismSusceptibility(float susceptibility) -> void;
   auto DisableTropism() -> void;
   auto EnableTropism() -> void;
 
