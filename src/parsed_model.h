@@ -22,7 +22,8 @@ struct Properties
 // Add default properties from the symbol table, provided they're
 // not overridden by existing properties.
 [[nodiscard]] auto GetFinalProperties(const SymbolTable<Value>& symbolTable,
-                                      const Properties& properties) -> Properties;
+                                      const Properties& initialProperties,
+                                      bool setDefaults = true) -> Properties;
 
 struct Point3dFlt
 {

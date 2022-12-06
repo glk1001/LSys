@@ -44,20 +44,24 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 } // namespace
 
 [[nodiscard]] auto GetFinalProperties(const SymbolTable<Value>& symbolTable,
-                                      const Properties& properties) -> Properties
+                                      const Properties& initialProperties,
+                                      const bool setDefaults) -> Properties
 {
   static constexpr auto DEFAULT_MAX_GEN       = 0; // Default: just do sanity checking
   static constexpr auto DEFAULT_TURN_ANGLE    = 90.0F; // Default: turn at right angles
   static constexpr auto DEFAULT_LINE_WIDTH    = 1.0F; // Default line aspect ratio (1/100)
   static constexpr auto DEFAULT_LINE_DISTANCE = 1.0F;
 
-  auto newProperties = properties;
+  auto newProperties = initialProperties;
 
   if (newProperties.maxGen < 0)
   {
     if (Value value; not symbolTable.Lookup("maxgen", value))
     {
-      newProperties.maxGen = DEFAULT_MAX_GEN;
+      if (setDefaults)
+      {
+        newProperties.maxGen = DEFAULT_MAX_GEN;
+      }
     }
     else if (not value.GetIntValue(newProperties.maxGen))
     {
@@ -70,7 +74,10 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
   {
     if (Value value; not symbolTable.Lookup("delta", value))
     {
-      newProperties.turnAngle = DEFAULT_TURN_ANGLE;
+      if (setDefaults)
+      {
+        newProperties.turnAngle = DEFAULT_TURN_ANGLE;
+      }
     }
     else if (not value.GetFloatValue(newProperties.turnAngle))
     {
@@ -83,7 +90,10 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
   {
     if (Value value; not symbolTable.Lookup("width", value))
     {
-      newProperties.lineWidth = DEFAULT_LINE_WIDTH;
+      if (setDefaults)
+      {
+        newProperties.lineWidth = DEFAULT_LINE_WIDTH;
+      }
     }
     else if (not value.GetFloatValue(newProperties.lineWidth))
     {
@@ -96,7 +106,10 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
   {
     if (Value value; not symbolTable.Lookup("distance", value))
     {
-      newProperties.lineDistance = DEFAULT_LINE_DISTANCE;
+      if (setDefaults)
+      {
+        newProperties.lineDistance = DEFAULT_LINE_DISTANCE;
+      }
     }
     else if (not value.GetFloatValue(newProperties.lineDistance))
     {

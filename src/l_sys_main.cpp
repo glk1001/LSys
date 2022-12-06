@@ -96,7 +96,6 @@ struct CommandLineArgs
   strStream << "  Input file = " << properties.inputFilename << "\n";
   strStream << "  Output file = " << outputFilename << "\n";
   strStream << "  Bounds file = " << boundsFilename << "\n";
-  strStream << "  Seed = " << properties.seed << "\n";
   strStream << "  Maxgen = " << properties.maxGen << "\n";
   strStream << "  Width = " << properties.lineWidth << "\n";
   strStream << "  Delta = " << properties.turnAngle << "\n";
@@ -127,7 +126,6 @@ struct CommandLineArgs
          << "-maxgen  sets number of generations to produce\n"
          << "-delta   sets default turn angle\n"
          << "-width   sets default line width\n"
-         << "-seed    sets seed GetFloatValue\n"
          << "-display displays the L-systems produced at each generation\n"
          << "-stats   displays module stats for each generation\n";
 
@@ -159,7 +157,6 @@ cerr << "    m - main program loop\n"
   static constexpr const auto* DELTA_DESCR    = "sets the default turn angle";
   static constexpr const auto* DISTANCE_DESCR = "sets the default line length";
   static constexpr const auto* WIDTH_DESCR    = "sets the default line width";
-  static constexpr const auto* SEED_DESCR     = "sets the seed GetFloatValue";
   static constexpr const auto* DISPLAY_DESCR  = "displays the L-systems for each generation";
   static constexpr const auto* STATS_DESCR    = "displays module statistics for each generation";
   static constexpr const auto* OUTPUT_DESCR   = "output filename";
@@ -195,8 +192,6 @@ cerr << "    m - main program loop\n"
               WIDTH_DESCR,
               OptionTypes::REQUIRED_ARG,
               &commandLineArgs.properties.lineWidth);
-  cmdOpts.Add(
-      's', "seed <int>", SEED_DESCR, OptionTypes::REQUIRED_ARG, &commandLineArgs.properties.seed);
   cmdOpts.Add('o',
               "output <string>",
               OUTPUT_DESCR,
@@ -289,7 +284,7 @@ int main(const int argc, const char* argv[])
     }
 
     // Initialize random number generator.
-    ::srand48((cmdArgs.properties.seed != -1) ? cmdArgs.properties.seed : ::time(nullptr));
+    ::srand48(::time(nullptr));
     SetRandFunc([]() { return static_cast<double>(rand()) / static_cast<double>(RAND_MAX); });
 
     const auto model           = GetParsedModel(cmdArgs.properties);
