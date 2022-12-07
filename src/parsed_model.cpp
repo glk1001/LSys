@@ -6,10 +6,10 @@
 #include "parser.h"
 
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <sstream>
 #include <string>
 
 int ParseDebug = 0;
@@ -123,6 +123,12 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 
 [[nodiscard]] auto GetParsedModel(const Properties& properties) -> std::unique_ptr<LSysModel>
 {
+  if (not std::filesystem::exists(properties.inputFilename))
+  {
+    std::cerr << "Could not find input file '" << properties.inputFilename << "'.\n";
+    throw std::runtime_error("Could not find input file.");
+  }
+
   auto model = std::make_unique<LSysModel>();
 
   SetSymbolTableValues(model->GetSymbolTable(), properties);
@@ -134,7 +140,7 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 
   if (model->GetStartModuleList() == nullptr)
   {
-    PDebug(PD_MAIN, std::cerr << "No starting module list.\n");
+    std::cerr << "No starting module list.\n";
     throw std::runtime_error("No starting module list.");
   }
 
@@ -181,7 +187,11 @@ auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
 {
   auto boundingBox3d = BoundingBox3d{};
   auto inputFile     = std::make_unique<std::ifstream>(filename);
-  assert(*inputFile);
+  if (not *inputFile)
+  {
+    std::cerr << "Could not open bounds file '" << filename << "'.\n";
+    throw std::runtime_error("Could not open bounds file.");
+  }
 
   while (true)
   {
