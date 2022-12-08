@@ -1,0 +1,31 @@
+/*
+   Weed from http://paulbourke.net/fractals/lsys/
+ */
+#define maxgen 5
+#define delta 12.0
+
+START : aF
+p1  : a -> FFFFFy[++++n][----z]fb
+p2  : b -> +FFFFFy[++++n][----z]fc
+p3  : c -> FFFFFy[++++n][----z]fd
+p4  : d -> -FFFFFy[++++n][----z]fe
+p5  : e -> FFFFFy[++++n][----z]fg
+p6  : g -> FFFFFy[+++fa]fh
+p7  : h -> FFFFFy[++++n][----z]fi
+p8  : i -> +FFFFFy[++++n][----z]fj
+p9  : j -> FFFFFy[++++n][----z]fk
+p10 : k -> -FFFFFy[++++n][----z]fl
+p11 : l -> FFFFFy[++++n][----z]fm
+p12 : m -> FFFFFy[---fa]fa
+p13 : n -> ofFFF
+p14 : o -> fFFFp
+p15 : p -> fFFF[-s]q
+p16 : q -> fFFF[-s]r
+p17 : r -> fFFF[-s]
+p18 : s -> fFfF
+p19 : z -> ufFFF
+p20 : u -> fFFFv
+p21 : v -> fFFF[+s]w
+p22 : w -> fFFF[+s]x
+p23 : x -> fFFF[+s]
+p24 : y -> Fy
