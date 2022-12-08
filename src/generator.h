@@ -43,6 +43,7 @@ namespace L_SYSTEM
 class IGenerator
 {
 public:
+  IGenerator(const std::string& name);
   IGenerator()                  = default;
   IGenerator(const IGenerator&) = default;
   IGenerator(IGenerator&&)      = default;
@@ -100,6 +101,11 @@ private:
   std::string m_objectName   = "null_object"; // Name of generated object
   std::string m_objectHeader = "";
 };
+
+inline IGenerator::IGenerator(const std::string& name)
+: m_objectName{name}
+{
+}
 
 inline auto IGenerator::GetTurtle() const -> const Turtle&
 {

@@ -23,7 +23,7 @@ public:
     DrawPolygonFunc drawPolygonFunc;
   };
 
-  explicit GraphicsGenerator(const DrawFuncs& drawFuncs);
+  GraphicsGenerator(const std::string& name, const DrawFuncs& drawFuncs);
 
   auto SetHeader(const std::string& header) -> void override;
 

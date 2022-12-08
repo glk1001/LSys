@@ -38,13 +38,13 @@ namespace L_SYSTEM
 class LSysModel
 {
 public:
-  LSysModel() = default;
+  LSysModel()                 = default;
   LSysModel(const LSysModel&) = delete;
-  LSysModel(LSysModel&&) = delete;
+  LSysModel(LSysModel&&)      = default;
   ~LSysModel() noexcept;
 
   auto operator=(const LSysModel&) -> LSysModel& = delete;
-  auto operator=(LSysModel&&) -> LSysModel& = delete;
+  auto operator=(LSysModel&&) -> LSysModel&      = delete;
 
   [[nodiscard]] auto Generate(List<Module>* oldModuleList) -> std::unique_ptr<List<Module>>;
 
@@ -54,6 +54,8 @@ public:
 
   auto ResetStartModuleList(List<Module>* moduleList) noexcept;
   [[nodiscard]] auto GetStartModuleList() const noexcept -> const List<Module>*;
+
+  auto ResetArgument(const std::string& name, const Value& newValue) -> void;
 
 private:
   SymbolTable<Value> m_symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.

@@ -18,7 +18,7 @@ class List
 public:
   List() = default;
   List(const List& other) noexcept;
-  List(List&&) = delete;
+  List(List&&) = default;
   ~List()      = default;
 
   auto operator=(const List&) -> List& = delete;

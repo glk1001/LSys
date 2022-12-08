@@ -36,6 +36,15 @@ namespace L_SYSTEM
 
 LSysModel::~LSysModel() noexcept = default;
 
+auto LSysModel::ResetArgument(const std::string& name, const Value& newValue) -> void
+{
+  if (Value value; not m_symbolTable.Lookup(name, value))
+  {
+    throw std::runtime_error("Could not find argument to reset.");
+  }
+  m_symbolTable.Enter(name, newValue);
+}
+
 // Apply the model to the specified list for one generation, generating a new list.
 auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {

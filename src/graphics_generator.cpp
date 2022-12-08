@@ -8,7 +8,8 @@
 namespace L_SYSTEM
 {
 
-GraphicsGenerator::GraphicsGenerator(const DrawFuncs& drawFuncs) : m_drawFuncs{drawFuncs}
+GraphicsGenerator::GraphicsGenerator(const std::string& name, const DrawFuncs& drawFuncs)
+  : IGenerator{name}, m_drawFuncs{drawFuncs}
 {
 }
 
