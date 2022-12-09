@@ -40,7 +40,7 @@
 #include <stack>
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 namespace
@@ -50,7 +50,7 @@ namespace
 // get quite deep in recursive L-system productions, thus we use a depth
 // of 100 (probably should use a dynamically allocated list).
 constexpr auto MAX_POLYGONS = 100;
-std::stack<L_SYSTEM::Polygon> polygonStack{};
+std::stack<LSYS::Polygon> polygonStack{};
 
 enum class State
 {
@@ -1033,4 +1033,4 @@ auto Tropism(ConstListIterator<Module>& moduleIter,
   TropismImpl(moduleIter, turtle, generator, numArgs, args);
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

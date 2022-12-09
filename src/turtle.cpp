@@ -39,7 +39,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 // TODO(glk) -  Make most of these inline.
@@ -406,4 +406,4 @@ std::ostream& operator<<(std::ostream& out, const Color& color)
   return out;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

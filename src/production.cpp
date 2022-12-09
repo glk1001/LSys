@@ -36,7 +36,7 @@
 
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 Production::Production(const Name& name,
@@ -394,4 +394,4 @@ auto operator<<(std::ostream& out, const Production& production) -> std::ostream
   return out;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

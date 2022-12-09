@@ -41,10 +41,9 @@
 #include "vector.h"
 
 #include <cmath>
-#include <ctime>
 #include <functional>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 namespace
@@ -642,4 +641,4 @@ auto GetFloat(const SymbolTable<Value>& symbolTable,
   return false;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

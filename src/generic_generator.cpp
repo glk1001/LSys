@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 static constexpr auto PRECISION = 5;
@@ -119,7 +119,7 @@ auto GenericGenerator::OutputAttributes(const Turtle::State& turtleState) -> voi
   m_output << INDENT << "Width: " << turtleState.width << "\n";
 }
 
-auto GenericGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
+auto GenericGenerator::Polygon(const LSYS::Polygon& polygon) -> void
 {
   // Draw the polygon
   StartGraphics();
@@ -233,4 +233,4 @@ auto GenericGenerator::SetWidth() -> void
   // Not needed.
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

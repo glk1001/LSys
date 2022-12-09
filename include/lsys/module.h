@@ -35,7 +35,7 @@
 
 #include <memory>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 // A Module is the basic object of an L-system to which productions
@@ -84,4 +84,4 @@ inline Module::Module(const Module& other) noexcept
 {
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

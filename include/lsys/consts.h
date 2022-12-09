@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 inline constexpr int MAX_ARGS = 10;
 using ArgsArray               = std::array<float, MAX_ARGS>;
@@ -38,4 +38,4 @@ inline constexpr auto DEGREES_360 = 360.0F;
 }
 
 } // namespace MATHS
-} // namespace L_SYSTEM
+} // namespace LSYS

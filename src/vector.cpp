@@ -41,7 +41,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 static constexpr uint32_t X = 0U;
@@ -327,4 +327,4 @@ std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
   return out;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

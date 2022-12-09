@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 GraphicsGenerator::GraphicsGenerator(const std::string& name, const DrawFuncs& drawFuncs)
@@ -40,7 +40,7 @@ auto GraphicsGenerator::FlushGraphics() -> void
   // Not used.
 }
 
-auto GraphicsGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
+auto GraphicsGenerator::Polygon(const LSYS::Polygon& polygon) -> void
 {
   ++m_groupNum;
 
@@ -93,4 +93,4 @@ auto GraphicsGenerator::SetWidth() -> void
   // Not needed.
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

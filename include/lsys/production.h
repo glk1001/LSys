@@ -31,7 +31,7 @@
 
 #include <memory>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 // A Predecessor is the left-hand side of a production; it contains
@@ -103,4 +103,4 @@ private:
   std::unique_ptr<const List<Successor>> m_successors;
 };
 
-} // namespace L_SYSTEM
+} // namespace LSYS

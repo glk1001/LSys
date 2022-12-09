@@ -60,15 +60,15 @@
 
 #include <cstdlib>
 
-using L_SYSTEM::Expression;
-using L_SYSTEM::List;
-using L_SYSTEM::LSysModel;
-using L_SYSTEM::Module;
-using L_SYSTEM::Name;
-using L_SYSTEM::Predecessor;
-using L_SYSTEM::Production;
-using L_SYSTEM::Successor;
-using L_SYSTEM::Value;
+using LSYS::Expression;
+using LSYS::List;
+using LSYS::LSysModel;
+using LSYS::Module;
+using LSYS::Name;
+using LSYS::Predecessor;
+using LSYS::Production;
+using LSYS::Successor;
+using LSYS::Value;
 
 /* default version in liby:yyerror.o as extern "C" void yyerror(char *); */
 void yyerror(const char *);
@@ -97,7 +97,7 @@ void set_parser_globals(LSysModel* m)
 
 // A separate list of CF productions is maintained until all
 //  productions have been read.
-static L_SYSTEM::List<Production> Context_free_rules;
+static LSYS::List<Production> Context_free_rules;
 
 // Should expressions be evaluated when read in?
 static bool BindExpression = false;
@@ -111,11 +111,11 @@ typedef union {
   Value* value;	                    /* numeric value */
   Module* module;
   Expression* expression;
-  L_SYSTEM::List<Module>* moduleList;	  /* list of modules as in a production successor */
-  L_SYSTEM::List<Expression>* expressionList;	/* list of expressions within a module */
+  LSYS::List<Module>* moduleList;	  /* list of modules as in a production successor */
+  LSYS::List<Expression>* expressionList;	/* list of expressions within a module */
   Predecessor* predecessor;	        /* a production predecessor */
   Successor* successor;	            /* a production successor */
-  L_SYSTEM::List<Successor>* successors;/* list of production successors with probabilities */
+  LSYS::List<Successor>* successors;/* list of production successors with probabilities */
 } yystype;
 # define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1
@@ -1157,7 +1157,7 @@ case 19:
     break;}
 case 20:
 #line 219 "lsys.y"
-{ yyval.successors = new L_SYSTEM::List<Successor>;
+{ yyval.successors = new LSYS::List<Successor>;
     auto succ = std::unique_ptr<Successor>(yyvsp[-1].successor);
 		      yyval.successors->append(std::move(succ));
 		      yyval.successors->append(yyvsp[0].successors);
@@ -1173,7 +1173,7 @@ case 21:
     break;}
 case 22:
 #line 232 "lsys.y"
-{ yyval.successors = new L_SYSTEM::List<Successor>; ;
+{ yyval.successors = new LSYS::List<Successor>; ;
     break;}
 case 23:
 #line 236 "lsys.y"
@@ -1213,7 +1213,7 @@ case 27:
 			//  should verify list has only one module and
 			//  delete the list after removing that module.
 
-      L_SYSTEM::ListIterator<Module> mi(yyvsp[-2].moduleList);
+      LSYS::ListIterator<Module> mi(yyvsp[-2].moduleList);
 			yyval.predecessor->center.reset(mi.first());
 			PDebug(PD_PARSER, std::cerr << "Predecessor (no context) is: " << *yyval.predecessor << std::endl);
 		      } else {
@@ -1257,7 +1257,7 @@ case 32:
     break;}
 case 33:
 #line 300 "lsys.y"
-{ yyval.moduleList = new L_SYSTEM::List<Module>; ;
+{ yyval.moduleList = new LSYS::List<Module>; ;
     break;}
 case 34:
 #line 305 "lsys.y"
@@ -1297,7 +1297,7 @@ case 38:
     break;}
 case 39:
 #line 334 "lsys.y"
-{ yyval.expressionList = new L_SYSTEM::List<Expression>;
+{ yyval.expressionList = new LSYS::List<Expression>;
 		      PDebug(PD_PARSER, std::cerr << "Parsed expression: " << *yyvsp[0].expression << std::endl);
 		      if (BindExpression == true) {
 			Value v = yyvsp[0].expression->Evaluate(parserSymbolTable);
@@ -1311,7 +1311,7 @@ case 39:
     break;}
 case 40:
 #line 345 "lsys.y"
-{ yyval.expressionList = new L_SYSTEM::List<Expression>; ;
+{ yyval.expressionList = new LSYS::List<Expression>; ;
     break;}
 case 41:
 #line 350 "lsys.y"

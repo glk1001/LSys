@@ -736,27 +736,27 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 74 "lex.l"
-{ lexcol += 7; return L_SYSTEM::LSYS_IGNORE; }
+{ lexcol += 7; return LSYS::LSYS_IGNORE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 75 "lex.l"
-{ lexcol += 8; return L_SYSTEM::LSYS_INCLUDE; }
+{ lexcol += 8; return LSYS::LSYS_INCLUDE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 76 "lex.l"
-{ lexcol += 7; return L_SYSTEM::LSYS_DEFINE; }
+{ lexcol += 7; return LSYS::LSYS_DEFINE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 77 "lex.l"
-{ lexcol += 5; return L_SYSTEM::LSYS_START; }
+{ lexcol += 5; return LSYS::LSYS_START; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 78 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_YIELDS; }
+{ lexcol += 2; return LSYS::LSYS_YIELDS; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
@@ -765,7 +765,7 @@ YY_RULE_SETUP
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 8:
@@ -775,7 +775,7 @@ YY_RULE_SETUP
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 9:
@@ -784,7 +784,7 @@ YY_RULE_SETUP
 { lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 10:
@@ -794,7 +794,7 @@ YY_RULE_SETUP
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 11:
@@ -804,7 +804,7 @@ YY_RULE_SETUP
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: expression GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 12:
@@ -814,7 +814,7 @@ YY_RULE_SETUP
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: integer -> %s\n", yytext));
-                return L_SYSTEM::LSYS_INTEGER;
+                return LSYS::LSYS_INTEGER;
               }
 	YY_BREAK
 case 13:
@@ -828,43 +828,43 @@ YY_RULE_SETUP
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: real -> %s\n", yytext));
-                return L_SYSTEM::LSYS_REAL;
+                return LSYS::LSYS_REAL;
               }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 122 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_LE; }
+{ lexcol += 2; return LSYS::LSYS_LE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 123 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_EQ; }
+{ lexcol += 2; return LSYS::LSYS_EQ; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 124 "lex.l"
-{ lexcol++; return L_SYSTEM::LSYS_EQ; }
+{ lexcol++; return LSYS::LSYS_EQ; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 125 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_GE; }
+{ lexcol += 2; return LSYS::LSYS_GE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 126 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_NE; }
+{ lexcol += 2; return LSYS::LSYS_NE; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 127 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_AND; }
+{ lexcol += 2; return LSYS::LSYS_AND; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 128 "lex.l"
-{ lexcol += 2; return L_SYSTEM::LSYS_OR; }
+{ lexcol += 2; return LSYS::LSYS_OR; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
@@ -883,7 +883,7 @@ YY_RULE_SETUP
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: GetName -> %s\n", yytext));
-                return L_SYSTEM::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 	YY_BREAK
 case 26:
@@ -904,7 +904,7 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 140 "lex.l"
-{ lexcol++; return L_SYSTEM::LSYS_ERROR; }
+{ lexcol++; return LSYS::LSYS_ERROR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP

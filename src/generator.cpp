@@ -32,7 +32,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 auto IGenerator::OutputFailed() -> void
@@ -62,4 +62,4 @@ auto IGenerator::LineTo() -> void
   m_lastMove     = false;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

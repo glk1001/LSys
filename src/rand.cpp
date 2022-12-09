@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 static GetRandDoubleInUnitIntervalFunc s_getRandDouble = nullptr;
@@ -18,4 +18,4 @@ double GetRandDoubleInUnitInterval()
   return s_getRandDouble();
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

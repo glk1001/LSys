@@ -38,7 +38,7 @@
 
 #include <string>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 class Name
@@ -76,4 +76,4 @@ inline auto operator!=(const Name& a, const Name& b) -> bool
 
 std::ostream& operator<<(std::ostream& out, const Name& name);
 
-} // namespace L_SYSTEM
+} // namespace LSYS

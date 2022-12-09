@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 using GetRandDoubleInUnitIntervalFunc = std::function<double()>;
@@ -11,4 +11,4 @@ auto SetRandFunc(const GetRandDoubleInUnitIntervalFunc& getRandDoubleFunc) -> vo
 
 [[nodiscard]] auto GetRandDoubleInUnitInterval() -> double;
 
-} // namespace L_SYSTEM
+} // namespace LSYS

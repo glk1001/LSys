@@ -40,7 +40,7 @@
 #include <array>
 #include <memory>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 class Expression
@@ -154,4 +154,4 @@ inline auto Expression::GetFuncArgs() const -> List<Expression>*
   return m_expressionValue.name.funcArgs.get();
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

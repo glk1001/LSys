@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 class RadianceGenerator : public IGenerator
@@ -26,7 +26,7 @@ public:
   auto FlushGraphics() -> void override;
 
   // Functions to draw objects in graphics mode
-  auto Polygon(const L_SYSTEM::Polygon& polygon) -> void override;
+  auto Polygon(const LSYS::Polygon& polygon) -> void override;
   auto LineTo() -> void override;
   auto Flower(float radius) -> void;
   auto Leaf(float length) -> void;
@@ -46,4 +46,4 @@ private:
   auto OutputBounds() -> void;
 };
 
-} // namespace L_SYSTEM
+} // namespace LSYS

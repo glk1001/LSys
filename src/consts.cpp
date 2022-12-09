@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cmath>
 
-namespace L_SYSTEM::MATHS
+namespace LSYS::MATHS
 {
 
 auto Round(const float val, const int numDecimalPlaces) -> float
@@ -27,4 +27,4 @@ auto Round(const float val, const int numDecimalPlaces) -> float
   return static_cast<float>(roundedVal);
 }
 
-} // namespace L_SYSTEM::MATHS
+} // namespace LSYS::MATHS

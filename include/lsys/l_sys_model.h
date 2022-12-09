@@ -32,7 +32,7 @@
 
 #include <memory>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 class LSysModel
@@ -90,4 +90,4 @@ inline auto LSysModel::GetStartModuleList() const noexcept -> const List<Module>
   return m_start.get();
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

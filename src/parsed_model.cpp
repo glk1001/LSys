@@ -14,7 +14,7 @@
 
 int ParseDebug = 0;
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 namespace
@@ -230,4 +230,4 @@ auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
   return boundingBox3d;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

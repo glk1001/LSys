@@ -47,5 +47,5 @@
 void set_parser_input(const char* ifile);
 
 // In lsys.y, for setting parser state
-void set_parser_globals(L_SYSTEM::LSysModel*);
+void set_parser_globals(LSYS::LSysModel*);
 int yyparse(void);

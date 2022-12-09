@@ -40,7 +40,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 const SymbolTable<ActionFunc> Interpreter::ACTION_SYMBOL_TABLE = GetActionSymbolTable();
@@ -170,4 +170,4 @@ inline auto Interpreter::GetActionArgsArray(const Module& mod) -> std::pair<int,
   return {numArgs, args};
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

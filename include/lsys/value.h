@@ -36,7 +36,7 @@
 
 #include <iostream>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 enum class ValueType
@@ -99,4 +99,4 @@ private:
   OpType GetBinaryOpType(const Value& value) const;
 };
 
-} // namespace L_SYSTEM
+} // namespace LSYS

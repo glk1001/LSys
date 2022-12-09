@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 static constexpr auto PRECISION = 5;
@@ -109,7 +109,7 @@ auto RadianceGenerator::OutputBounds() -> void
   m_boundsOutput << "\n\n";
 }
 
-auto RadianceGenerator::Polygon(const L_SYSTEM::Polygon& polygon) -> void
+auto RadianceGenerator::Polygon(const LSYS::Polygon& polygon) -> void
 {
   // Draw the polygon
   StartGraphics();
@@ -274,4 +274,4 @@ auto RadianceGenerator::SetWidth() -> void
   // Not needed.
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

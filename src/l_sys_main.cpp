@@ -53,16 +53,16 @@
 #include <iomanip>
 #include <string>
 
-using L_SYSTEM::GenericGenerator;
-using L_SYSTEM::GetFinalProperties;
-using L_SYSTEM::IGenerator;
-using L_SYSTEM::Interpreter;
-using L_SYSTEM::List;
-using L_SYSTEM::LSysModel;
-using L_SYSTEM::Module;
-using L_SYSTEM::Properties;
-using L_SYSTEM::RadianceGenerator;
-using L_SYSTEM::SetRandFunc;
+using LSYS::GenericGenerator;
+using LSYS::GetFinalProperties;
+using LSYS::IGenerator;
+using LSYS::Interpreter;
+using LSYS::List;
+using LSYS::LSysModel;
+using LSYS::Module;
+using LSYS::Properties;
+using LSYS::RadianceGenerator;
+using LSYS::SetRandFunc;
 using Utilities::CommandLineOptions;
 
 using OptionTypes      = Utilities::CommandLineOptions::OptionTypes;

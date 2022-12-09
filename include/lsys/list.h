@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 template<typename T>
@@ -268,4 +268,4 @@ inline auto ConstListIterator<T>::last() -> const T*
   return m_listIter->get();
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

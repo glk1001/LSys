@@ -33,7 +33,7 @@
 #include <string>
 #include <utility>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 class Interpreter
@@ -98,4 +98,4 @@ inline auto Interpreter::InterpretNext() -> bool
   return true;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS

@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 struct Properties
@@ -39,4 +39,4 @@ struct BoundingBox3d
 
 [[nodiscard]] auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d;
 
-} // namespace L_SYSTEM
+} // namespace LSYS

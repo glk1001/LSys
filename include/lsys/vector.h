@@ -43,7 +43,7 @@
 #include <cstdint>
 #include <iostream>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 // This is a Cartesian vector class.
 // The usual scalar and vector operators are defined.
@@ -228,4 +228,4 @@ private:
 
 std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
 
-} // namespace L_SYSTEM
+} // namespace LSYS

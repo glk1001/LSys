@@ -8,7 +8,7 @@
 #include "token.inc"
 #include "value.h"
 
-namespace L_SYSTEM
+namespace LSYS
 {
 const int LSYS_ERROR    = ERROR;
 const int LSYS_VALUE    = VALUE;
@@ -48,4 +48,4 @@ const int LSYS_UMINUS   = UMINUS;
 #undef GE
 #undef UMINUS
 
-} // namespace L_SYSTEM
+} // namespace LSYS

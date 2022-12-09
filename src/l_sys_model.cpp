@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace L_SYSTEM
+namespace LSYS
 {
 
 LSysModel::~LSysModel() noexcept = default;
@@ -85,4 +85,4 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
   return newModuleList;
 }
 
-} // namespace L_SYSTEM
+} // namespace LSYS
