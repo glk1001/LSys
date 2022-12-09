@@ -1,5 +1,5 @@
 project(LSys)
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,49 +16,78 @@ include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
-set(TARGET_NAME "LSys")
+set(TARGET_LIB "lsys")
+set(TARGET_APP "lsys-gen")
 
-add_executable(${TARGET_NAME}
+add_library(${TARGET_LIB}
+        STATIC
+        include/lsys/list.h
+        include/lsys/polygon.h
+        include/lsys/symbol_table.h
         src/actions.cpp
-        src/command_line_options.cpp
         src/consts.cpp
         src/expression.cpp
         src/generator.cpp
         src/generic_generator.cpp
         src/graphics_generator.cpp
         src/interpret.cpp
-        src/l_sys_main.cpp
         src/l_sys_model.cpp
         src/lexer.cpp
-        src/list.h
         src/module.cpp
         src/name.cpp
-        src/options.cpp
         src/parsed_model.cpp
         src/parser.cpp
-        src/polygon.h
         src/production.cpp
         src/rand.cpp
         src/radiance_generator.cpp
-        src/symbol_table.h
         src/token.h
         src/turtle.cpp
         src/value.cpp
         src/vector.cpp
         )
 
-target_include_directories(${TARGET_NAME}
+add_library(LSys::lib ALIAS ${TARGET_LIB})
+
+add_executable(${TARGET_APP}
+        src/l_sys_main.cpp
+        src/command_line_options.cpp
+        src/options.cpp
+        )
+
+add_executable(LSys::gen ALIAS ${TARGET_APP})
+
+target_include_directories(${TARGET_LIB}
+        PUBLIC
+        include/lsys
+        )
+target_include_directories(${TARGET_LIB}
+        SYSTEM PRIVATE
+        /usr/include
+        )
+target_include_directories(${TARGET_APP}
+        PUBLIC
+        include/lsys
+        )
+target_include_directories(${TARGET_APP}
         SYSTEM PRIVATE
         /usr/include
         )
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_APP}
         PRIVATE
+        ${TARGET_LIB}
+        pthread
         m
         stdc++
         )
 
-set_project_warnings(${TARGET_NAME})
+set(POS_INDEP_CODE "ON")
+set_target_properties(${TARGET_LIB}
+        PROPERTIES
+        POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
+        )
+
+set_project_warnings(${TARGET_LIB} ${TARGET_APP})
 
 set(MSVC_WARNINGS_OFF
         -Wno-date-time # TODO(glk) fix these
@@ -76,6 +105,7 @@ set(CLANG_WARNINGS_OFF
         )
 set(GCC_WARNINGS_OFF
         ${CLANG_WARNINGS_OFF}
+        -Wno-pedantic
         -Wno-useless-cast
         -Wno-effc++
         )
