@@ -57,7 +57,7 @@ add_executable(${TARGET_APP}
 add_executable(LSys::gen ALIAS ${TARGET_APP})
 
 target_include_directories(${TARGET_LIB}
-        PUBLIC
+        PRIVATE
         include/lsys
         )
 target_include_directories(${TARGET_LIB}
@@ -65,7 +65,7 @@ target_include_directories(${TARGET_LIB}
         /usr/include
         )
 target_include_directories(${TARGET_APP}
-        PUBLIC
+        PRIVATE
         include/lsys
         )
 target_include_directories(${TARGET_APP}
