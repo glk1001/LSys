@@ -44,8 +44,8 @@ public:
   struct DefaultParams
   {
     float turnAngleInDegrees = 90.0F;
-    float width = 1.0F;
-    float distance = 1.0F;
+    float width              = 1.0F;
+    float distance           = 1.0F;
   };
   auto SetDefaults(const DefaultParams& defaultParams) -> void;
 

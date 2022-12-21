@@ -89,8 +89,8 @@ public:
   auto IsContextFree() const -> bool { return m_contextFree; }
   auto Matches(const ListIterator<Module>& modIter,
                const Module* mod,
-               SymbolTable<Value>& symbolTable) -> bool;
-  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable)
+               SymbolTable<Value>& symbolTable) const -> bool;
+  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable) const
       -> std::unique_ptr<List<Module>>;
 
   friend auto operator<<(std::ostream& out, const Production& production) -> std::ostream&;

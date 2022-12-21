@@ -70,7 +70,7 @@ public:
   virtual auto MoveTo() -> void;
   virtual auto LineTo() -> void;
   virtual auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args) -> void = 0;
-  virtual auto Polygon(const LSYS::Polygon& polygon) -> void                         = 0;
+  virtual auto Polygon(const LSYS::Polygon& polygon) -> void                             = 0;
 
   // Functions to change rendering parameters
   virtual auto SetColor() -> void     = 0;
@@ -102,8 +102,7 @@ private:
   std::string m_objectHeader = "";
 };
 
-inline IGenerator::IGenerator(const std::string& name)
-: m_objectName{name}
+inline IGenerator::IGenerator(const std::string& name) : m_objectName{name}
 {
 }
 

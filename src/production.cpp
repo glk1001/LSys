@@ -67,9 +67,9 @@ Production::Production(const Name& name,
 //  satisfies the conditional expression attached to it. The list
 //  iterator must be set at m, as it provides context for context-sensitive
 //  productions. Neither the iterator nor the module are modified.
-bool Production::Matches(const ListIterator<Module>& modIter,
+auto Production::Matches(const ListIterator<Module>& modIter,
                          const Module* const mod,
-                         SymbolTable<Value>& symbolTable)
+                         SymbolTable<Value>& symbolTable) const -> bool
 {
   PDebug(PD_PRODUCTION,
          std::cerr << "Production::Matches: testing module " << *mod << " against " << *this
@@ -292,7 +292,7 @@ bool Production::Matches(const ListIterator<Module>& modIter,
 // Given a module which matches() the left hand side of this
 //  production, apply the production and return the resulting
 //  module list.
-auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& symbolTable)
+auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& symbolTable) const
     -> std::unique_ptr<List<Module>>
 {
   auto moduleList = std::make_unique<List<Module>>();

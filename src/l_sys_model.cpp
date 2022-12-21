@@ -48,7 +48,7 @@ auto LSysModel::ResetArgument(const std::string& name, const Value& newValue) ->
 // Apply the model to the specified list for one generation, generating a new list.
 auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<List<Module>>
 {
-  auto ruleIter      = ListIterator<Production>{&m_rules};
+  auto ruleIter      = ConstListIterator<Production>{m_rules};
   auto newModuleList = std::make_unique<List<Module>>();
 
   auto oldModIter = ListIterator<Module>{*oldModuleList};
@@ -58,7 +58,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
 
     // Find a matching production.
     // NOTE: This could be optimized a bunch.
-    Production* rule;
+    const Production* rule;
     for (rule = ruleIter.first(); rule != nullptr; rule = ruleIter.next())
     {
       if (rule->Matches(oldModIter, oldMod, m_symbolTable))
