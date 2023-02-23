@@ -90,7 +90,8 @@ set_target_properties(${TARGET_LIB}
 set_project_warnings(${TARGET_LIB} ${TARGET_APP})
 
 set(MSVC_WARNINGS_OFF
-        -Wno-date-time # TODO(glk) fix these
+#        /wd4996
+        /w
         )
 set(CLANG_WARNINGS_OFF
         -Wno-extra
@@ -122,6 +123,7 @@ STRING(REPLACE ";" " " SOME_WARNINGS_OFF "${SOME_WARNINGS_OFF}")
 set_source_files_properties(
         src/command_line_options.cpp
         src/lexer.cpp
+        src/name.cpp
         src/options.cpp
         src/parser.cpp
         PROPERTIES
