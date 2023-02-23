@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 
 int ParseDebug = 0;
