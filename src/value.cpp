@@ -105,7 +105,6 @@ auto Value::operator-() const -> Value
     case ValueType::FLOAT:
       return Value(-m_val.fltVal);
     case ValueType::UNDEFINED:
-    default:
       return *this;
   }
 }
@@ -121,7 +120,6 @@ auto Value::operator~() const -> Value
       std::cerr << "Value::operator~(): cannot complement non-integer GetFloatValue\n";
       return Value{};
     case ValueType::UNDEFINED:
-    default:
       return Value{};
   }
 }
@@ -137,7 +135,6 @@ auto Value::operator!() const -> Value
       std::cerr << "Value::operator!(): cannot complement non-integer GetFloatValue\n";
       return Value{};
     case ValueType::UNDEFINED:
-    default:
       return Value{};
   }
 }
@@ -152,7 +149,6 @@ auto Value::Abs() const -> Value
     case ValueType::FLOAT:
       return Value{std::fabs(m_val.fltVal)};
     case ValueType::UNDEFINED:
-    default:
       return Value{};
   }
 }
@@ -170,7 +166,6 @@ auto Value::operator&(const Value& otherValue) const -> Value
       std::cerr << "Value::operator&(): cannot bitwise AND non-integer values\n";
       return Value{};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -188,7 +183,6 @@ auto Value::operator|(const Value& otherValue) const -> Value
       std::cerr << "Value::operator|(): cannot bitwise OR non-integer values\n";
       return Value{};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -206,7 +200,6 @@ auto Value::operator&&(const Value& otherValue) const -> Value
       std::cerr << "Value::operator&&(): cannot logical AND non-integer values\n";
       return Value{};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -224,7 +217,6 @@ auto Value::operator||(const Value& otherValue) const -> Value
       std::cerr << "Value::operator||(): cannot logical OR non-integer values\n";
       return Value{};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -243,7 +235,6 @@ auto Value::operator==(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value{m_val.fltVal == otherValue.m_val.fltVal};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -262,7 +253,6 @@ auto Value::operator!=(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal != otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -281,7 +271,6 @@ auto Value::operator<(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal < otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -300,7 +289,6 @@ auto Value::operator<=(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal <= otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -319,7 +307,6 @@ auto Value::operator>=(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal >= otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -338,7 +325,6 @@ auto Value::operator>(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal > otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -357,7 +343,6 @@ auto Value::operator+(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal + otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -376,7 +361,6 @@ auto Value::operator-(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal - otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -395,7 +379,6 @@ auto Value::operator*(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(m_val.fltVal * otherValue.m_val.fltVal);
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -440,7 +423,6 @@ auto Value::operator%(const Value& otherValue) const -> Value
       std::cerr << "Value::operator%(): cannot compute modulo of non-integer values\n";
       return Value{};
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -459,7 +441,6 @@ auto Value::operator^(const Value& otherValue) const -> Value
     case OpType::FF:
       return Value(std::pow(m_val.fltVal, otherValue.m_val.fltVal));
     case OpType::UNDEF:
-    default:
       return Value{};
   }
 }
@@ -505,7 +486,6 @@ auto operator<<(std::ostream& out, const Value& value) -> std::ostream&
       out.unsetf(std::ios::showpoint);
       break;
     case ValueType::UNDEFINED:
-    default:
       out << "(undefined value)";
       break;
   }

@@ -125,7 +125,7 @@ auto operator<<(std::ostream& out, const List<T>& list) -> std::ostream&
 {
   ConstListIterator<T> iter(list);
   const T* val = iter.first();
-  while (val != 0)
+  while (val != nullptr)
   {
     out << *val;
     val = iter.next();

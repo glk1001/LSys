@@ -78,10 +78,12 @@ static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
       << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10) << MATHS::Round(vec[2], PRECISION);
   return;
 
+  /**
   // Revert to right-handed coord system
   out << std::setw(10) << -MATHS::Round(vec[2], PRECISION) << " " << std::setw(10)
       << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10)
       << -MATHS::Round(vec[0], PRECISION);
+  **/
 }
 
 auto GenericGenerator::OutputBounds() -> void

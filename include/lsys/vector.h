@@ -57,7 +57,7 @@ public:
   auto operator()(const uint32_t i) const -> float { return m_vec[i]; }
 
   Vector() = default;
-  Vector(const float x, const float y, const float z) : m_vec{x, y, z} {};
+  Vector(const float x, const float y, const float z) : m_vec{x, y, z} {}
 
   [[nodiscard]] auto GetMagnitude() -> float
   {

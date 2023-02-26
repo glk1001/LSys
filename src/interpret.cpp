@@ -132,7 +132,7 @@ auto Interpreter::InterpretNextModule(const Module& mod) -> bool
     PDebug(PD_INTERPRET, std::cerr << "No action for module " << mod << "\n");
     return false;
     // TODO(glk) - Should this be a failed lookup?
-    throw std::runtime_error("Unknown action.");
+    //throw std::runtime_error("Unknown action.");
   }
 
   // Fetch defined parameters

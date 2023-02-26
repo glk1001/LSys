@@ -208,10 +208,6 @@ auto Matrix::Rotate(const Axis axis, const float angle) -> Matrix&
       rotatedMatrix[Z][Z] = 1;
       rotatedMatrix[Z][W] = 0;
       break;
-    default:
-      std::cerr << "Matrix::rotate: unknown axis = " << static_cast<int>(axis) << "\n";
-      ::exit(1);
-      break;
   }
 
   *this = *this * rotatedMatrix;

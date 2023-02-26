@@ -80,7 +80,7 @@ public:
 
 protected:
   [[nodiscard]] auto GetTurtle() const -> const Turtle&;
-  virtual auto OutputFailed() -> void;
+  [[noreturn]] virtual auto OutputFailed() -> void;
 
   [[nodiscard]] auto GetLastPosition() const -> const Vector& { return m_lastPosition; }
   [[nodiscard]] auto GetLastWidth() const -> float { return m_lastWidth; }
