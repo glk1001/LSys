@@ -3,7 +3,7 @@
   <component name="CMakeSharedSettings">
     <configurations>
       <configuration PROFILE_NAME="gcc-12-Debug" ENABLED="true" GENERATION_DIR="build-clion-gcc-12-Debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="gcc-12" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DYYDEBUG=1;PDEBUG_ENABLED=1 -D_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1" BUILD_OPTIONS="-- -j 6" />
-      <configuration PROFILE_NAME="clang-15-RelWithDebInfo" ENABLED="true" GENERATION_DIR="build-clion-clang-15-RelWithDebInfo" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="clang-15" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DYYDEBUG=1;PDEBUG_ENABLED=1 -D_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1" BUILD_OPTIONS="-- -j 6" />
+      <configuration PROFILE_NAME="docker-clang-17-RelWithDebInfo" ENABLED="true" GENERATION_DIR="build-clion-docker-clang-17-RelWithDebInfo" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="docker-clang-17" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF -DYYDEBUG=1;PDEBUG_ENABLED=1 -D_DEBUG;PDEBUG_ENABLED;YYSTYPE=int;YY_NO_UNPUT;YY_SKIP_YYWRAP;YY_NEVER_INTERACTIVE=1" BUILD_OPTIONS="-- -j 9" />
     </configurations>
   </component>
 </project>

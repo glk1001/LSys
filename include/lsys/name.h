@@ -52,7 +52,15 @@ public:
 
 private:
   static inline SymbolTable<int> s_map{};
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   static char** s_reverseMap;
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
   static int s_nextIndex;
   static uint32_t s_reverseMapSize;
   int m_index = 0;

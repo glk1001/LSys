@@ -195,8 +195,16 @@ public:
   Matrix() = default;
   Matrix(Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3);
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   auto operator[](const uint32_t i) -> float* { return m_matrix[i]; }
   auto operator[](const uint32_t i) const -> const float* { return m_matrix[i]; }
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
   auto Zero() -> Matrix&;
   auto Identity() -> Matrix&;
   auto Rotate(Axis axis, float angle) -> Matrix&;

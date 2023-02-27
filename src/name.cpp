@@ -37,7 +37,15 @@
 namespace LSYS
 {
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 char** Name::s_reverseMap       = nullptr;
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 int Name::s_nextIndex           = 0;
 uint32_t Name::s_reverseMapSize = 0U;
 
@@ -65,7 +73,15 @@ Name::Name(const char* name)
   {
     // Allocate more space for the inverse map from IDs to strings
     //GLK int size= reverse_map_size + map_incr;
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     auto** const strPtr = new char*[s_reverseMapSize + MAP_INCR];
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
     for (auto i = 0U; i < s_reverseMapSize; ++i)
     {
