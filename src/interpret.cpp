@@ -111,12 +111,9 @@ auto Interpreter::InterpretAllModules(const List<Module>& moduleList) -> void
 {
   Start(moduleList);
 
-  while (true)
+  while (not AllDone())
   {
-    if (not InterpretNext())
-    {
-      break;
-    }
+    InterpretNext();
   }
 
   Finish();

@@ -52,7 +52,9 @@ public:
   // Iteratively interpret a bound left-system, producing output to the specified generator.
   auto Start(const List<Module>& moduleList) -> void;
   auto Finish() -> void;
-  [[nodiscard]] auto InterpretNext() -> bool;
+
+  auto InterpretNext() -> void;
+  [[nodiscard]] auto AllDone() -> bool;
 
   // Interpret all of a bound left-system, producing output to the specified generator.
   auto InterpretAllModules(const List<Module>& moduleList) -> void;
@@ -85,17 +87,15 @@ inline auto Interpreter::Finish() -> void
   m_generator.Postscript();
 }
 
-inline auto Interpreter::InterpretNext() -> bool
+inline auto Interpreter::InterpretNext() -> void
 {
-  if (m_currentModule == nullptr)
-  {
-    return false;
-  }
-
   InterpretNextModule(*m_currentModule);
   m_currentModule = m_moduleIter->next();
+}
 
-  return true;
+inline auto Interpreter::AllDone() -> bool
+{
+  return m_currentModule == nullptr;
 }
 
 } // namespace LSYS
