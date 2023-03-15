@@ -49,8 +49,8 @@ public:
          std::unique_ptr<List<Expression>> expressionList,
          bool ignoreFlag = false);
   Module(const Module& other) noexcept;
-  Module(Module&&) = default;
-  ~Module()        = default;
+  Module(Module&&) noexcept = default;
+  ~Module() noexcept        = default;
 
   auto operator=(const Module&) -> Module& = delete;
   auto operator=(Module&&) -> Module&      = default;

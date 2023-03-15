@@ -41,7 +41,7 @@ namespace LSYS
 Module::Module(const Name& name,
                std::unique_ptr<List<Expression>> expressionList,
                const bool ignoreFlag)
-  : m_tag(name.id()), m_ignoreFlag{ignoreFlag}, m_param{std::move(expressionList)}
+  : m_tag{name.id()}, m_ignoreFlag{ignoreFlag}, m_param{std::move(expressionList)}
 {
   PDebug(PD_MODULE, std::cerr << "Creating module " << *this << " @ " << this << "\n");
 }

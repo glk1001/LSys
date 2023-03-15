@@ -18,13 +18,15 @@ class List
 public:
   List() = default;
   List(const List& other) noexcept;
-  List(List&&) = default;
-  ~List()      = default;
+  List(List&&) noexcept = default;
+  ~List() noexcept      = default;
 
   auto operator=(const List&) -> List& = delete;
   auto operator=(List&&) -> List&      = delete;
 
   [[nodiscard]] auto size() const -> size_t;
+  using ListAsArray = std::vector<std::unique_ptr<T>>;
+  [[nodiscard]] auto GetListAsArray() const noexcept -> const ListAsArray&;
 
   auto append(std::unique_ptr<T> item) -> void;
 
@@ -96,6 +98,12 @@ template<typename T>
 inline auto List<T>::size() const -> size_t
 {
   return m_stdList.size();
+}
+
+template<typename T>
+inline auto List<T>::GetListAsArray() const noexcept -> const ListAsArray&
+{
+  return m_stdList;
 }
 
 template<typename T>
