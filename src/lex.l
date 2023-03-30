@@ -37,8 +37,9 @@
  */
 
 #include "token.h" /* Make sure this the first include to avoid name clashes */
-#include <string>
+#include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include "lexdefs.h"
 #include "debug.h"
 
@@ -73,45 +74,45 @@ E	[Ee][-+]?{D}+
                 lexcol += strlen(yytext);
                 lexline += countnewlines(yytext, &lexcol);
               }
-#ignore			  { lexcol += 7; return LSys::LSYS_IGNORE; }
-#include		  { lexcol += 8; return LSys::LSYS_INCLUDE; }
-#define			  { lexcol += 7; return LSys::LSYS_DEFINE; }
-START		      { lexcol += 5; return LSys::LSYS_START; }
-->			      { lexcol += 2; return LSys::LSYS_YIELDS; }
+#ignore			  { lexcol += 7; return LSYS::LSYS_IGNORE; }
+#include		  { lexcol += 8; return LSYS::LSYS_INCLUDE; }
+#define			  { lexcol += 7; return LSYS::LSYS_DEFINE; }
+START		      { lexcol += 5; return LSYS::LSYS_START; }
+->			      { lexcol += 2; return LSYS::LSYS_YIELDS; }
 <MODULE>{A}{D}*|Fl|Fr	  {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 <MODULE>@{A}*|~{A}* {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 <MODULE>{D}   { lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 <MODULE>[+^/&|%~!-]  {
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: module name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 <EXPRESSION>{A}({A}|{D})*   {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: expression name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 <EXPRESSION>{D}+  {
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: integer -> %s\n", yytext));
-                return LSys::LSYS_INTEGER;
+                return LSYS::LSYS_INTEGER;
               }
 <EXPRESSION>{D}+"."{D}*({E})? |
 {D}*"."{D}+({E})? |
@@ -119,27 +120,27 @@ START		      { lexcol += 5; return LSys::LSYS_START; }
                 lexcol += strlen(yytext);
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: real -> %s\n", yytext));
-                return LSys::LSYS_REAL;
+                return LSYS::LSYS_REAL;
               }
-<EXPRESSION>\<=	  { lexcol += 2; return LSys::LSYS_LE; }
-<EXPRESSION>==	  { lexcol += 2; return LSys::LSYS_EQ; }
-<EXPRESSION>=		  { lexcol++; return LSys::LSYS_EQ; }
-<EXPRESSION>>=	  { lexcol += 2; return LSys::LSYS_GE; }
-<EXPRESSION>!=	  { lexcol += 2; return LSys::LSYS_NE; }
-<EXPRESSION>&&	  { lexcol += 2; return LSys::LSYS_AND; }
-<EXPRESSION>\|\|  { lexcol += 2; return LSys::LSYS_OR; }
+<EXPRESSION>\<=	  { lexcol += 2; return LSYS::LSYS_LE; }
+<EXPRESSION>==	  { lexcol += 2; return LSYS::LSYS_EQ; }
+<EXPRESSION>=		  { lexcol++; return LSYS::LSYS_EQ; }
+<EXPRESSION>>=	  { lexcol += 2; return LSYS::LSYS_GE; }
+<EXPRESSION>!=	  { lexcol += 2; return LSYS::LSYS_NE; }
+<EXPRESSION>&&	  { lexcol += 2; return LSYS::LSYS_AND; }
+<EXPRESSION>\|\|  { lexcol += 2; return LSYS::LSYS_OR; }
 <EXPRESSION>[+^/&|~%!-]  { lexcol++; return yytext[0]; }
 [*:(),<>]		             { lexcol++; return yytext[0]; }
 [[\]{}\\$\.']	{
                 lexcol++;
                 save_name(yytext);
                 PDebug(PD_LEXER, fprintf(stderr, "lex: name -> %s\n", yytext));
-                return LSys::LSYS_NAME;
+                return LSYS::LSYS_NAME;
               }
 [ \t]+			  { lexcol= spaceadd(lexcol, yytext); }
 \\\n			    { lexcol= 1; lexline++; }
 \n			      { lexcol= 1; lexline++; return '\n'; }
-.			        { lexcol++; return LSys::LSYS_ERROR; }
+.			        { lexcol++; return LSYS::LSYS_ERROR; }
 %%
 
 
