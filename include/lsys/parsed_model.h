@@ -10,12 +10,14 @@ namespace LSYS
 
 struct Properties
 {
-  std::string inputFilename = "";
-  int maxGen                = -1;
-  float turnAngle           = -1.0F;
-  float lineWidth           = -1.0F;
-  float lineDistance        = -1.0F;
+  std::string inputFilename;
+  int maxGen         = -1;
+  float turnAngle    = -1.0F;
+  float lineWidth    = -1.0F;
+  float lineDistance = -1.0F;
 };
+
+auto SetParserDebug(bool debugOn) noexcept -> void;
 
 [[nodiscard]] auto GetParsedModel(const Properties& properties) -> std::unique_ptr<LSysModel>;
 

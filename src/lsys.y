@@ -1,3 +1,5 @@
+/**  Use: bison -d -l lsys.y  **/
+
 %{
 /* lsys.y - parser for L-systems.
  *
@@ -31,7 +33,6 @@
 
 #include <cstdlib>
 #include <ctype.h>
-#include <malloc.h>
 #include "debug.h"
 #include "parser.h"
 
@@ -83,16 +84,17 @@ static bool BindExpression = false;
 %start lsystem
 
 %union {
-  int name;                         /* module or variable name id */
-  float probability;                /* production probability */
-  Value* value;	                    /* numeric value */
-  Module* module;
-  Expression* expression;
-  LSYS::List<Module>* moduleList;	  /* list of modules as in a production successor */
-  LSYS::List<Expression>* expressionList;	/* list of expressions within a module */
-  Predecessor* predecessor;	        /* a production predecessor */
-  Successor* successor;	            /* a production successor */
-  LSYS::List<Successor>* successors;/* list of production successors with probabilities */
+  int name;                                /* module or variable name id */
+  float probability;                       /* production probability */
+  LSYS::Value* value;	                   /* numeric value */
+  LSYS::Module* module;
+  LSYS::Expression* expression;
+  LSYS::List<LSYS::Module>* moduleList;	   /* list of modules as in a production successor */
+  LSYS::List<LSYS::Expression>* expressionList;
+                                           /* list of expressions within a module */
+  LSYS::Predecessor* predecessor;          /* a production predecessor */
+  LSYS::Successor* successor;	           /* a production successor */
+  LSYS::List<LSYS::Successor>* successors; /* list of production successors with probabilities */
 }
 
 %type <moduleList> modules right_list
@@ -460,4 +462,3 @@ void free(YYSTYPE *yp) {
 }
 #endif /*!__GNUG__*/
 #endif /*sun*/
-

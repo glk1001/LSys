@@ -7,8 +7,10 @@
 #pragma GCC diagnostic ignored "-Wunreachable-code"
 #pragma GCC diagnostic ignored "-Wunused-macros"
 #pragma GCC diagnostic ignored "-Wmissing-noreturn"
+#pragma GCC diagnostic ignored "-Wused-but-marked-unused"
 #endif
 #if __clang_major__ >= 16
+#pragma GCC diagnostic ignored "-Wused-but-marked-unused"
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
@@ -20,7 +22,13 @@
 
 // NOLINTBEGIN
 
+#define YYDEBUG 1
+
 #include "lsys.tab.c"
+
+#ifdef YYDEBUG
+//extern int yydebug = 1;
+#endif
 
 // NOLINTEND
 

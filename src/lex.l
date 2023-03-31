@@ -1,3 +1,8 @@
+/**  Use: flex -L lex.l  **/
+
+%option never-interactive
+%option nounistd
+
 %{
 /* lex.l - lexical analyzer for L-systems.
  *
@@ -236,15 +241,11 @@ static void save_name(const char *s)
  */
 void set_parser_input(const char *ifile)
 {
-  #ifdef pink
-    fprintf(stderr, "Setting yyin, yyout to stdin, stdout\n");
-    // This is to get around a broken stdio.h which defines stdin and
-    //	stdout such that we cannot initialize globals with them.
-    yyin= stdin;
-    yyout= stdout;
-  #endif /*pink*/
   if (ifile != NULL) {
-    fprintf(stderr, "Setting yyin to %s\n", ifile);
+    if (yy_flex_debug)
+    {
+      fprintf(stderr, "Setting yyin to %s\n", ifile);
+    }
     if ((yyin= fopen(ifile, "r")) == NULL) {
 	    fprintf(stderr, "Can't open input file %s\n", ifile);
 	    exit(1);
@@ -293,4 +294,3 @@ int yywrap(void)
 {
   return 1;
 }
-

@@ -14,6 +14,8 @@
 #include <string>
 
 int ParseDebug = 0;
+extern int yydebug;
+extern int yy_flex_debug;
 
 namespace LSYS
 {
@@ -43,6 +45,22 @@ auto SetSymbolTableValues(SymbolTable<Value>& symbolTable, const Properties& pro
 }
 
 } // namespace
+
+auto SetParserDebug(const bool debugOn) noexcept -> void
+{
+  if (debugOn)
+  {
+    ParseDebug    = 1;
+    yy_flex_debug = 1;
+    yydebug       = 1;
+  }
+  else
+  {
+    ParseDebug    = 0;
+    yy_flex_debug = 0;
+    yydebug       = 0;
+  }
+}
 
 [[nodiscard]] auto GetFinalProperties(const SymbolTable<Value>& symbolTable,
                                       const Properties& initialProperties,

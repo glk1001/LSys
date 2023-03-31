@@ -42,6 +42,12 @@
 
 #include <cmath>
 #include <functional>
+#include <memory>
+
+#ifdef PDEBUG_ENABLED
+#include <sstream>
+#include <string>
+#endif
 
 namespace LSYS
 {
@@ -254,6 +260,30 @@ const auto functionSymbolTable = GetFunctionSymbolTable();
   }
 }
 
+#ifndef PDEBUG_ENABLED
+
+inline auto GetExprStr([[maybe unused]] const Expression* expr) noexcept -> ::std::string
+{
+  return "";
+}
+
+#else
+
+inline auto GetExprStr(const Expression* expr) noexcept -> ::std::string
+{
+  if (nullptr == expr)
+  {
+    return "null";
+  }
+
+  ::std::stringstream strStream;
+  strStream << *expr;
+  return strStream.str();
+}
+
+#endif
+
+
 } // namespace
 
 std::ostream& operator<<(std::ostream& out, const Expression& expression)
@@ -306,7 +336,7 @@ Expression::Expression(const int operation, Expression* const lop, Expression* c
   PDebug(PD_EXPRESSION,
          std::cerr << "Creating expression w/op " << operation << "='"
                    << static_cast<char>(operation) << "'"
-                   << " &lhs= " << *lop << " &rhs= " << *rop << "\n");
+                   << " &lhs= " << GetExprStr(lop) << " &rhs= " << GetExprStr(rop) << "\n");
 
   m_expressionValue.args[0].reset(lop);
   m_expressionValue.args[1].reset(rop);
@@ -504,7 +534,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
     default:
       std::cerr << "Fatal error in Expression::Evaluate: unrecognized operator '"
                 << static_cast<char>(m_operation) << "'= " << m_operation << "\n";
-      return Value{};
+      throw std::runtime_error("Fatal error in Expression::Evaluate: unrecognized operator.");
   }
 }
 

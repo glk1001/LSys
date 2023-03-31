@@ -62,6 +62,7 @@ using LSYS::LSysModel;
 using LSYS::Module;
 using LSYS::Properties;
 using LSYS::RadianceGenerator;
+using LSYS::SetParserDebug;
 using LSYS::SetRandFunc;
 using Utilities::CommandLineOptions;
 
@@ -275,6 +276,8 @@ auto PrintInterpretStart(const std::string& header) -> void
 
 int main(const int argc, const char* argv[])
 {
+  SetParserDebug(false);
+
   try
   {
     const auto cmdArgs = GetPropertiesFromCommandLine(argc, argv);

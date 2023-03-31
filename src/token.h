@@ -1,12 +1,14 @@
 #pragma once
 
-/* This must be the first include file in a file. Otherwise name clashes
-     may occur. */
+// This must be the first include file in a file.
+// Otherwise, name clashes occur.
 
 #include "module.h"
 #include "production.h"
-#include "token.inc"
 #include "value.h"
+
+// Must be last include!
+#include "lsys.tab.h"
 
 namespace LSYS
 {
