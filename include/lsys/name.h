@@ -36,6 +36,7 @@
 
 #include "symbol_table.h"
 
+#include <cstdint>
 #include <string>
 
 namespace LSYS
