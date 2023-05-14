@@ -116,9 +116,6 @@ function(get_project_warnings compiler_warnings)
         -Wno-padded
         -Wno-switch-enum
         -Wno-float-equal
-        # These break fmt 10.0.0
-        -Wno-array-bounds
-        -Wno-stringop-overflow
         )
     # Inline warning requires nasty destructors to be added as fixes.
     # if (CMAKE_CXX_COMPILER_ID MATCHES ".*GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.1)
@@ -153,7 +150,6 @@ function(set_project_warnings project_name)
 
     SET(PROJECT_WARNINGS "")
     get_project_warnings(PROJECT_WARNINGS)
-    message(STATUS "Goom-libs-cmake: PROJECT_WARNINGS = \"${PROJECT_WARNINGS}\".")
 
     target_compile_options(${project_name} PRIVATE ${PROJECT_WARNINGS})
 endfunction()
