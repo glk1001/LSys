@@ -291,7 +291,7 @@ public:
   // Unless Options::Quiet is used, missing option-arguments and
   // invalid options (and the like) will automatically cause error
   // messages to be issued to cerr.
-  int operator()(OptIter&, const char** optarg, const char** longOpt = 0);
+  int operator()(OptIter&, const char** optarg, const char** longOpt = nullptr);
 
   // Call this member function after operator() has returned 0
   // if you want to know whether or not options were explicitly
@@ -346,9 +346,9 @@ public:
   OptIterRwd();
   virtual ~OptIterRwd();
 
-  virtual const char* Current()    = 0;
-  virtual void Next()              = 0;
-  virtual const char* operator()() = 0;
+  const char* Current() override    = 0;
+  void Next() override              = 0;
+  const char* operator()() override = 0;
 
   // Rewind() resets the "current-element" to the first one in the "list"
   virtual void Rewind() = 0;
@@ -367,10 +367,10 @@ public:
 
   virtual ~OptArgvIter();
 
-  virtual const char* Current();
-  virtual void Next();
-  virtual const char* operator()();
-  virtual void Rewind();
+  const char* Current() override;
+  void Next() override;
+  const char* operator()() override;
+  void Rewind() override;
 
   // Index returns the current Index to use for argv[]
   int Index() { return ndx; }
@@ -387,13 +387,13 @@ private:
 class OptStrTokIter : public OptIterRwd
 {
 public:
-  OptStrTokIter(const char* tokens, const char* delimiters = 0);
+  OptStrTokIter(const char* tokens, const char* delimiters = nullptr);
   virtual ~OptStrTokIter();
 
-  virtual const char* Current();
-  virtual void Next();
-  virtual const char* operator()();
-  virtual void Rewind();
+  const char* Current() override;
+  void Next() override;
+  const char* operator()() override;
+  void Rewind() override;
 
   // delimiters() with NO arguments returns the current set of delimiters,
   // If an argument is given then it is used as the new set of delimiters.
@@ -433,9 +433,9 @@ public:
   OptIstreamIter(std::istream& input);
   virtual ~OptIstreamIter();
 
-  virtual const char* Current();
-  virtual void Next();
-  virtual const char* operator()();
+  const char* Current() override;
+  void Next() override;
+  const char* operator()() override;
 
 private:
   std::istream& is;

@@ -62,7 +62,7 @@ public:
   OptionSpec(const char* decl, const char* _description)
     : hidden(0), spec(decl), description(_description)
   {
-    if (spec == 0)
+    if (spec == nullptr)
       spec = Null_spec;
     CheckHidden();
   }
@@ -98,7 +98,7 @@ public:
   operator const char*() { return isHiddenOpt() ? (spec - 1) : spec; }
 
   // Is this option 0?
-  int isNull() const { return ((spec == 0) || (spec == Null_spec)); }
+  int isNull() const { return ((spec == nullptr) || (spec == Null_spec)); }
 
   // Is this options incorrectly specified?
   int isSyntaxError(const char* Name) const;
@@ -112,7 +112,7 @@ public:
   // Get the corresponding long-option string
   const char* LongOpt() const
   {
-    return (spec[1] && spec[2] && (!isspace(spec[2]))) ? (spec + 2) : 0;
+    return (spec[1] && spec[2] && (!isspace(spec[2]))) ? (spec + 2) : nullptr;
   }
 
   // Get the corresponding description string
@@ -166,7 +166,7 @@ inline int isNullOpt(char optchar)
 // Check for explicit "end-of-options"
 inline int isEndOpts(const char* token)
 {
-  return ((token == 0) || (!::strcmp(token, "--")));
+  return ((token == nullptr) || (!::strcmp(token, "--")));
 }
 
 
@@ -240,12 +240,12 @@ Options::Options(const char* name, const char* const optv[], const char* const o
     optctrls(Default),
     optvec(optv),
     optDesc(optDescriptions),
-    nextchar(0),
-    listopt(0),
+    nextchar(nullptr),
+    listopt(nullptr),
     cmdname(name)
 {
   const char* basename = ::strrchr(cmdname, pathDelimiter);
-  if (basename != 0)
+  if (basename != nullptr)
     cmdname = basename + 1;
   this->CheckSyntax();
 }
@@ -260,7 +260,7 @@ void Options::SetOptions(const char* name,
   optvec               = optv;
   optDesc              = optDescriptions;
   const char* basename = ::strrchr(cmdname, pathDelimiter);
-  if (basename != 0)
+  if (basename != nullptr)
     cmdname = basename + 1;
   this->CheckSyntax();
 }
@@ -272,11 +272,11 @@ void Options::SetOptions(const char* name,
 void Options::CheckSyntax() const
 {
   int errors = 0;
-  if ((optvec == 0) || (!*optvec))
+  if ((optvec == nullptr) || (!*optvec))
     return;
 
   int i = 0;
-  while (optvec[i] != 0)
+  while (optvec[i] != nullptr)
   {
     OptionSpec optspec(optvec[i], optDesc[i]);
     i++;
@@ -289,7 +289,7 @@ void Options::CheckSyntax() const
 
 void Options::Controls(const char* flagsStr)
 {
-  if ((flagsStr != 0) && (*flagsStr != '\0'))
+  if ((flagsStr != nullptr) && (*flagsStr != '\0'))
   {
     unsigned flags = this->Controls();
     for (const char* p = flagsStr; (*p != '\0'); p++)
@@ -362,11 +362,11 @@ void Options::Controls(const char* flagsStr)
 // ^^-------------------------------------------------------------------------
 OptionSpec Options::MatchOpt(char opt, int ignore_case) const
 {
-  if ((optvec == 0) || (!*optvec))
+  if ((optvec == nullptr) || (!*optvec))
     return OptionSpec("", "");
 
   int i = 0;
-  while (optvec[i] != 0)
+  while (optvec[i] != nullptr)
   {
     OptionSpec optspec(optvec[i], optDesc[i]);
     i++;
@@ -433,16 +433,16 @@ OptionSpec Options::MatchLongOpt(const char* opt, int len, int& ambiguous) const
   OptionSpec matched("", "");
 
   ambiguous = 0;
-  if ((optvec == 0) || (!*optvec))
+  if ((optvec == nullptr) || (!*optvec))
     return OptionSpec("", "");
 
   int i = 0;
-  while (optvec[i] != 0)
+  while (optvec[i] != nullptr)
   {
     OptionSpec optspec(optvec[i], optDesc[i]);
     i++;
     const char* longopt = optspec.LongOpt();
-    if (longopt == 0)
+    if (longopt == nullptr)
       continue;
     result = kwdmatch(longopt, opt, len);
     if (result == EXACT_MATCH)
@@ -500,9 +500,9 @@ OptionSpec Options::MatchLongOpt(const char* opt, int len, int& ambiguous) const
 // ^^-------------------------------------------------------------------------
 int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
 {
-  listopt = 0; // Reset the list pointer
+  listopt = nullptr; // Reset the list pointer
 
-  if ((optvec == 0) || (!*optvec))
+  if ((optvec == nullptr) || (!*optvec))
     return Options::EndOpts;
 
   // Try to match a known option
@@ -540,7 +540,7 @@ int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
   // If no argument is taken, then leave now
   if (optspec.isNoArg())
   {
-    *optarg = 0;
+    *optarg = nullptr;
     return optspec.OptChar();
   }
 
@@ -548,7 +548,7 @@ int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
   if (*nextchar)
   {
     *optarg  = nextchar; // the argument is right here
-    nextchar = 0; // we've exhausted this arg
+    nextchar = nullptr; // we've exhausted this arg
     if (optspec.isList())
       listopt = optspec; // save the list-spec
     return optspec.OptChar();
@@ -556,7 +556,7 @@ int Options::ParseOpt(OptIter& iter, const char** optarg, const char** longOpt)
 
   // Check for argument in Next arg
   const char* nextarg = iter.Current();
-  if ((nextarg != 0) && (optspec.isValRequired() || (!isOption(optctrls, nextarg))))
+  if ((nextarg != nullptr) && (optspec.isValRequired() || (!isOption(optctrls, nextarg))))
   {
     *optarg = nextarg; // the argument is here
     iter.Next(); // end of arg - advance
@@ -613,9 +613,9 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
 {
   int len = 0, ambiguous = 0;
 
-  listopt = 0; // Reset the list-spec
+  listopt = nullptr; // Reset the list-spec
 
-  if ((optvec == 0) || (!*optvec))
+  if ((optvec == nullptr) || (!*optvec))
     return Options::EndOpts;
 
   // if a value is supplied in this argv element, get it now
@@ -655,7 +655,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
            << ((optctrls & Options::LongOnly) ? "-" : "--") << nextchar << "." << endl;
     }
     *optarg  = nextchar; // record the bad option in optarg
-    nextchar = 0; // we've exhausted this argument
+    nextchar = nullptr; // we've exhausted this argument
     return (ambiguous) ? Options::Ambiguous : Options::BadKeyword;
   }
 
@@ -670,7 +670,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
            << optspec.LongOpt() << " does NOT take an argument." << endl;
     }
     *optarg  = val; // record the unexpected argument
-    nextchar = 0; // we've exhausted this argument
+    nextchar = nullptr; // we've exhausted this argument
     return optspec.OptChar();
   }
 
@@ -678,7 +678,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
   if (val)
   {
     *optarg  = val; // the argument is right here
-    nextchar = 0; // we exhausted the rest of this arg
+    nextchar = nullptr; // we exhausted the rest of this arg
     if (optspec.isList())
       listopt = optspec; // save the list-spec
     return optspec.OptChar();
@@ -686,18 +686,18 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
 
   // Check for argument in Next arg
   const char* nextarg = iter.Current(); // find the Next argument to parse
-  if ((nextarg != 0) && (optspec.isValRequired() || (!isOption(optctrls, nextarg))))
+  if ((nextarg != nullptr) && (optspec.isValRequired() || (!isOption(optctrls, nextarg))))
   {
     *optarg = nextarg; // the argument is right here
     iter.Next(); // end of arg - advance
-    nextchar = 0; // we exhausted the rest of this arg
+    nextchar = nullptr; // we exhausted the rest of this arg
     if (optspec.isList())
       listopt = optspec; // save the list-spec
     return optspec.OptChar();
   }
 
   // No argument given - if it's required, that's an error
-  optarg = 0;
+  optarg = nullptr;
   if (optspec.isValRequired() && !(optctrls & Options::Quiet))
   {
     const auto* spc = ::strchr(*longOpt, ' ');
@@ -706,7 +706,7 @@ int Options::ParseLongOpt(OptIter& iter, const char** optarg, const char** longO
     cerr << cmdname << ": argument required for " << ((optctrls & Options::LongOnly) ? "-" : "--");
     cerr.write(*longOpt, longopt_len) << " option." << endl;
   }
-  nextchar = 0; // we exhausted the rest of this arg
+  nextchar = nullptr; // we exhausted the rest of this arg
   return optspec.OptChar();
 }
 
@@ -742,7 +742,7 @@ void Options::Usage(ostream& os, const char* positionals) const
   return;
 #else
   const char* const* optv = optvec;
-  if ((optv == 0) || (!*optv))
+  if ((optv == nullptr) || (!*optv))
     return;
 
   // print first portion "Usage: progname"
@@ -750,7 +750,7 @@ void Options::Usage(ostream& os, const char* positionals) const
 
   // print the options and the positional arguments
   int i = 0;
-  while (optvec[i] != 0)
+  while (optvec[i] != nullptr)
   {
     OptionSpec optspec(optvec[i], optDesc[i]);
     i++;
@@ -760,7 +760,7 @@ void Options::Usage(ostream& os, const char* positionals) const
     optspec.Format(buf, optctrls);
     os << "  " << buf << endl;
   }
-  if (positionals != 0)
+  if (positionals != nullptr)
     os << "  " << positionals << endl;
 #endif
 }
@@ -805,8 +805,8 @@ void Options::Usage(ostream& os, const char* positionals) const
 // ^^-------------------------------------------------------------------------
 int Options::operator()(OptIter& iter, const char** optarg, const char** _longOpt)
 {
-  const char* longOpt   = 0;
-  const char** pLongOpt = (_longOpt != 0) ? _longOpt : &longOpt;
+  const char* longOpt   = nullptr;
+  const char** pLongOpt = (_longOpt != nullptr) ? _longOpt : &longOpt;
 
   const int parse_opts_only = isOptsOnly(optctrls);
   if (parse_opts_only)
@@ -819,21 +819,21 @@ int Options::operator()(OptIter& iter, const char** optarg, const char** _longOp
   }
 
   // Check for end-of-options ...
-  const char* arg  = 0;
+  const char* arg  = nullptr;
   int get_next_arg = 0;
   do
   {
     arg          = iter.Current();
     get_next_arg = 0;
-    if (arg == 0)
+    if (arg == nullptr)
     {
-      listopt = 0;
+      listopt = nullptr;
       return Options::EndOpts;
     }
     else if ((!explicitEnd) && isEndOpts(arg))
     {
       iter.Next(); // advance past end-of-options arg
-      listopt     = 0;
+      listopt     = nullptr;
       explicitEnd = 1;
       if (parse_opts_only)
         return Options::EndOpts;
@@ -842,7 +842,7 @@ int Options::operator()(OptIter& iter, const char** optarg, const char** _longOp
   } while (get_next_arg);
 
   // Do we have a positional arg?
-  if (explicitEnd || ((!isOption(optctrls, arg) && listopt == 0)))
+  if (explicitEnd || ((!isOption(optctrls, arg) && listopt == nullptr)))
   {
     if (parse_opts_only)
     {
@@ -903,7 +903,7 @@ kwdmatch_t kwdmatch(const char* src, const char* attempt, int len)
 
   if (src == attempt)
     return EXACT_MATCH;
-  if ((src == 0) || (attempt == 0))
+  if ((src == nullptr) || (attempt == nullptr))
     return NO_MATCH;
   if ((!*src) && (!*attempt))
     return EXACT_MATCH;
@@ -933,7 +933,7 @@ int OptionSpec::isSyntaxError(const char* Name) const
     cerr << "\tmust be at least 1 character long." << endl;
     ++error;
   }
-  else if (spec[1] && (strchr("|?:*+", spec[1]) == 0))
+  else if (spec[1] && (strchr("|?:*+", spec[1]) == nullptr))
   {
     cerr << Name << ": bad option specifier \"" << spec << "\"." << endl;
     cerr << "\t2nd character must be in the set \"|?:*+\"." << endl;
@@ -984,7 +984,7 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   const char* optDesc = this->Description();
   char* p             = buf;
 
-  const char* value = 0;
+  const char* value = nullptr;
   int longopt_len   = 0;
   int value_len     = 0;
 
@@ -1014,13 +1014,13 @@ unsigned OptionSpec::Format(char* buf, unsigned optctrls) const
   if ((optctrls & Options::ShortOnly) &&
       ((!isNullOpt(optchar)) || (optctrls & Options::NoGuessing)))
   {
-    longopt = 0;
+    longopt = nullptr;
   }
   if ((optctrls & Options::LongOnly) && (longopt || (optctrls & Options::NoGuessing)))
   {
     optchar = '\0';
   }
-  if (isNullOpt(optchar) && (longopt == 0))
+  if (isNullOpt(optchar) && (longopt == nullptr))
   {
     *buf = '\0';
     return 0;
@@ -1111,7 +1111,7 @@ OptArgvIter::~OptArgvIter()
 
 const char* OptArgvIter::Current()
 {
-  return ((ndx == ac) || (av[ndx] == 0)) ? 0 : av[ndx];
+  return ((ndx == ac) || (av[ndx] == nullptr)) ? nullptr : av[ndx];
 }
 
 
@@ -1124,7 +1124,7 @@ void OptArgvIter::Next()
 
 const char* OptArgvIter::operator()()
 {
-  return ((ndx == ac) || (av[ndx] == 0)) ? 0 : av[ndx++];
+  return ((ndx == ac) || (av[ndx] == nullptr)) ? nullptr : av[ndx++];
 }
 
 
@@ -1139,9 +1139,9 @@ const char* OptStrTokIter::defaultDelims = WHITESPACE;
 
 
 OptStrTokIter::OptStrTokIter(const char* tokens, const char* delimiters)
-  : len(unsigned(strlen(tokens))), str(tokens), seps(delimiters), cur(0), tokstr(0)
+  : len(unsigned(strlen(tokens))), str(tokens), seps(delimiters), cur(nullptr), tokstr(nullptr)
 {
-  if (seps == 0)
+  if (seps == nullptr)
     seps = defaultDelims;
   tokstr = new char[len + 1];
   ::strcpy(tokstr, str);
@@ -1164,7 +1164,7 @@ const char* OptStrTokIter::Current()
 void OptStrTokIter::Next()
 {
   if (cur)
-    cur = ::strtok(0, seps);
+    cur = ::strtok(nullptr, seps);
 }
 
 
@@ -1172,7 +1172,7 @@ const char* OptStrTokIter::operator()()
 {
   const char* elt = cur;
   if (cur)
-    cur = ::strtok(0, seps);
+    cur = ::strtok(nullptr, seps);
   return elt;
 }
 
@@ -1192,7 +1192,7 @@ enum
 const unsigned OptIstreamIter::MAX_LINE_LEN = 1024;
 
 
-OptIstreamIter::OptIstreamIter(istream& input) : is(input), tok_iter(0)
+OptIstreamIter::OptIstreamIter(istream& input) : is(input), tok_iter(nullptr)
 {
 }
 
@@ -1205,19 +1205,19 @@ OptIstreamIter::~OptIstreamIter()
 
 const char* OptIstreamIter::Current()
 {
-  const char* result = 0;
+  const char* result = nullptr;
   if (tok_iter)
     result = tok_iter->Current();
   if (result)
     return result;
   this->Fill();
-  return (!is) ? 0 : tok_iter->Current();
+  return (!is) ? nullptr : tok_iter->Current();
 }
 
 
 void OptIstreamIter::Next()
 {
-  const char* result = 0;
+  const char* result = nullptr;
   if (tok_iter)
     result = tok_iter->operator()();
   if (result)
@@ -1230,13 +1230,13 @@ void OptIstreamIter::Next()
 
 const char* OptIstreamIter::operator()()
 {
-  const char* result = 0;
+  const char* result = nullptr;
   if (tok_iter)
     result = tok_iter->operator()();
   if (result)
     return result;
   this->Fill();
-  return (!is) ? 0 : tok_iter->operator()();
+  return (!is) ? nullptr : tok_iter->operator()();
 }
 
 

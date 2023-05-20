@@ -1,5 +1,6 @@
-project(LSys)
 cmake_minimum_required(VERSION 3.20)
+
+project(LSys)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -7,11 +8,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_SCRIPTS_PATH "cmake")
 
+include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
+include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Hardening.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
@@ -44,7 +49,7 @@ add_library(${TARGET_LIB}
         src/turtle.cpp
         src/value.cpp
         src/vector.cpp
-        )
+)
 
 add_library(LSys::lib ALIAS ${TARGET_LIB})
 
@@ -52,26 +57,26 @@ add_executable(${TARGET_APP}
         src/l_sys_main.cpp
         src/command_line_options.cpp
         src/options.cpp
-        )
+)
 
 add_executable(LSys::gen ALIAS ${TARGET_APP})
 
 target_include_directories(${TARGET_LIB}
         PRIVATE
         include/lsys
-        )
+)
 target_include_directories(${TARGET_LIB}
         SYSTEM PRIVATE
         /usr/include
-        )
+)
 target_include_directories(${TARGET_APP}
         PRIVATE
         include/lsys
-        )
+)
 target_include_directories(${TARGET_APP}
         SYSTEM PRIVATE
         /usr/include
-        )
+)
 
 target_link_libraries(${TARGET_APP}
         PRIVATE
@@ -79,20 +84,23 @@ target_link_libraries(${TARGET_APP}
         pthread
         m
         stdc++
-        )
+)
 
 set(POS_INDEP_CODE "ON")
 set_target_properties(${TARGET_LIB}
         PROPERTIES
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
-        )
+)
 
-set_project_warnings(${TARGET_LIB} ${TARGET_APP})
+include(ProjectOptions.cmake)
+LSys_set_project_warnings(${LSys_WARNINGS_AS_ERRORS} ${TARGET_LIB})
+LSys_set_project_warnings(${LSys_WARNINGS_AS_ERRORS} ${TARGET_APP})
+LSys_enable_hardening(global ON ${ENABLE_UBSAN_MINIMAL_RUNTIME})
 
 set(MSVC_WARNINGS_OFF
-#        /wd4996
+        /wd4996
         /w
-        )
+)
 set(CLANG_WARNINGS_OFF
         -Wno-extra
         -Wno-date-time
@@ -103,13 +111,13 @@ set(CLANG_WARNINGS_OFF
         -Wno-register
         -Wno-unused-function
         -Wno-write-strings
-        )
+)
 set(GCC_WARNINGS_OFF
         ${CLANG_WARNINGS_OFF}
         -Wno-pedantic
         -Wno-useless-cast
         -Wno-effc++
-        )
+)
 
 if (MSVC)
     set(SOME_WARNINGS_OFF "${MSVC_WARNINGS_OFF}")

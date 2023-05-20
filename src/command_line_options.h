@@ -120,8 +120,8 @@ public:
   auto operator=(const CommandLineOption&) -> CommandLineOption& = delete;
   auto operator=(CommandLineOption&&) -> CommandLineOption&      = delete;
 
-  virtual CommandLineOption* Clone() const;
-  virtual void SetValue(const char* valStr);
+  CommandLineOption* Clone() const override;
+  void SetValue(const char* valStr) override;
   const T& Value() const { return *m_val; }
 
 private:
@@ -136,7 +136,7 @@ CommandLineOption<T>::CommandLineOption(char optionChar,
                                         T* val)
   : CommandLineOptionBase(optionChar, longOption, optionDescription, optionType), m_val(val)
 {
-  if (m_val == 0)
+  if (m_val == nullptr)
   {
     throw std::runtime_error("Cannot have null option address for short option " +
                              std::string(1, optionChar) + ", long option " + longOption);
@@ -176,7 +176,7 @@ inline void CommandLineOption<const char*>::SetValue(const char* valStr)
 template<>
 inline void CommandLineOption<std::vector<std::string>>::SetValue(const char* valStr)
 {
-  if (valStr != 0)
+  if (valStr != nullptr)
     m_val->push_back(valStr); // ????????????????????????????????????????
 }
 

@@ -78,7 +78,7 @@ void CommandLineOptions::FreeOptionDefinitions()
     int i = 0;
     while (true)
     {
-      if (optionDefinitions[i] == 0)
+      if (optionDefinitions[i] == nullptr)
       {
         break;
       }
@@ -97,7 +97,7 @@ void CommandLineOptions::FreeOptionDescriptions()
     int i = 0;
     while (true)
     {
-      if (optionDescriptions[i] == 0)
+      if (optionDescriptions[i] == nullptr)
       {
         break;
       }
@@ -157,7 +157,7 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
     optionDefinitions[i]  = strdup(str.c_str());
     optionDescriptions[i] = strdup(cmdOptions[i]->OptDescription().c_str());
   }
-  optionDefinitions[cmdOptions.size()] = 0;
+  optionDefinitions[cmdOptions.size()] = nullptr;
 
   argv++;
   argc--;
@@ -170,7 +170,7 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
   int optChar;
   while ((optChar = (*rawOptions)(optIter, &optArg, &longOpt)) != 0)
   {
-    lastShortOption = (optArg == 0) ? '\0' : optArg[0];
+    lastShortOption = (optArg == nullptr) ? '\0' : optArg[0];
     lastLongOption  = longOpt;
 
     switch (optChar)
