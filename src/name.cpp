@@ -87,7 +87,7 @@ Name::Name(const char* name)
     {
       strPtr[i] = s_reverseMap[i];
     }
-    delete s_reverseMap;
+    delete[] s_reverseMap;
     s_reverseMap = strPtr;
     s_reverseMapSize += MAP_INCR;
   }
