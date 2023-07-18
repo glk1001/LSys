@@ -79,9 +79,6 @@ Name::Name(const char* name)
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
     auto** const strPtr = new char*[s_reverseMapSize + MAP_INCR];
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
 
     for (auto i = 0U; i < s_reverseMapSize; ++i)
     {
@@ -94,6 +91,9 @@ Name::Name(const char* name)
 
   s_map.Enter(name, s_nextIndex);
   s_reverseMap[s_nextIndex] = ::strdup(name);
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
   m_index                   = s_nextIndex;
   ++s_nextIndex;
 }

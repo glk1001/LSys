@@ -48,7 +48,15 @@ public:
   explicit Name(const char* name);
   explicit Name(int id);
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   [[nodiscard]] auto str() const -> std::string { return s_reverseMap[m_index]; }
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
   [[nodiscard]] auto id() const -> int { return m_index; }
 
 private:

@@ -257,7 +257,7 @@ public:
   void Controls(const char* flagsStr);
 
   // reset for another pass to parse for options
-  void Reset() { nextchar = listopt = NULL; }
+  void Reset() { nextchar = nullptr; listopt = nullptr; }
 
   // usage() prints options usage (followed by any positional arguments
   // listed in the parameter "positionals") on the given outstream
@@ -344,7 +344,7 @@ class OptIterRwd : public OptIter
 {
 public:
   OptIterRwd();
-  virtual ~OptIterRwd();
+  ~OptIterRwd() override;
 
   const char* Current() override    = 0;
   void Next() override              = 0;
@@ -365,7 +365,7 @@ public:
 
   OptArgvIter(int argc, const char* const argv[]) : ac(argc), av(argv) {}
 
-  virtual ~OptArgvIter();
+  ~OptArgvIter() override;
 
   const char* Current() override;
   void Next() override;
@@ -388,7 +388,7 @@ class OptStrTokIter : public OptIterRwd
 {
 public:
   OptStrTokIter(const char* tokens, const char* delimiters = nullptr);
-  virtual ~OptStrTokIter();
+  ~OptStrTokIter() override;
 
   const char* Current() override;
   void Next() override;
@@ -431,7 +431,7 @@ public:
   static const unsigned MAX_LINE_LEN;
 
   OptIstreamIter(std::istream& input);
-  virtual ~OptIstreamIter();
+  ~OptIstreamIter() override;
 
   const char* Current() override;
   void Next() override;
