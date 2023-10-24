@@ -98,6 +98,8 @@ LSys_set_project_warnings(${LSys_WARNINGS_AS_ERRORS} ${TARGET_APP})
 LSys_enable_hardening(global ON ${ENABLE_UBSAN_MINIMAL_RUNTIME})
 
 set(MSVC_WARNINGS_OFF
+        /wd4005
+        /wd4201
         /wd4996
         /w
 )
