@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(LSys)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -113,6 +113,7 @@ set(CLANG_WARNINGS_OFF
         -Wno-register
         -Wno-unused-function
         -Wno-write-strings
+        -Wno-switch-default
 )
 set(GCC_WARNINGS_OFF
         ${CLANG_WARNINGS_OFF}
@@ -136,6 +137,8 @@ set_source_files_properties(
         src/name.cpp
         src/options.cpp
         src/parser.cpp
+        src/value.cpp
+        src/vector.cpp
         PROPERTIES
         COMPILE_FLAGS "${SOME_WARNINGS_OFF}"
 )
