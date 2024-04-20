@@ -35,10 +35,12 @@
 
 #include "list.h"
 #include "name.h"
+#include "symbol_table.h"
 #include "value.h"
 
 #include <array>
 #include <memory>
+#include <ostream>
 
 namespace LSYS
 {
@@ -78,10 +80,10 @@ private:
     struct Name
     {
       int id{};
-      std::unique_ptr<List<Expression>> funcArgs{};
+      std::unique_ptr<List<Expression>> funcArgs;
     };
     Name name{};
-    Value value{}; // Ensure union is big enough for a Value
+    Value value; // Ensure union is big enough for a Value
     std::array<std::unique_ptr<Expression>, 2> args{}; // Child expressions
   };
   ExpressionValue m_expressionValue{};

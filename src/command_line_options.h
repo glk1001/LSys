@@ -1,6 +1,8 @@
 #pragma once
 
 #include <boost/lexical_cast.hpp>
+#include <cstddef>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -36,7 +38,7 @@ public:
     ONE_OR_MORE_ARGS,
   };
 
-  CommandLineOptions(bool use_f_flag = true);
+  explicit CommandLineOptions(bool useFFlag = true);
   CommandLineOptions(const CommandLineOptions&) = delete;
   CommandLineOptions(CommandLineOptions&&)      = default;
   ~CommandLineOptions();
@@ -48,7 +50,7 @@ public:
   void Add(char optChar,
            const std::string& longOpt,
            const std::string& optDescription,
-           OptionTypes,
+           OptionTypes optionTypes,
            T* theVal);
   void Add(const CommandLineOptionBase&);
   void SetPositional(int minNum, int maxNum, std::vector<std::string>*);

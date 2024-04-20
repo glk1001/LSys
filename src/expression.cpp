@@ -33,16 +33,23 @@
 
 #include "expression.h"
 
+#include "consts.h"
 #include "debug.h"
+#include "list.h"
+#include "name.h"
 #include "rand.h"
 #include "symbol_table.h"
 #include "token.h"
 #include "value.h"
-#include "vector.h"
 
+#include <array>
 #include <cmath>
 #include <functional>
+#include <iostream>
 #include <memory>
+#include <ostream>
+#include <stdexcept>
+#include <utility>
 
 #ifdef PDEBUG_ENABLED
 #include <sstream>
@@ -560,8 +567,8 @@ auto Bind(const List<Expression>* const formals,
 
   auto left  = ConstListIterator<Expression>{*formals};
   auto right = ConstListIterator<Expression>{*values};
-  const Expression* leftPtr;
-  const Expression* rightPtr;
+  const Expression* leftPtr{};
+  const Expression* rightPtr{};
 
   for (leftPtr = left.first(), rightPtr = right.first();
        (leftPtr != nullptr) and (rightPtr != nullptr);

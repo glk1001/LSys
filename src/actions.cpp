@@ -29,14 +29,15 @@
 
 #include "consts.h"
 #include "debug.h"
-#include "expression.h"
 #include "generator.h"
+#include "list.h"
 #include "module.h"
 #include "polygon.h"
 #include "turtle.h"
-#include "value.h"
 
 #include <cassert>
+#include <cmath>
+#include <iostream>
 #include <stack>
 #include <stdexcept>
 
@@ -675,7 +676,7 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
   // Must find a matching ]; skip anything else including
   //	bracketed substrings.
   const Module* obj{};
-  int brackets;
+  int brackets = 0;
   for (brackets = 0, obj = moduleIter.next(); obj; obj = moduleIter.next())
   {
     if (obj->GetName() == RIGHT_BRACKET)

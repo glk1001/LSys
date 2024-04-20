@@ -49,9 +49,9 @@ const char CommandLineOptions::optTypeChar[static_cast<size_t>(OptionTypes::ONE_
 };
 
 
-CommandLineOptions::CommandLineOptions(const bool use_f_flag) : rawOptions{new Options}
+CommandLineOptions::CommandLineOptions(const bool useFFlag) : rawOptions{new Options}
 {
-  if (use_f_flag)
+  if (useFFlag)
   {
     this->Add(CommandLineOptionBase('f', "control <string>", "", OptionTypes::OPTIONAL_ARG));
   }
