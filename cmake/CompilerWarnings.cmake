@@ -35,6 +35,7 @@ function(LSys_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         # Disabled:
         /wd4715 # turn off: not all control paths return a value. Not good with switches
         /wd4646 # turn off: function declared with 'noreturn' has non-void return type
+        /wd4701 # turn off: potentially uninitialized local variable. Seems broken
         )
 
     set(CLANG_WARNINGS
@@ -43,18 +44,22 @@ function(LSys_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         # NOT USEFUL
         -Wno-c++98-compat
         -Wno-c++98-compat-pedantic
-        -Wno-pre-c++17-compat
+        -Wno-pre-c++20-compat
+        -Wno-c++20-compat
         -Wno-global-constructors
         -Wno-exit-time-destructors
         -Wno-switch-enum
         -Wno-padded
         -Wno-weak-vtables
         -Wno-disabled-macro-expansion
+        -Wno-switch-default
 
         # COULD BE USEFUL but cause existing code (e.g., math20) to have warnings
         -Wno-reserved-identifier
         -Wno-float-equal
         -Wno-date-time
+        -Wno-pch-date-time
+        -Wno-deprecated-declarations  # Problem with std::unary_function called in ",,,include/c++/14/bits/refwrap.h"
         )
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
