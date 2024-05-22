@@ -118,13 +118,13 @@ auto Production::Matches(const ListIterator<Module>& modIter,
           continue;
         }
         // Skip over ], and increase bracket level.
-        if (value->GetName() == RIGHT_BRACKET)
+        if (IsRightBracket(value->GetName()))
         { // ]
           ++brackets;
           continue;
         }
         // Skip over [, and decrease bracket level iff > 0
-        if (value->GetName() == LEFT_BRACKET)
+        if (IsLeftBracket(value->GetName()))
         { // [
           if (brackets > 0)
           {
@@ -183,7 +183,7 @@ auto Production::Matches(const ListIterator<Module>& modIter,
       // Find the next potentially matching module; skip over
       //	bracketed substrings, e.g. A < B matches A[anything]B
       //	as well as modules which should be ignored.
-      if (formal->GetName() == LEFT_BRACKET)
+      if (IsLeftBracket(formal->GetName()))
       { // [
         // Must find a matching [; skip only ignored modules
         while ((value != nullptr) and value->Ignore())
@@ -191,13 +191,13 @@ auto Production::Matches(const ListIterator<Module>& modIter,
           value = listIterValue.next();
         }
       }
-      else if (formal->GetName() == RIGHT_BRACKET)
+      else if (IsRightBracket(formal->GetName()))
       { // ]
         // Must find a matching ]; skip anything else including
         //  bracketed substrings.
         for (auto brackets = 0; value != nullptr; value = listIterValue.next())
         {
-          if (value->GetName() == RIGHT_BRACKET)
+          if (IsRightBracket(value->GetName()))
           { // ]
             if (0 == brackets)
             {
@@ -205,7 +205,7 @@ auto Production::Matches(const ListIterator<Module>& modIter,
             }
             --brackets;
           }
-          else if (value->GetName() == LEFT_BRACKET)
+          else if (IsLeftBracket(value->GetName()))
           { // [
             ++brackets;
           }
@@ -223,12 +223,12 @@ auto Production::Matches(const ListIterator<Module>& modIter,
           {
             continue;
           }
-          if (value->GetName() == LEFT_BRACKET)
+          if (IsLeftBracket(value->GetName()))
           { // [
             ++brackets;
             continue;
           }
-          if (value->GetName() == RIGHT_BRACKET)
+          if (IsRightBracket(value->GetName()))
           { // ]
             if (brackets > 0)
             {

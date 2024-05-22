@@ -78,8 +78,8 @@ private:
   std::unique_ptr<List<Expression>> m_param; // Expressions bound to module
 };
 
-inline const Name LEFT_BRACKET{"["};
-inline const Name RIGHT_BRACKET{"]"};
+[[nodiscard]] auto IsLeftBracket(const Name& name) noexcept -> bool;
+[[nodiscard]] auto IsRightBracket(const Name& name) noexcept -> bool;
 
 } // namespace LSYS
 
@@ -92,6 +92,20 @@ inline Module::Module(const Module& other) noexcept
     m_param{other.m_param == nullptr ? std::make_unique<List<Expression>>()
                                      : std::make_unique<List<Expression>>(*other.m_param)}
 {
+}
+
+inline auto IsLeftBracket(const Name& name) noexcept -> bool
+{
+  static const auto LEFT_BRACKET = Name{"["};
+
+  return name == LEFT_BRACKET;
+}
+
+inline auto IsRightBracket(const Name& name) noexcept -> bool
+{
+  static const auto RIGHT_BRACKET = Name{"]"};
+
+  return name == RIGHT_BRACKET;
 }
 
 } // namespace LSYS

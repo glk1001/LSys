@@ -400,7 +400,7 @@ auto PopImpl(ConstListIterator<Module>& moduleIter,
   const Module* const obj = moduleIter.next();
   if (obj != nullptr)
   {
-    if (obj->GetName() != RIGHT_BRACKET)
+    if (not IsRightBracket(obj->GetName()))
     {
       SetLineWidth(turtle, generator);
       SetColor(turtle, generator);
@@ -683,7 +683,7 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
   int brackets = 0;
   for (brackets = 0, obj = moduleIter.next(); obj; obj = moduleIter.next())
   {
-    if (obj->GetName() == RIGHT_BRACKET)
+    if (IsRightBracket(obj->GetName()))
     {
       --brackets;
       if (0 == brackets)
@@ -691,7 +691,7 @@ auto CutBranchImpl(ConstListIterator<Module>& moduleIter,
         break;
       }
     }
-    else if (obj->GetName() == LEFT_BRACKET)
+    else if (IsLeftBracket(obj->GetName()))
     {
       ++brackets;
     }
