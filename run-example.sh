@@ -4,7 +4,7 @@ set -u
 
 declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
-declare -r EXE_FILE=${THIS_SCRIPT_PATH}/build-clion-gcc-12-Debug/lsys-gen
+declare -r EXE_FILE=${THIS_SCRIPT_PATH}/build-clion-clang-18-RelWithDebInfo/lsys-gen
 
 declare -r OUTPUT_DIR="$1"
 declare -r INPUT_FILE="$2"

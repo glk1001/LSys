@@ -25,20 +25,24 @@
  *
  */
 
-#include "interpret.h"
+module;
 
-#include "actions.h"
-#include "consts.h"
 #include "debug.h"
-#include "expression.h"
-#include "generator.h"
-#include "module.h"
-#include "symbol_table.h"
-#include "turtle.h"
 
 #include <iostream>
 #include <stdexcept>
 #include <string>
+
+module LSys.Interpret;
+
+import LSys.Actions;
+import LSys.Consts;
+import LSys.Expression;
+import LSys.Generator;
+import LSys.Module;
+import LSys.SymbolTable;
+import LSys.Turtle;
+import LSys.Vector;
 
 namespace LSYS
 {

@@ -25,16 +25,22 @@
  *
  */
 
-#include "production.h"
+module;
 
 #include "debug.h"
-#include "expression.h"
-#include "module.h"
-#include "rand.h"
-#include "symbol_table.h"
-#include "value.h"
 
+#include <iostream>
+#include <memory>
 #include <stdexcept>
+
+module LSys.Production;
+
+import LSys.Expression;
+import LSys.Module;
+import LSys.Name;
+import LSys.Rand;
+import LSys.SymbolTable;
+import LSys.Value;
 
 namespace LSYS
 {

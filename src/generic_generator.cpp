@@ -1,12 +1,15 @@
-#include "generic_generator.h"
+module;
 
-#include "module.h"
-#include "turtle.h"
-#include "vector.h"
-
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
+
+module LSys.GenericGenerator;
+
+import LSys.Module;
+import LSys.Turtle;
+import LSys.Vector;
 
 namespace LSYS
 {

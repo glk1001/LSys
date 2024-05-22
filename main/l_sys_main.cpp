@@ -39,19 +39,22 @@
  *
  */
 #include "command_line_options.h"
-#include "generator.h"
-#include "generic_generator.h"
-#include "interpret.h"
-#include "list.h"
-#include "parsed_model.h"
-#include "radiance_generator.h"
-#include "rand.h"
-#include "value.h"
 
 #include <cstdlib>
 #include <filesystem>
-#include <iomanip>
+#include <iostream>
 #include <string>
+
+import LSys.Generator;
+import LSys.GenericGenerator;
+import LSys.Interpret;
+import LSys.List;
+import LSys.LSysModel;
+import LSys.Module;
+import LSys.ParsedModel;
+import LSys.RadianceGenerator;
+import LSys.Rand;
+import LSys.Value;
 
 using LSYS::GenericGenerator;
 using LSYS::GetFinalProperties;

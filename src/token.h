@@ -3,9 +3,11 @@
 // This must be the first include file in a file.
 // Otherwise, name clashes occur.
 
-#include "module.h"
-#include "production.h"
-#include "value.h"
+import LSys.Expression;
+import LSys.List;
+import LSys.Module;
+import LSys.Production;
+import LSys.Value;
 
 // Must be last include!
 #include "lsys.tab.h"

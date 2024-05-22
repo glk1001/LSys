@@ -31,16 +31,10 @@
  *
  */
 
-#include "expression.h"
+module;
 
-#include "consts.h"
 #include "debug.h"
-#include "list.h"
-#include "name.h"
-#include "rand.h"
-#include "symbol_table.h"
 #include "token.h"
-#include "value.h"
 
 #include <array>
 #include <cmath>
@@ -55,6 +49,15 @@
 #include <sstream>
 #include <string>
 #endif
+
+module LSys.Expression;
+
+import LSys.Consts;
+import LSys.List;
+import LSys.Name;
+import LSys.Rand;
+import LSys.SymbolTable;
+import LSys.Value;
 
 namespace LSYS
 {

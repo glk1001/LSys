@@ -32,14 +32,17 @@
  *
  */
 
-#pragma once
-
-#include "symbol_table.h"
+module;
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 
-namespace LSYS
+export module LSys.Name;
+
+import LSys.SymbolTable;
+
+export namespace LSYS
 {
 
 class Name
@@ -48,33 +51,24 @@ public:
   explicit Name(const char* name);
   explicit Name(int id);
 
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
   [[nodiscard]] auto str() const -> std::string { return s_reverseMap[m_index]; }
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
   [[nodiscard]] auto id() const -> int { return m_index; }
 
 private:
   static inline SymbolTable<int> s_map{};
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
   static char** s_reverseMap;
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
   static int s_nextIndex;
   static uint32_t s_reverseMapSize;
   int m_index = 0;
   friend auto operator==(const Name& a, const Name& b) -> bool;
 };
+
+std::ostream& operator<<(std::ostream& out, const Name& name);
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 inline Name::Name(const int id)
   : m_index((id < 0) or (id >= static_cast<int>(s_reverseMapSize)) ? 0 : id)
@@ -90,7 +84,5 @@ inline auto operator!=(const Name& a, const Name& b) -> bool
 {
   return not(a == b);
 }
-
-std::ostream& operator<<(std::ostream& out, const Name& name);
 
 } // namespace LSYS

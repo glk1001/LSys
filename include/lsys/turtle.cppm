@@ -28,15 +28,17 @@
  *
  */
 
-#pragma once
-
-#include "vector.h"
+module;
 
 #include <array>
 #include <iostream>
 #include <stack>
 
-namespace LSYS
+export module LSys.Turtle;
+
+import LSys.Vector;
+
+export namespace LSYS
 {
 
 // TODO(glk) - This should be restricted to the scope of class Turtle
@@ -66,16 +68,8 @@ struct Color
   explicit Color(const Vector& color) : colorType{ColorType::RGB}
   {
     m_color.rgb[0] = static_cast<char>(color[0]);
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
     m_color.rgb[1] = static_cast<char>(color[1]);
     m_color.rgb[2] = static_cast<char>(color[2]);
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
   }
 
   [[nodiscard]] auto GetGrayLevel() const -> float; // Force interpretation as gray scale [0..1]

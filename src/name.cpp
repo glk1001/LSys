@@ -27,25 +27,20 @@
  */
 //static char RCSid[]= "$Id: Name.c,v 1.3 91/03/20 10:38:10 leech Exp $";
 
-#include "name.h"
+module;
 
 #include "debug.h"
 
+#include <cstdint>
 #include <cstring>
 #include <iostream>
+
+module LSys.Name;
 
 namespace LSYS
 {
 
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 char** Name::s_reverseMap       = nullptr;
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
 int Name::s_nextIndex           = 0;
 uint32_t Name::s_reverseMapSize = 0U;
 
@@ -73,11 +68,6 @@ Name::Name(const char* name)
   {
     // Allocate more space for the inverse map from IDs to strings
     //GLK int size= reverse_map_size + map_incr;
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
     auto** const strPtr = new char*[s_reverseMapSize + MAP_INCR];
 
     for (auto i = 0U; i < s_reverseMapSize; ++i)
@@ -91,9 +81,6 @@ Name::Name(const char* name)
 
   s_map.Enter(name, s_nextIndex);
   s_reverseMap[s_nextIndex] = ::strdup(name);
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
   m_index                   = s_nextIndex;
   ++s_nextIndex;
 }

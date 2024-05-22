@@ -31,11 +31,13 @@
 
 #pragma once
 
-#include "expression.h"
-#include "l_sys_model.h"
-#include "module.h"
-#include "production.h"
-#include "value.h"
+import LSys.Expression;
+import LSys.List;
+import LSys.LSysModel;
+import LSys.Module;
+import LSys.Name;
+import LSys.Production;
+import LSys.Value;
 
 #define parserRules (parseInfo->GetRules())
 #define parserSymbolTable (parseInfo->GetSymbolTable())

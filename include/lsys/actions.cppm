@@ -22,16 +22,19 @@
  *
  */
 
-#pragma once
-
-#include "consts.h"
-#include "generator.h"
-#include "module.h"
-#include "turtle.h"
+module;
 
 #include <functional>
 
-namespace LSYS
+export module LSys.Actions;
+
+import LSys.Consts;
+import LSys.Generator;
+import LSys.List;
+import LSys.Module;
+import LSys.Turtle;
+
+export namespace LSYS
 {
 
 inline constexpr char DRAW_OBJECT_START_CHAR   = '~';

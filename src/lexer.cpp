@@ -9,10 +9,6 @@
 #pragma GCC diagnostic ignored "-Wunused-macros"
 #pragma GCC diagnostic ignored "-Wmissing-noreturn"
 #endif
-#if __clang_major__ >= 16
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push

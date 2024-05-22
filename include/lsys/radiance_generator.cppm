@@ -1,12 +1,17 @@
-#pragma once
-
-#include "consts.h"
-#include "generator.h"
+module;
 
 #include <fstream>
 #include <string>
 
-namespace LSYS
+export module LSys.RadianceGenerator;
+
+import LSys.Consts;
+import LSys.Generator;
+import LSys.Module;
+import LSys.Polygon;
+import LSys.Vector;
+
+export namespace LSYS
 {
 
 class RadianceGenerator : public IGenerator

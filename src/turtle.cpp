@@ -31,13 +31,17 @@
  *
  */
 
-#include "turtle.h"
+module;
 
 #include "debug.h"
 
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
+
+module LSys.Turtle;
+
+import LSys.Consts;
 
 namespace LSYS
 {
@@ -85,11 +89,6 @@ auto Turtle::SetHeading(const Vector& heading) -> void
   m_currentState.frame[2][0] = heading(2);
 }
 
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 auto Turtle::GetLeft() const -> Vector
 {
   // GetLeft is second column of frame
@@ -115,9 +114,6 @@ auto Turtle::SetUp(const Vector& up) -> void
   m_currentState.frame[1][2] = up(1);
   m_currentState.frame[2][2] = up(2);
 }
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
 
 auto Turtle::SetFrame(const Matrix& frame) -> void
 {

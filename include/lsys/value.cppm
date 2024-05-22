@@ -32,11 +32,13 @@
  *
  */
 
-#pragma once
+module;
 
 #include <iostream>
 
-namespace LSYS
+export module LSys.Value;
+
+export namespace LSYS
 {
 
 enum class ValueType

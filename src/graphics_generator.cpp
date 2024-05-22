@@ -1,9 +1,11 @@
-#include "graphics_generator.h"
-
-#include "module.h"
-#include "vector.h"
+module;
 
 #include <stdexcept>
+
+module LSys.GraphicsGenerator;
+
+import LSys.Module;
+import LSys.Vector;
 
 namespace LSYS
 {

@@ -60,15 +60,7 @@ public:
   const char* LastLongOption() const;
   void Usage(std::ostream&, const char* positionalParamsDescription);
   static const char optTypeChar[static_cast<size_t>(OptionTypes::ONE_OR_MORE_ARGS) + 1];
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
   static char OptTypeChar(OptionTypes t) { return optTypeChar[static_cast<size_t>(t)]; }
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
 
 private:
   Options* rawOptions;

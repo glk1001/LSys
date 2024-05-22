@@ -1,7 +1,9 @@
-#include "consts.h"
+module;
 
 #include <cassert>
 #include <cmath>
+
+module LSys.Consts;
 
 namespace LSYS::MATHS
 {

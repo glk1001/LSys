@@ -1,14 +1,17 @@
-#pragma once
+module;
 
 #include <iostream>
 #include <memory>
 #include <vector>
 
-namespace LSYS
+export module LSys.List;
+
+export namespace LSYS
 {
 
 template<typename T>
 class ListIterator;
+
 template<typename T>
 class ConstListIterator;
 
@@ -76,6 +79,14 @@ private:
   const List<T>* m_list;
   ConstListIter m_listIter;
 };
+
+template<typename T>
+auto operator<<(std::ostream& out, const List<T>& list) -> std::ostream&;
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 template<typename T>
 inline List<T>::List(const List<T>& other) noexcept

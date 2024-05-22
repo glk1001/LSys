@@ -35,11 +35,14 @@
  *
  */
 
-#include "vector.h"
+module;
 
-#include <cstdlib>
+#include <cstdint>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
+
+module LSys.Vector;
 
 namespace LSYS
 {
@@ -72,11 +75,6 @@ std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox)
 
 // Initialize a matrix by either COLUMNS or ROWS as specified;
 // assumes an underlying Identity matrix.
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 Matrix::Matrix(const Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3)
 {
   for (auto i = X; i <= Z; ++i)
@@ -327,8 +325,5 @@ std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
 
   return out;
 }
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif
 
 } // namespace LSYS

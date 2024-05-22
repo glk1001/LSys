@@ -1,29 +1,24 @@
-#pragma once
+module;
 
-#include "consts.h"
-#include "generator.h"
-#include "vector.h"
-
-#include <functional>
+#include <fstream>
 #include <string>
 
-namespace LSYS
+export module LSys.GenericGenerator;
+
+import LSys.Consts;
+import LSys.Generator;
+import LSys.Module;
+import LSys.Polygon;
+import LSys.Turtle;
+import LSys.Vector;
+
+export namespace LSYS
 {
 
-class GraphicsGenerator : public IGenerator
+class GenericGenerator : public IGenerator
 {
 public:
-  using DrawLineFunc =
-      std::function<void(const Vector& point1, const Vector& point2, int color, float lineWidth)>;
-  using DrawPolygonFunc =
-      std::function<void(const std::vector<Vector>& polygon, int color, float lineWidth)>;
-  struct DrawFuncs
-  {
-    DrawLineFunc drawLineFunc;
-    DrawPolygonFunc drawPolygonFunc;
-  };
-
-  GraphicsGenerator(const std::string& name, const DrawFuncs& drawFuncs);
+  GenericGenerator(const std::string& outputFilename, const std::string& boundsFilename);
 
   auto SetHeader(const std::string& header) -> void override;
 
@@ -41,7 +36,7 @@ public:
   auto Flower(float radius) -> void;
   auto Leaf(float length) -> void;
   auto Apex(Vector& start, float length) -> void;
-  [[noreturn]] auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args) -> void override;
+  auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args) -> void override;
 
   // Functions to change rendering parameters
   auto SetColor() -> void override;
@@ -50,8 +45,11 @@ public:
   auto SetTexture() -> void override;
 
 private:
-  const DrawFuncs& m_drawFuncs;
+  std::ofstream m_output;
+  std::ofstream m_boundsOutput;
   int m_groupNum = 0;
+  auto OutputBounds() -> void;
+  auto OutputAttributes(const Turtle::State& turtleState) -> void;
 };
 
 } // namespace LSYS

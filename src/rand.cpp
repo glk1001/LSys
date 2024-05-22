@@ -1,11 +1,13 @@
-#include "rand.h"
+module;
 
 #include <cassert>
+
+module LSys.Rand;
 
 namespace LSYS
 {
 
-static GetRandDoubleInUnitIntervalFunc s_getRandDouble = nullptr;
+static GetRandDoubleInUnitIntervalFunc s_getRandDouble{};
 
 auto SetRandFunc(const GetRandDoubleInUnitIntervalFunc& getRandDoubleFunc) -> void
 {
@@ -14,7 +16,7 @@ auto SetRandFunc(const GetRandDoubleInUnitIntervalFunc& getRandDoubleFunc) -> vo
 
 double GetRandDoubleInUnitInterval()
 {
-  assert(s_getRandDouble != nullptr);
+  assert(s_getRandDouble);
   return s_getRandDouble();
 }
 

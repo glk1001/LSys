@@ -12,12 +12,6 @@ using std::endl;
 using std::string;
 using std::vector;
 
-#if __clang_major__ >= 16
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
-
 namespace Utilities
 {
 
@@ -262,9 +256,4 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
   return OptionReturnCode::OK;
 }
 
-
 } // namespace Utilities
-
-#if __clang_major__ >= 16
-#pragma GCC diagnostic pop
-#endif

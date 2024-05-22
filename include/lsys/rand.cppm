@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <functional>
 
-namespace LSYS
+export module LSys.Rand;
+
+export namespace LSYS
 {
 
 using GetRandDoubleInUnitIntervalFunc = std::function<double()>;

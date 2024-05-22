@@ -31,18 +31,20 @@
  *
  */
 
-#pragma once
-
-#include "list.h"
-#include "name.h"
-#include "symbol_table.h"
-#include "value.h"
+module;
 
 #include <array>
 #include <memory>
 #include <ostream>
 
-namespace LSYS
+export module LSys.Expression;
+
+import LSys.List;
+import LSys.Name;
+import LSys.SymbolTable;
+import LSys.Value;
+
+export namespace LSYS
 {
 
 class Expression
@@ -98,6 +100,8 @@ private:
   [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*;
 };
 
+std::ostream& operator<<(std::ostream& out, const Expression& expression);
+
 [[nodiscard]] auto Bind(const List<Expression>* formals,
                         const List<Expression>* values,
                         SymbolTable<Value>& symbolTable) -> bool;
@@ -115,6 +119,11 @@ private:
                             const List<Expression>& expressionList,
                             Value& value,
                             unsigned int n = 0) -> bool;
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 inline auto Expression::LEval(const SymbolTable<Value>& symbolTable) const -> Value
 {

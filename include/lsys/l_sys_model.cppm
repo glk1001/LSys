@@ -22,17 +22,19 @@
  *
  */
 
-#pragma once
-
-#include "list.h"
-#include "module.h"
-#include "production.h"
-#include "symbol_table.h"
-#include "value.h"
+module;
 
 #include <memory>
 
-namespace LSYS
+export module LSys.LSysModel;
+
+import LSys.List;
+import LSys.Module;
+import LSys.Production;
+import LSys.SymbolTable;
+import LSys.Value;
+
+export namespace LSYS
 {
 
 class LSysModel
@@ -64,6 +66,11 @@ private:
 
   std::unique_ptr<List<Module>> m_start{};
 };
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 inline auto LSysModel::GetSymbolTable() noexcept -> SymbolTable<Value>&
 {

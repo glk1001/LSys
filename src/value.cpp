@@ -36,10 +36,12 @@
  *
  */
 
-#include "value.h"
+module;
 
 #include <cmath>
 #include <iostream>
+
+module LSys.Value;
 
 namespace LSYS
 {

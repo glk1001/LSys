@@ -25,21 +25,25 @@
  *
  */
 
-#include "actions.h"
+module;
 
-#include "consts.h"
 #include "debug.h"
-#include "generator.h"
-#include "list.h"
-#include "module.h"
-#include "polygon.h"
-#include "turtle.h"
 
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <stack>
 #include <stdexcept>
+
+module LSys.Actions;
+
+import LSys.Consts;
+import LSys.Generator;
+import LSys.List;
+import LSys.Module;
+import LSys.Polygon;
+import LSys.Turtle;
+import LSys.Vector;
 
 namespace LSYS
 {

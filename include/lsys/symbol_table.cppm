@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include <map>
 #include <string>
 
-namespace LSYS
+export module LSys.SymbolTable;
+
+export namespace LSYS
 {
 
 template<typename T>
@@ -30,9 +32,13 @@ public:
   [[nodiscard]] auto Lookup(const std::string& name, T& value) const -> bool;
 
 private:
-  using SymbolTableMap = typename std::map<std::string, Symbol<T>>;
-  SymbolTableMap m_symbolTable{};
+  std::map<std::string, Symbol<T>> m_symbolTable{};
 };
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 template<typename T>
 auto SymbolTable<T>::Enter(const std::string& name, const T& value) -> bool
@@ -42,7 +48,7 @@ auto SymbolTable<T>::Enter(const std::string& name, const T& value) -> bool
   if (iter == m_symbolTable.end())
   {
     const auto symbol = Symbol<T>{name, value};
-    m_symbolTable.insert(typename SymbolTableMap::value_type(name, symbol));
+    m_symbolTable.insert({name, symbol});
     return true;
   }
 

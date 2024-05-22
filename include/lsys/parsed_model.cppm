@@ -1,11 +1,15 @@
-#pragma once
-
-#include "l_sys_model.h"
+module;
 
 #include <memory>
 #include <string>
 
-namespace LSYS
+export module LSys.ParsedModel;
+
+import LSys.LSysModel;
+import LSys.SymbolTable;
+import LSys.Value;
+
+export namespace LSYS
 {
 
 struct Properties

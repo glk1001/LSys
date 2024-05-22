@@ -1,5 +1,4 @@
-/*
- * Copyright (C) 1990, Jonathan P. Leech
+/* Copyright (C) 1990, Jonathan P. Leech
  *
  * This software may be freely copied, modified, and redistributed,
  * provided that this copyright notice is preserved on all copies.
@@ -22,18 +21,23 @@
  *
  */
 
-#pragma once
+module;
 
-#include "actions.h"
-#include "generator.h"
-#include "list.h"
-#include "module.h"
-#include "symbol_table.h"
-
+#include <memory>
 #include <string>
 #include <utility>
 
-namespace LSYS
+export module LSys.Interpret;
+
+import LSys.Actions;
+import LSys.Consts;
+import LSys.Generator;
+import LSys.List;
+import LSys.Module;
+import LSys.SymbolTable;
+import LSys.Turtle;
+
+export namespace LSYS
 {
 
 class Interpreter
@@ -72,6 +76,11 @@ private:
   [[nodiscard]] static auto GetModuleName(const Module& mod) -> std::string;
   [[nodiscard]] static auto GetActionArgsArray(const Module& mod) -> std::pair<int, ArgsArray>;
 };
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 inline auto Interpreter::Start(const List<Module>& moduleList) -> void
 {

@@ -25,13 +25,20 @@
  *
  */
 
-#pragma once
-
-#include "module.h"
+module;
 
 #include <memory>
 
-namespace LSYS
+export module LSys.Production;
+
+import LSys.Expression;
+import LSys.List;
+import LSys.Module;
+import LSys.Name;
+import LSys.SymbolTable;
+import LSys.Value;
+
+export namespace LSYS
 {
 
 // A Predecessor is the left-hand side of a production; it contains

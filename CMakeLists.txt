@@ -19,39 +19,29 @@ include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 set(TARGET_LIB "lsys")
 set(TARGET_APP "lsys-gen")
 
+include(${CMAKE_SCRIPTS_PATH}/GetLSysSources.cmake)
+set(LSys_SOURCE_DIR "")
+LSys_get_modules("${LSys_SOURCE_DIR}" LSys_modules)
+LSys_get_source_files("${LSys_SOURCE_DIR}" LSys_source_files)
+LSys_set_some_warnings_off("${LSys_SOURCE_DIR}")
+
 add_library(${TARGET_LIB}
         STATIC
-        include/lsys/list.h
-        include/lsys/polygon.h
-        include/lsys/symbol_table.h
-        src/actions.cpp
-        src/consts.cpp
-        src/expression.cpp
-        src/generator.cpp
-        src/generic_generator.cpp
-        src/graphics_generator.cpp
-        src/interpret.cpp
-        src/l_sys_model.cpp
-        src/lexer.cpp
-        src/module.cpp
-        src/name.cpp
-        src/parsed_model.cpp
-        src/parser.cpp
-        src/production.cpp
-        src/rand.cpp
-        src/radiance_generator.cpp
-        src/token.h
-        src/turtle.cpp
-        src/value.cpp
-        src/vector.cpp
+        ${LSys_source_files}
+)
+
+target_sources(${TARGET_LIB}
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        ${LSys_modules}
 )
 
 add_library(LSys::lib ALIAS ${TARGET_LIB})
 
 add_executable(${TARGET_APP}
-        src/l_sys_main.cpp
-        src/command_line_options.cpp
-        src/options.cpp
+        main/l_sys_main.cpp
+        main/command_line_options.cpp
+        main/options.cpp
 )
 
 add_executable(LSys::gen ALIAS ${TARGET_APP})

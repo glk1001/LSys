@@ -11,8 +11,6 @@
 #endif
 #if __clang_major__ >= 16
 #pragma GCC diagnostic ignored "-Wused-but-marked-unused"
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 
 #ifdef __GNUC__
@@ -24,6 +22,8 @@
 
 #define YYDEBUG 1
 
+#include <memory>
+#include <iostream>
 #include "lsys.tab.c"
 
 #ifdef YYDEBUG

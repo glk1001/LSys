@@ -27,10 +27,12 @@
 
 //#define NDEBUG
 
-#include "generator.h"
+module;
 
 #include <cassert>
 #include <stdexcept>
+
+module LSys.Generator;
 
 namespace LSYS
 {

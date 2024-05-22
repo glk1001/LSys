@@ -25,17 +25,21 @@
  *
  */
 
-#pragma once
-
-#include "consts.h"
-#include "module.h"
-#include "polygon.h"
-#include "turtle.h"
+module;
 
 #include <string>
 
-namespace LSYS
+export module LSys.Generator;
+
+import LSys.Consts;
+import LSys.Module;
+import LSys.Polygon;
+import LSys.Turtle;
+import LSys.Vector;
+
+export namespace LSYS
 {
+
 // A class to generate a database; uses virtual methods and should be
 // subclassed for a specific type of database, e.g. PostScript or
 // PPHIGS databases.
@@ -101,6 +105,11 @@ private:
   std::string m_objectName   = "null_object"; // Name of generated object
   std::string m_objectHeader = "";
 };
+
+}// namespace LSYS
+
+namespace LSYS
+{
 
 inline IGenerator::IGenerator(const std::string& name) : m_objectName{name}
 {

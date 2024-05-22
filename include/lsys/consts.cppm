@@ -1,9 +1,12 @@
-#pragma once
+module;
 
 #include <array>
 
-namespace LSYS
+export module LSys.Consts;
+
+export namespace LSYS
 {
+
 inline constexpr int MAX_ARGS = 10;
 using ArgsArray               = std::array<float, MAX_ARGS>;
 

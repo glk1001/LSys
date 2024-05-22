@@ -25,15 +25,20 @@
  *
  */
 
-#include "module.h"
+module;
 
 #include "debug.h"
-#include "expression.h"
-#include "symbol_table.h"
-#include "value.h"
 
 #include <iostream>
+#include <memory>
 #include <stdexcept>
+
+module LSys.Module;
+
+import LSys.Expression;
+import LSys.Name;
+import LSys.SymbolTable;
+import LSys.Value;
 
 namespace LSYS
 {

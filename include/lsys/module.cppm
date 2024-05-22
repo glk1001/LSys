@@ -28,20 +28,26 @@
  *
  */
 
-#pragma once
-
-#include "expression.h"
-#include "name.h"
+module;
 
 #include <memory>
 
-namespace LSYS
+export module LSys.Module;
+
+import LSys.Expression;
+import LSys.List;
+import LSys.Name;
+import LSys.SymbolTable;
+import LSys.Value;
+
+export namespace LSYS
 {
 
 // A Module is the basic object of an L-system to which productions
 //  are applied, and which is interpreted in terms of turtle movements
 //  and graphical objects. Since there are so many of them allocated,
 //  the class is tightly packed.
+
 class Module
 {
 public:
@@ -72,9 +78,13 @@ private:
   std::unique_ptr<List<Expression>> m_param; // Expressions bound to module
 };
 
-// These Names are used in context matching to ascend/descend tree levels.
 inline const Name LEFT_BRACKET{"["};
 inline const Name RIGHT_BRACKET{"]"};
+
+} // namespace LSYS
+
+namespace LSYS
+{
 
 inline Module::Module(const Module& other) noexcept
   : m_tag{other.m_tag},

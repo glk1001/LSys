@@ -22,13 +22,15 @@
  *
  */
 
-#pragma once
-
-#include "vector.h"
+module;
 
 #include <vector>
 
-namespace LSYS
+export module LSys.Polygon;
+
+import LSys.Vector;
+
+export namespace LSYS
 {
 
 // A polygon is just a list of vertices

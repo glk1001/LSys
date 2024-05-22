@@ -1,11 +1,14 @@
-#include "radiance_generator.h"
+module;
 
-#include "module.h"
-#include "vector.h"
-
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
+
+module LSys.RadianceGenerator;
+
+import LSys.Module;
+import LSys.Vector;
 
 namespace LSYS
 {

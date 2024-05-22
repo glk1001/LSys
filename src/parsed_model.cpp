@@ -1,8 +1,6 @@
-#include "parsed_model.h"
+module;
 
 #include "debug.h"
-#include "expression.h"
-#include "l_sys_model.h"
 #include "parser.h"
 
 #include <cassert>
@@ -16,6 +14,12 @@
 int ParseDebug = 0;
 extern int yydebug;
 extern int yy_flex_debug;
+
+module LSys.ParsedModel;
+
+import LSys.Expression;
+import LSys.LSysModel;
+import LSys.SymbolTable;
 
 namespace LSYS
 {

@@ -22,14 +22,21 @@
  *
  */
 
-#include "l_sys_model.h"
+module;
 
 #include "debug.h"
-#include "expression.h"
-#include "module.h"
-#include "production.h"
 
+#include <memory>
 #include <iostream>
+#include <string>
+
+module LSys.LSysModel;
+
+import LSys.Expression;
+import LSys.List;
+import LSys.Module;
+import LSys.Production;
+import LSys.Value;
 
 namespace LSYS
 {
