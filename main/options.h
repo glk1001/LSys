@@ -257,7 +257,11 @@ public:
   void Controls(const char* flagsStr);
 
   // reset for another pass to parse for options
-  void Reset() { nextchar = nullptr; listopt = nullptr; }
+  void Reset()
+  {
+    nextchar = nullptr;
+    listopt  = nullptr;
+  }
 
   // usage() prints options usage (followed by any positional arguments
   // listed in the parameter "positionals") on the given outstream

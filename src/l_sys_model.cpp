@@ -26,8 +26,8 @@ module;
 
 #include "debug.h"
 
-#include <memory>
 #include <iostream>
+#include <memory>
 #include <string>
 
 module LSys.LSysModel;

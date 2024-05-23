@@ -22,9 +22,12 @@
 
 #define YYDEBUG 1
 
-#include <memory>
+// clang-format off
 #include <iostream>
+#include <memory>
+
 #include "lsys.tab.c"
+// clang-format on
 
 #ifdef YYDEBUG
 //extern int yydebug = 1;
