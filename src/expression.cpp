@@ -33,6 +33,8 @@
 
 module;
 
+// NOLINTBEGIN(misc-no-recursion, cert-dcl58-cpp): clang-tidy namespace std bug
+
 #include "debug.h"
 #include "token.h"
 
@@ -239,7 +241,8 @@ auto GetFunctionSymbolTable() -> SymbolTable<ExprFunc>
   return symbolTable;
 }
 
-const auto functionSymbolTable = GetFunctionSymbolTable();
+// NOLINTNEXTLINE(cert-err58-cpp)
+const auto FUNCTION_SYMBOL_TABLE = GetFunctionSymbolTable();
 
 [[nodiscard]] auto GetOpName(const int operation) -> const char*
 {
@@ -264,9 +267,9 @@ const auto functionSymbolTable = GetFunctionSymbolTable();
     case LSYS_GE:
       return ">=";
     default:
-      static char s_str[] = " ";
-      s_str[0]            = static_cast<char>(operation);
-      return s_str;
+      static auto s_str = std::array{' '};
+      s_str[0]          = static_cast<char>(operation);
+      return s_str.data();
   }
 }
 
@@ -286,13 +289,12 @@ inline auto GetExprStr(const Expression* expr) noexcept -> ::std::string
     return "null";
   }
 
-  ::std::stringstream strStream;
+  ::std::stringstream strStream{};
   strStream << *expr;
   return strStream.str();
 }
 
 #endif
-
 
 } // namespace
 
@@ -397,7 +399,7 @@ Expression::Expression(const Name& name, List<Expression>* funcArgs)
   {
     PDebug(PD_EXPRESSION,
            std::cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name
-                     << *funcArgs << "\n");
+                     << m_expressionValue.name.funcArgs << "\n");
   }
 }
 
@@ -411,7 +413,7 @@ Expression::Expression(const Name& name, std::unique_ptr<List<Expression>> funcA
 {
   PDebug(PD_EXPRESSION,
          std::cerr << "Creating expression w/op " << LSYS_FUNCTION << " function " << name
-                   << *funcArgs << "\n");
+                   << m_expressionValue.name.funcArgs << "\n");
 }
 
 // Create a value node.
@@ -457,7 +459,6 @@ auto Expression::GetName() const -> Name
   return (m_operation == LSYS_NAME) ? GetVarName() : s_BOGUS;
 }
 
-
 auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 {
   switch (m_operation)
@@ -466,7 +467,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
       return GetValue();
 
     case LSYS_FUNCTION:
-      if (ExprFunc exprFunc; functionSymbolTable.Lookup(GetFuncName().str(), exprFunc))
+      if (ExprFunc exprFunc; FUNCTION_SYMBOL_TABLE.Lookup(GetFuncName().str(), exprFunc))
       {
         return exprFunc(symbolTable, *GetFuncArgs());
       }
@@ -552,6 +553,7 @@ auto Expression::Evaluate(const SymbolTable<Value>& symbolTable) const -> Value
 // using the symbol table for evaluation and binding. The two
 // lists should conform() for this method to succeed.
 // Returns true on success, false otherwise.
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto Bind(const List<Expression>* const formals,
           const List<Expression>* const values,
           SymbolTable<Value>& symbolTable) -> bool
@@ -598,6 +600,7 @@ auto Bind(const List<Expression>* const formals,
 
 // Check if list 'el' is conformant with the list, e.g.,
 // that they have the same number of expressions.
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto Conforms(const List<Expression>* const formals, const List<Expression>* const values) -> bool
 {
   const auto formalsSize = (formals == nullptr) ? 0U : formals->size();
@@ -636,6 +639,7 @@ auto Instantiate(const List<Expression>* const before,
 // parameters or the parameter is not a number.
 // This should be wrapped around a method of class List(Expression),
 // but that's a pain with the template method used.
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto GetValue(const SymbolTable<Value>& symbolTable,
               const List<Expression>& expressionList,
               Value& value,
@@ -669,6 +673,7 @@ auto GetValue(const SymbolTable<Value>& symbolTable,
   return true;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto GetFloat(const SymbolTable<Value>& symbolTable,
               const List<Expression>& expressionList,
               float& fltValue,
@@ -682,3 +687,5 @@ auto GetFloat(const SymbolTable<Value>& symbolTable,
 }
 
 } // namespace LSYS
+
+// NOLINTEND(misc-no-recursion, cert-dcl58-cpp)

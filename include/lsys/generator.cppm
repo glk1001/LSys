@@ -47,7 +47,7 @@ export namespace LSYS
 class IGenerator
 {
 public:
-  IGenerator(const std::string& name);
+  explicit IGenerator(const std::string& name);
   IGenerator()                  = default;
   IGenerator(const IGenerator&) = default;
   IGenerator(IGenerator&&)      = default;
@@ -99,14 +99,14 @@ protected:
 
 private:
   const Turtle* m_turtle = nullptr;
-  Vector m_lastPosition{};
+  Vector m_lastPosition;
   float m_lastWidth          = 0.0F;
   bool m_lastMove            = true; // Was last move/draw a move?
   std::string m_objectName   = "null_object"; // Name of generated object
-  std::string m_objectHeader = "";
+  std::string m_objectHeader;
 };
 
-}// namespace LSYS
+} // namespace LSYS
 
 namespace LSYS
 {

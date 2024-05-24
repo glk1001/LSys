@@ -125,6 +125,7 @@ std::ostream& operator<<(std::ostream& out, const Expression& expression);
 namespace LSYS
 {
 
+// NOLINTNEXTLINE(misc-no-recursion)
 inline auto Expression::LEval(const SymbolTable<Value>& symbolTable) const -> Value
 {
   return GetLChild()->Evaluate(symbolTable);

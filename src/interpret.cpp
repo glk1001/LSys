@@ -47,6 +47,7 @@ import LSys.Vector;
 namespace LSYS
 {
 
+// NOLINTNEXTLINE(cert-err58-cpp)
 const SymbolTable<ActionFunc> Interpreter::ACTION_SYMBOL_TABLE = GetActionSymbolTable();
 
 // Set up the default actions for interpretation.
@@ -92,9 +93,9 @@ auto Interpreter::GetActionSymbolTable() -> SymbolTable<ActionFunc>
   return symbolTable;
 }
 
-Interpreter::Interpreter(IGenerator& generator) : m_generator{generator}
+Interpreter::Interpreter(IGenerator& generator) : m_generator{&generator}
 {
-  m_generator.SetTurtle(m_turtle);
+  m_generator->SetTurtle(m_turtle);
 }
 
 auto Interpreter::SetDefaults(const DefaultParams& defaultParams) -> void
@@ -138,7 +139,7 @@ auto Interpreter::InterpretNextModule(const Module& mod) -> bool
 
   // Fetch defined parameters
   const auto [numArgs, args] = GetActionArgsArray(mod);
-  actionFunc(*m_moduleIter, m_turtle, m_generator, numArgs, args);
+  actionFunc(*m_moduleIter, m_turtle, *m_generator, numArgs, args);
   PDebug(PD_INTERPRET, std::cerr << m_turtle);
 
   return true;
@@ -161,7 +162,7 @@ inline auto Interpreter::GetActionArgsArray(const Module& mod) -> std::pair<int,
 
   for (auto i = 0U; i < MAX_ARGS; ++i)
   {
-    if (not mod.GetFloat(args[i], i))
+    if (not mod.GetFloat(args.at(i), i))
     {
       break;
     }

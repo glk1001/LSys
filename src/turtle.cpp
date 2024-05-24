@@ -45,9 +45,12 @@ import LSys.Consts;
 
 namespace LSYS
 {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic,
+//             cppcoreguidelines-pro-type-union-access)
 
 // TODO(glk) -  Make most of these inline.
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Turtle::Turtle(const float widthScale, const float turnAngleInDegrees)
 {
   ResetDrawingParamsToDefaults();
@@ -61,7 +64,8 @@ auto Turtle::ResetDrawingParamsToDefaults() -> void
   m_currentState = State{};
 
   SetDefaultDistance(1.0F);
-  SetDefaultTurnAngleInDegrees(90.0F);
+  static constexpr auto DEFAULT_TURN_ANGLE = 90.0F;
+  SetDefaultTurnAngleInDegrees(DEFAULT_TURN_ANGLE);
   SetWidth(1.0F);
   m_currentState.widthScale = 1.0F;
   SetColor(0, 0);
@@ -108,11 +112,11 @@ auto Turtle::GetUp() const -> Vector
   return Vector{m_currentState.frame[0][2], m_currentState.frame[1][2], m_currentState.frame[2][2]};
 }
 
-auto Turtle::SetUp(const Vector& up) -> void
+auto Turtle::SetUp(const Vector& upVec) -> void
 {
-  m_currentState.frame[0][2] = up(0);
-  m_currentState.frame[1][2] = up(1);
-  m_currentState.frame[2][2] = up(2);
+  m_currentState.frame[0][2] = upVec(0);
+  m_currentState.frame[1][2] = upVec(1);
+  m_currentState.frame[2][2] = upVec(2);
 }
 
 auto Turtle::SetFrame(const Matrix& frame) -> void
@@ -170,6 +174,7 @@ auto Turtle::SetColor(const int color) -> void
   m_currentState.color = Color(color);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto Turtle::SetColor(const int color, const int backgroundColor) -> void
 {
   m_currentState.color           = Color(color);
@@ -365,9 +370,13 @@ auto Color::GetGrayLevel() const -> float
     return static_cast<float>(m_color.index) / 100.0F;
   }
 
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   const auto* const vec = reinterpret_cast<const Vector*>(&m_color.rgb);
   // G= .3R + .6G + .1B
-  return (0.3F * (*vec)(0)) + (0.6F * (*vec)(1)) + (0.1F * (*vec)(2));
+  static constexpr auto RED_FRAC   = 0.3F;
+  static constexpr auto GREEN_FRAC = 0.6F;
+  static constexpr auto BLUE_FRAC  = 0.1F;
+  return (RED_FRAC * (*vec)(0)) + (GREEN_FRAC * (*vec)(1)) + (BLUE_FRAC * (*vec)(2));
 }
 
 // Interpret the color as RGB; map color index into gray scale
@@ -379,6 +388,7 @@ auto Color::GetRGBColor() const -> Vector
     return Vector(grayLevel, grayLevel, grayLevel);
   }
 
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   return *reinterpret_cast<const Vector*>(&m_color.rgb);
 }
 
@@ -409,5 +419,8 @@ std::ostream& operator<<(std::ostream& out, const Color& color)
 
   return out;
 }
+
+// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic,
+//           cppcoreguidelines-pro-type-union-access)
 
 } // namespace LSYS

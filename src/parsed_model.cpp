@@ -1,5 +1,7 @@
 module;
 
+// NOLINTBEGIN(cert-dcl58-cpp): clang-tidy namespace std bug
+
 #include "debug.h"
 #include "parser.h"
 
@@ -11,8 +13,9 @@ module;
 #include <sstream>
 #include <string>
 
-int ParseDebug = 0;
-extern int yydebug;
+int ParseDebug = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+extern int yydebug; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables, readability-identifier-naming)
 extern int yy_flex_debug;
 
 module LSys.ParsedModel;
@@ -66,6 +69,7 @@ auto SetParserDebug(const bool debugOn) noexcept -> void
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 [[nodiscard]] auto GetFinalProperties(const SymbolTable<Value>& symbolTable,
                                       const Properties& initialProperties,
                                       const bool setDefaults) -> Properties
@@ -177,7 +181,7 @@ namespace
 {
 
 // TODO(glk) - String utils
-const std::string WHITESPACE = " \n\r\t\f\v";
+constexpr auto WHITESPACE = " \n\r\t\f\v";
 
 [[nodiscard]] auto LeftTrim(const std::string& str) -> std::string
 {
@@ -254,3 +258,5 @@ auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
 }
 
 } // namespace LSYS
+
+// NOLINTEND(cert-dcl58-cpp): clang-tidy namespace std bug

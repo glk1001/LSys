@@ -8,6 +8,7 @@ export module LSys.List;
 
 export namespace LSYS
 {
+// NOLINTBEGIN(readability-identifier-naming)
 
 template<typename T>
 class ListIterator;
@@ -140,6 +141,7 @@ inline auto List<T>::Clear() -> void
 }
 
 template<typename T>
+// NOLINTNEXTLINE(misc-no-recursion)
 auto operator<<(std::ostream& out, const List<T>& list) -> std::ostream&
 {
   ConstListIterator<T> iter(list);
@@ -286,5 +288,7 @@ inline auto ConstListIterator<T>::last() -> const T*
   m_listIter = m_list->m_stdList.end() - 1;
   return m_listIter->get();
 }
+
+// NOLINTEND(readability-identifier-naming)
 
 } // namespace LSYS

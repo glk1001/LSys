@@ -15,6 +15,7 @@ namespace LSYS
 
 static constexpr auto PRECISION = 5;
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 RadianceGenerator::RadianceGenerator(const std::string& outputFilename,
                                      const std::string& boundsFilename)
   : m_output{outputFilename}, m_boundsOutput{boundsFilename}
@@ -79,14 +80,18 @@ auto RadianceGenerator::FlushGraphics() -> void
   // Not used.
 }
 
-static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+namespace
 {
+inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+{
+  static constexpr auto WID = 10U;
   //  out << vec[0] << " " << vec[1] << " " << vec[2];
   // Revert to right-handed coord system
-  out << std::setw(10) << -MATHS::Round(vec[2], PRECISION) << " " << std::setw(10)
-      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10)
+  out << std::setw(WID) << -MATHS::Round(vec[2], PRECISION) << " " << std::setw(WID)
+      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(WID)
       << -MATHS::Round(vec[0], PRECISION);
 }
+} // namespace
 
 auto RadianceGenerator::OutputBounds() -> void
 {
@@ -102,13 +107,14 @@ auto RadianceGenerator::OutputBounds() -> void
   m_boundsOutput << "\n";
 
   // Output bounds
+  static constexpr auto WID = 12U;
   m_boundsOutput << "bounds" << '\n';
-  m_boundsOutput << "  min: " << std::setw(12) << MATHS::Round(minBoundingBox[0], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(minBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(minBoundingBox[2], PRECISION) << '\n';
-  m_boundsOutput << "  max: " << std::setw(12) << MATHS::Round(maxBoundingBox[0], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(maxBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(maxBoundingBox[2], PRECISION) << '\n';
+  m_boundsOutput << "  min: " << std::setw(WID) << MATHS::Round(minBoundingBox[0], PRECISION) << " "
+                 << std::setw(WID) << MATHS::Round(minBoundingBox[1], PRECISION) << " "
+                 << std::setw(WID) << MATHS::Round(minBoundingBox[2], PRECISION) << '\n';
+  m_boundsOutput << "  max: " << std::setw(WID) << MATHS::Round(maxBoundingBox[0], PRECISION) << " "
+                 << std::setw(WID) << MATHS::Round(maxBoundingBox[1], PRECISION) << " "
+                 << std::setw(WID) << MATHS::Round(maxBoundingBox[2], PRECISION) << '\n';
   m_boundsOutput << "\n\n";
 }
 
@@ -120,10 +126,12 @@ auto RadianceGenerator::Polygon(const LSYS::Polygon& polygon) -> void
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
   m_output << " "
@@ -158,10 +166,12 @@ auto RadianceGenerator::LineTo() -> void
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
   m_output << " "
@@ -208,10 +218,12 @@ auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const A
   ++m_groupNum;
   m_output << "Start_Object_Group " << m_groupNum << '\n';
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
   m_output << " "
            << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
+           // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
   m_output << " "
@@ -249,7 +261,7 @@ auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const A
   for (auto i = 0U; i < static_cast<uint32_t>(numArgs); ++i)
   {
     m_output << "  "
-             << "    " << args[i] << '\n';
+             << "    " << args.at(i) << '\n';
   }
   m_output << '\n';
 

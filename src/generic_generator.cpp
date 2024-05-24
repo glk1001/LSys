@@ -17,6 +17,7 @@ namespace LSYS
 static constexpr auto PRECISION = 5;
 static constexpr auto* INDENT   = "  ";
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 GenericGenerator::GenericGenerator(const std::string& outputFilename,
                                    const std::string& boundsFilename)
   : m_output{outputFilename}, m_boundsOutput{boundsFilename}
@@ -75,11 +76,14 @@ auto GenericGenerator::FlushGraphics() -> void
   // Not used.
 }
 
-static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+namespace
 {
-  out << std::setw(10) << MATHS::Round(vec[0], PRECISION) << " " << std::setw(10)
-      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(10) << MATHS::Round(vec[2], PRECISION);
-  return;
+inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
+{
+  static constexpr auto WID = 10U;
+  out << std::setw(WID) << MATHS::Round(vec[0], PRECISION) << " " << std::setw(WID)
+      << MATHS::Round(vec[1], PRECISION) << " " << std::setw(WID)
+      << MATHS::Round(vec[2], PRECISION);
 
   /**
   // Revert to right-handed coord system
@@ -88,6 +92,7 @@ static inline auto OutputVec(std::ostream& out, const Vector& vec) -> void
       << -MATHS::Round(vec[0], PRECISION);
   **/
 }
+} // namespace
 
 auto GenericGenerator::OutputBounds() -> void
 {
@@ -104,21 +109,26 @@ auto GenericGenerator::OutputBounds() -> void
   m_boundsOutput << "\n";
 
   // Output bounds
+  static constexpr auto WID = 12U;
   m_boundsOutput << "bounds"
                  << "\n";
-  m_boundsOutput << INDENT << "min: " << std::setw(12) << MATHS::Round(minBoundingBox[0], PRECISION)
-                 << " " << std::setw(12) << MATHS::Round(minBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(minBoundingBox[2], PRECISION) << "\n";
-  m_boundsOutput << INDENT << "max: " << std::setw(12) << MATHS::Round(maxBoundingBox[0], PRECISION)
-                 << " " << std::setw(12) << MATHS::Round(maxBoundingBox[1], PRECISION) << " "
-                 << std::setw(12) << MATHS::Round(maxBoundingBox[2], PRECISION) << "\n";
+  m_boundsOutput << INDENT << "min: " << std::setw(WID)
+                 << MATHS::Round(minBoundingBox[0], PRECISION) << " " << std::setw(WID)
+                 << MATHS::Round(minBoundingBox[1], PRECISION) << " " << std::setw(WID)
+                 << MATHS::Round(minBoundingBox[2], PRECISION) << "\n";
+  m_boundsOutput << INDENT << "max: " << std::setw(WID)
+                 << MATHS::Round(maxBoundingBox[0], PRECISION) << " " << std::setw(WID)
+                 << MATHS::Round(maxBoundingBox[1], PRECISION) << " " << std::setw(WID)
+                 << MATHS::Round(maxBoundingBox[2], PRECISION) << "\n";
   m_boundsOutput << "\n\n";
 }
 
 auto GenericGenerator::OutputAttributes(const Turtle::State& turtleState) -> void
 {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
   m_output << INDENT << "FrontMaterial: " << turtleState.color.m_color.index << "\n";
   m_output << INDENT << "FrontTexture: " << turtleState.texture << "\n";
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
   m_output << INDENT << "BackMaterial: " << turtleState.backgroundColor.m_color.index << "\n";
   m_output << INDENT << "BackTexture: " << turtleState.texture << "\n";
   m_output << INDENT << "Width: " << turtleState.width << "\n";
@@ -210,7 +220,7 @@ auto GenericGenerator::DrawObject(const Module& mod, const int numArgs, const Ar
   m_output << INDENT << "  nargs: " << numArgs << "\n";
   for (auto i = 0U; i < static_cast<uint32_t>(numArgs); ++i)
   {
-    m_output << INDENT << "    " << args[i] << "\n";
+    m_output << INDENT << "    " << args.at(i) << "\n";
   }
   m_output << "\n";
 

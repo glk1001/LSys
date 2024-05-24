@@ -46,9 +46,9 @@ module LSys.Value;
 namespace LSYS
 {
 
-Value::Value() : m_type{ValueType::UNDEFINED}, m_val{}
-{
-}
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
+Value::Value() = default;
 
 Value::Value(const bool value) : m_type{ValueType::INT}
 {
@@ -117,6 +117,7 @@ auto Value::operator~() const -> Value
   switch (m_type)
   {
     case ValueType::INT:
+      // NOLINTNEXTLINE(hicpp-signed-bitwise)
       return Value(~m_val.intVal);
     case ValueType::FLOAT:
       std::cerr << "Value::operator~(): cannot complement non-integer GetFloatValue\n";
@@ -161,6 +162,7 @@ auto Value::operator&(const Value& otherValue) const -> Value
   switch (GetBinaryOpType(otherValue))
   {
     case OpType::II:
+      // NOLINTNEXTLINE(hicpp-signed-bitwise)
       return Value(m_val.intVal & otherValue.m_val.intVal);
     case OpType::IF:
     case OpType::FI:
@@ -178,6 +180,7 @@ auto Value::operator|(const Value& otherValue) const -> Value
   switch (GetBinaryOpType(otherValue))
   {
     case OpType::II:
+      // NOLINTNEXTLINE(hicpp-signed-bitwise)
       return Value(m_val.intVal | otherValue.m_val.intVal);
     case OpType::IF:
     case OpType::FI:
@@ -493,5 +496,7 @@ auto operator<<(std::ostream& out, const Value& value) -> std::ostream&
   }
   return out;
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace LSYS

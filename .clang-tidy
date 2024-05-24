@@ -1,10 +1,7 @@
 ---
-# Turn these off:
-#
-#  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-#     Doesn't work with logging.h. Not sure why.
-#
 
+# Disabled:
+#  '-llvm-header-guard'  doesn't work with '#pragma once'
 Checks: >
   -*,
   abseil-*,
@@ -25,11 +22,11 @@ Checks: >
   portability-*,
   readability-*,
   zircon-*,
+  -misc-include-cleaner,
   -llvm-header-guard,
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-  -cppcoreguidelines-avoid-const-or-ref-data-members,
-  -hicpp-no-array-decay,
-  -cert-err58-cpp, # Can activate this when we can use 'constexpr std::vector'
+  -readability-redundant-declaration,
+  -abseil-string-find-str-contains,
+  -cert-dcl58-cpp
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: '*'
@@ -37,6 +34,7 @@ HeaderFilterRegex: ''
 FormatStyle: none
 
 CheckOptions:
+  - { key: readability-inconsistent-declaration-parameter-name.Strict,      value: 'true' }
   - { key: readability-identifier-naming.AbstractClassCase,                 value: CamelCase }
   - { key: readability-identifier-naming.AbstractClassPrefix,               value: 'I' }
   - { key: readability-identifier-naming.ClassCase,                         value: CamelCase }
@@ -54,11 +52,12 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalFunctionCase,                value: CamelCase }
   - { key: readability-identifier-naming.GlobalFunctionIgnoredRegexp,       value: 'lerp' }
   - { key: readability-identifier-length.MinimumVariableNameLength,         value: 3 }
-  - { key: readability-identifier-length.IgnoredVariableNames,              value: 'a|b|t|x.*|X.*|y.*|Y.*|z.*|Z.*|u.*|v.*|i.*|j.*|k.*|m.*|n.*|N.*' }
+  - { key: readability-identifier-length.IgnoredVariableNames,              value: 'W|a|b|c|d|t|x.*|X.*|y.*|Y.*|z.*|Z.*|u.*|v.*|i.*|j.*|k.*|m.*|n.*|N.*' }
   - { key: readability-identifier-length.MinimumParameterNameLength,        value: 3 }
   - { key: readability-identifier-length.IgnoredParameterNames,             value: 'a|b|t|x.*|y.*|z.*|i|m|n|k.*' }
   - { key: readability-identifier-length.MinimumLoopCounterNameLength,      value: 3 }
   - { key: readability-identifier-length.IgnoredLoopCounterNames,           value: 'x|y|i|j|k' }
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp,             value: 'lerp|at' }
   - { key: readability-identifier-naming.LocalConstantCase,                 value: camelBack }
   - { key: readability-identifier-naming.MacroDefinitionCase,               value: UPPER_CASE }
   - { key: readability-identifier-naming.MethodCase,                        value: CamelCase }
@@ -69,7 +68,6 @@ CheckOptions:
   - { key: readability-identifier-naming.PublicMemberPrefix,                value: '' }
   - { key: readability-identifier-naming.ScopedEnumConstantCase,            value: UPPER_CASE }
   - { key: readability-identifier-naming.ScopedEnumConstantPrefix,          value: '' }
-  - { key: readability-identifier-naming.ScopedEnumConstantIgnoredRegexp,   value: '\_num' }
   - { key: readability-identifier-naming.StaticConstantCase,                value: UPPER_CASE }
   - { key: readability-identifier-naming.StaticConstantPrefix,              value: 's_' }
   - { key: readability-identifier-naming.StaticVariableCase,                value: camelBack }
@@ -85,18 +83,15 @@ CheckOptions:
   - { key: readability-implicit-bool-conversion.AllowPointerConditions,     value: '1' }
 
   - { key: cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField,                 value: '0' }
-  - { key: cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors,  value: '1' }
-  - { key: cppcoreguidelines-non-private-member-variables-in-classes
-                           .IgnoreClassesWithAllMemberVariablesBeingPublic, value: '1' }
   - { key: google-readability-braces-around-statements.ShortStatementLines, value: '1' }
   - { key: google-readability-function-size.StatementThreshold,             value: '800' }
   - { key: google-readability-namespace-comments.ShortNamespaceLines,       value: '10' }
   - { key: llvm-namespace-comment.ShortNamespaceLines,                      value: '10' }
-  - { key: google-readability-namespace-comments.SpacesBeforeComments,      value: '2' }
+  - { key: google-readability-namespace-comments.SpacesBeforeComments,      value: '1' }
+  - { key: llvm-namespace-comment.SpacesBeforeComments,                     value: '1' }
   - { key: modernize-loop-convert.MaxCopySize,                              value: '16' }
   - { key: modernize-loop-convert.MinConfidence,                            value: reasonable }
   - { key: modernize-loop-convert.NamingStyle,                              value: CamelCase }
   - { key: modernize-pass-by-value.IncludeStyle,                            value: llvm }
   - { key: modernize-replace-auto-ptr.IncludeStyle,                         value: llvm }
-  - { key: misc-non-private-member-variables-in-classes
-           .IgnoreClassesWithAllMemberVariablesBeingPublic,                 value: '1' }
+  - { key: misc-include-cleaner.IgnoreHeaders,                              value: 'GL/.*;vivid/.*;goom_config\.h' }

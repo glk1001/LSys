@@ -45,6 +45,7 @@ import LSys.SymbolTable;
 export namespace LSYS
 {
 
+// NOLINTBEGIN(readability-identifier-naming, cppcoreguidelines-pro-bounds-pointer-arithmetic)
 class Name
 {
 public:
@@ -62,6 +63,7 @@ private:
   int m_index = 0;
   friend auto operator==(const Name& a, const Name& b) -> bool;
 };
+// NOLINTEND(readability-identifier-naming, cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 std::ostream& operator<<(std::ostream& out, const Name& name);
 

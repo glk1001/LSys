@@ -96,16 +96,16 @@ inline Module::Module(const Module& other) noexcept
 
 inline auto IsLeftBracket(const Name& name) noexcept -> bool
 {
-  static const auto LEFT_BRACKET = Name{"["};
+  static const auto s_LEFT_BRACKET = Name{"["};
 
-  return name == LEFT_BRACKET;
+  return name == s_LEFT_BRACKET;
 }
 
 inline auto IsRightBracket(const Name& name) noexcept -> bool
 {
-  static const auto RIGHT_BRACKET = Name{"]"};
+  static const auto s_RIGHT_BRACKET = Name{"]"};
 
-  return name == RIGHT_BRACKET;
+  return name == s_RIGHT_BRACKET;
 }
 
 } // namespace LSYS

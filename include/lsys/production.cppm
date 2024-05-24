@@ -46,6 +46,7 @@ export namespace LSYS
 // the left and right context required to apply the production.
 // The class is basically just a container for three pointers,
 // so it's declared public.
+// NOLINTBEGIN(misc-non-private-member-variables-in-classes)
 struct Predecessor
 {
   Predecessor(std::unique_ptr<List<Module>> lft,
@@ -61,6 +62,7 @@ struct Predecessor
   std::unique_ptr<Module> center;
   std::unique_ptr<List<Module>> right;
 };
+// NOLINTEND(misc-non-private-member-variables-in-classes)
 
 // A Successor is the right-hand side of a production; it contains
 //  a probability of choosing this production and a list of modules

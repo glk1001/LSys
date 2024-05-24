@@ -34,6 +34,7 @@
 
 module;
 
+#include <cstdint>
 #include <iostream>
 
 export module LSys.Value;
@@ -41,7 +42,7 @@ export module LSys.Value;
 export namespace LSYS
 {
 
-enum class ValueType
+enum class ValueType : uint8_t
 {
   INT,
   FLOAT,
@@ -90,7 +91,7 @@ private:
     int intVal{};
     float fltVal;
   } m_val{};
-  enum class OpType
+  enum class OpType : uint8_t
   {
     II,
     IF,

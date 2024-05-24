@@ -11,7 +11,7 @@ namespace LSYS
 {
 
 GraphicsGenerator::GraphicsGenerator(const std::string& name, const DrawFuncs& drawFuncs)
-  : IGenerator{name}, m_drawFuncs{drawFuncs}
+  : IGenerator{name}, m_drawFuncs{&drawFuncs}
 {
 }
 
@@ -46,12 +46,13 @@ auto GraphicsGenerator::Polygon(const LSYS::Polygon& polygon) -> void
 {
   ++m_groupNum;
 
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
   const auto color   = GetTurtle().GetCurrentState().color.m_color.index;
   const auto width   = GetTurtle().GetCurrentState().width;
   auto closedPolygon = polygon;
   closedPolygon.emplace_back(polygon.front());
 
-  m_drawFuncs.drawPolygonFunc(closedPolygon, color, width);
+  m_drawFuncs->drawPolygonFunc(closedPolygon, color, width);
 }
 
 auto GraphicsGenerator::LineTo() -> void
@@ -60,10 +61,11 @@ auto GraphicsGenerator::LineTo() -> void
 
   const auto& start = GetLastPosition();
   const auto& end   = GetTurtle().GetCurrentState().position;
-  const auto color  = GetTurtle().GetCurrentState().color.m_color.index;
-  const auto width  = GetTurtle().GetCurrentState().width;
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+  const auto color = GetTurtle().GetCurrentState().color.m_color.index;
+  const auto width = GetTurtle().GetCurrentState().width;
 
-  m_drawFuncs.drawLineFunc(start, end, color, width);
+  m_drawFuncs->drawLineFunc(start, end, color, width);
 
   IGenerator::LineTo();
 }

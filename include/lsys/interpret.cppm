@@ -45,9 +45,10 @@ class Interpreter
 public:
   explicit Interpreter(IGenerator& generator);
 
+  static constexpr auto DEFAULT_TURN_ANGLE = 90.0F;
   struct DefaultParams
   {
-    float turnAngleInDegrees = 90.0F;
+    float turnAngleInDegrees = DEFAULT_TURN_ANGLE;
     float width              = 1.0F;
     float distance           = 1.0F;
   };
@@ -58,15 +59,15 @@ public:
   auto Finish() -> void;
 
   auto InterpretNext() -> void;
-  [[nodiscard]] auto AllDone() -> bool;
+  [[nodiscard]] auto AllDone() const -> bool;
 
   // Interpret all of a bound left-system, producing output to the specified generator.
   auto InterpretAllModules(const List<Module>& moduleList) -> void;
 
 private:
-  Turtle m_turtle{};
-  std::unique_ptr<ConstListIterator<Module>> m_moduleIter{};
-  IGenerator& m_generator;
+  Turtle m_turtle;
+  std::unique_ptr<ConstListIterator<Module>> m_moduleIter;
+  IGenerator* m_generator;
 
   const Module* m_currentModule{};
 
@@ -84,7 +85,7 @@ namespace LSYS
 
 inline auto Interpreter::Start(const List<Module>& moduleList) -> void
 {
-  m_generator.Prelude();
+  m_generator->Prelude();
   m_moduleIter    = std::make_unique<ConstListIterator<Module>>(moduleList);
   m_currentModule = m_moduleIter->first();
 }
@@ -93,7 +94,7 @@ inline auto Interpreter::Finish() -> void
 {
   m_currentModule = nullptr;
   m_moduleIter    = nullptr;
-  m_generator.Postscript();
+  m_generator->Postscript();
 }
 
 inline auto Interpreter::InterpretNext() -> void
@@ -102,7 +103,7 @@ inline auto Interpreter::InterpretNext() -> void
   m_currentModule = m_moduleIter->next();
 }
 
-inline auto Interpreter::AllDone() -> bool
+inline auto Interpreter::AllDone() const -> bool
 {
   return m_currentModule == nullptr;
 }

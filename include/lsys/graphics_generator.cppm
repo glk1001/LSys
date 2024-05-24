@@ -45,7 +45,8 @@ public:
   auto Flower(float radius) -> void;
   auto Leaf(float length) -> void;
   auto Apex(Vector& start, float length) -> void;
-  [[noreturn]] auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args) -> void override;
+  [[noreturn]] auto DrawObject(const Module& mod, int numArgs, const ArgsArray& args)
+      -> void override;
 
   // Functions to change rendering parameters
   auto SetColor() -> void override;
@@ -54,7 +55,7 @@ public:
   auto SetTexture() -> void override;
 
 private:
-  const DrawFuncs& m_drawFuncs;
+  const DrawFuncs* m_drawFuncs;
   int m_groupNum = 0;
 };
 

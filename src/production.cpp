@@ -73,6 +73,7 @@ Production::Production(const Name& name,
 //  satisfies the conditional expression attached to it. The list
 //  iterator must be set at m, as it provides context for context-sensitive
 //  productions. Neither the iterator nor the module are modified.
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 auto Production::Matches(const ListIterator<Module>& modIter,
                          const Module* const mod,
                          SymbolTable<Value>& symbolTable) const -> bool
@@ -99,10 +100,10 @@ auto Production::Matches(const ListIterator<Module>& modIter,
   {
     PDebug(PD_PRODUCTION, std::cerr << "    [left context]\n");
     // Scan each list in Reverse order
-    auto listIterFormal = ListIterator<Module>{*m_input->left};
-    auto listIterValue  = ListIterator<Module>{modIter};
-    const Module* formal;
-    const Module* value;
+    auto listIterFormal  = ListIterator<Module>{*m_input->left};
+    auto listIterValue   = ListIterator<Module>{modIter};
+    const Module* formal = nullptr;
+    const Module* value  = nullptr;
     for (formal = listIterFormal.last(), value = listIterValue.previous();
          (formal != nullptr) and (value != nullptr);
          formal = listIterFormal.previous(), value = listIterValue.previous())
@@ -169,10 +170,10 @@ auto Production::Matches(const ListIterator<Module>& modIter,
   // Right context
   if (m_input->right != nullptr)
   {
-    auto listIterFormal = ListIterator<Module>{*m_input->right};
-    auto listIterValue  = ListIterator<Module>{modIter};
-    const Module* formal;
-    const Module* value;
+    auto listIterFormal  = ListIterator<Module>{*m_input->right};
+    auto listIterValue   = ListIterator<Module>{modIter};
+    const Module* formal = nullptr;
+    const Module* value  = nullptr;
 
     PDebug(PD_PRODUCTION, std::cerr << "    [right context]\n");
     // Scan each list in Reverse order
@@ -288,7 +289,7 @@ auto Production::Matches(const ListIterator<Module>& modIter,
 
   const auto value = m_condition->Evaluate(symbolTable);
   PDebug(PD_PRODUCTION, std::cerr << "    [condition] -> " << value << "\n");
-  if (int i; value.GetIntValue(i))
+  if (auto i = 0; value.GetIntValue(i))
   {
     return i != 0;
   }
@@ -314,9 +315,9 @@ auto Production::Produce(const Module* const predecessor, SymbolTable<Value>& sy
   const auto randomVar       = static_cast<float>(GetRandDoubleInUnitInterval());
   auto cumulativeProbability = 0.0F;
 
-  const List<Module>* modList;
-  const Successor* succ;
-  auto successorIter = ConstListIterator<Successor>{*m_successors};
+  const List<Module>* modList = nullptr;
+  const Successor* succ       = nullptr;
+  auto successorIter          = ConstListIterator<Successor>{*m_successors};
   for (modList = nullptr, succ = successorIter.first(); succ != nullptr;
        succ = successorIter.next())
   {

@@ -30,12 +30,13 @@
 
 module;
 
-#include <array>
+#include <cstdint>
 #include <iostream>
 #include <stack>
 
 export module LSys.Turtle;
 
+import LSys.Consts;
 import LSys.Vector;
 
 export namespace LSYS
@@ -45,15 +46,18 @@ export namespace LSYS
 struct TropismInfo
 {
   Vector tropismVector; // Tropism vector
-  float susceptibility; // Susceptibility parameter
-  bool flag; // Whether to apply it
+  float susceptibility = 0.0F; // Susceptibility parameter
+  bool flag            = false; // Whether to apply it
 };
 
-enum class ColorType
+enum class ColorType : uint8_t
 {
   INDEX,
   RGB
 };
+
+// NOLINTBEGIN(misc-non-private-member-variables-in-classes,
+//             cppcoreguidelines-pro-type-union-access)
 struct Color
 {
   ColorType colorType = ColorType::INDEX;
@@ -64,7 +68,7 @@ struct Color
   } m_color{};
 
   Color() = default;
-  explicit Color(const int i) : colorType{ColorType::INDEX} { m_color.index = i; }
+  explicit Color(const int i) { m_color.index = i; }
   explicit Color(const Vector& color) : colorType{ColorType::RGB}
   {
     m_color.rgb[0] = static_cast<char>(color[0]);
@@ -77,19 +81,21 @@ struct Color
 
   friend auto operator==(const Color& color1, const Color& color2) -> bool;
 };
+// NOLINTEND
 
 auto operator<<(std::ostream& out, const Color& color) -> std::ostream&;
 
 class Turtle
 {
 public:
-  enum class Direction
+  enum class Direction : uint8_t
   {
     POSITIVE,
     NEGATIVE
   };
 
-  explicit Turtle(float widthScale = 1.0F, float turnAngleInDegrees = 90.0F);
+  static constexpr auto DEFAULT_TURN_ANGLE_DEGREES = 90.0F;
+  explicit Turtle(float widthScale = 1.0F, float turnAngleInDegrees = DEFAULT_TURN_ANGLE_DEGREES);
 
   [[nodiscard]] auto GetBoundingBox() const -> BoundingBox { return m_boundingBox; }
 
@@ -98,11 +104,11 @@ public:
     Vector position{0.0F, 0.0F, 0.0F};
     Matrix frame{};
     float defaultDistance           = 0.0F;
-    float defaultTurnAngleInRadians = 90.0F;
+    float defaultTurnAngleInRadians = MATHS::ToRadians(DEFAULT_TURN_ANGLE_DEGREES);
     float width                     = 1.0F;
     float widthScale                = 1.0F;
-    Color color{};
-    Color backgroundColor{};
+    Color color;
+    Color backgroundColor;
     int texture = 0;
     TropismInfo tropism{};
   };
@@ -116,10 +122,10 @@ public:
   [[nodiscard]] auto GetLeft() const -> Vector;
   auto SetLeft(const Vector& left) -> void;
   [[nodiscard]] auto GetUp() const -> Vector;
-  auto SetUp(const Vector& up) -> void;
+  auto SetUp(const Vector& upVec) -> void;
 
   auto SetDefaultDistance(float distance = 1.0F) -> void;
-  auto SetDefaultTurnAngleInDegrees(float turnAngleInDegrees = 90.0F) -> void;
+  auto SetDefaultTurnAngleInDegrees(float turnAngleInDegrees = DEFAULT_TURN_ANGLE_DEGREES) -> void;
 
   auto SetFrame(const Matrix& frame) -> void;
   auto SetGravity(const Vector& gravity) -> void;
@@ -163,9 +169,9 @@ public:
 
 private:
   State m_currentState{};
-  std::stack<State> m_stateStack{};
+  std::stack<State> m_stateStack;
 
-  BoundingBox m_boundingBox{}; // Bounding box of turtle path
+  BoundingBox m_boundingBox; // Bounding box of turtle path
   Vector m_gravity{0.0F, 0.0F, 0.0F}; // Antigravity vector
 };
 

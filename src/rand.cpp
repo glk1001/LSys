@@ -7,17 +7,21 @@ module LSys.Rand;
 namespace LSYS
 {
 
-static GetRandDoubleInUnitIntervalFunc s_getRandDouble{};
+namespace
+{
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+GetRandDoubleInUnitIntervalFunc getRandDouble{};
+}
 
 auto SetRandFunc(const GetRandDoubleInUnitIntervalFunc& getRandDoubleFunc) -> void
 {
-  s_getRandDouble = getRandDoubleFunc;
+  getRandDouble = getRandDoubleFunc;
 }
 
 double GetRandDoubleInUnitInterval()
 {
-  assert(s_getRandDouble);
-  return s_getRandDouble();
+  assert(getRandDouble);
+  return getRandDouble();
 }
 
 } // namespace LSYS

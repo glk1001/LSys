@@ -31,6 +31,7 @@ module;
 
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 #include <stack>
 #include <stdexcept>
@@ -55,14 +56,16 @@ namespace
 // get quite deep in recursive L-system productions, thus we use a depth
 // of 100 (probably should use a dynamically allocated list).
 constexpr auto MAX_POLYGONS = 100;
-std::stack<LSYS::Polygon> polygonStack{};
+// NOLINTNEXTLINE(cert-err58-cpp, cppcoreguidelines-avoid-non-const-global-variables)
+std::stack<LSYS::Polygon> polygonStack;
 
-enum class State
+enum class State : uint8_t
 {
   START,
   DRAWING,
   POLYGON
 };
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 auto state = State::START;
 
 auto MoveTurtle(Turtle& turtle, const int numArgs, const ArgsArray& args) noexcept -> void

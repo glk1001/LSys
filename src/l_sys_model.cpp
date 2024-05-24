@@ -65,7 +65,7 @@ auto LSysModel::Generate(List<Module>* const oldModuleList) -> std::unique_ptr<L
 
     // Find a matching production.
     // NOTE: This could be optimized a bunch.
-    const Production* rule;
+    const Production* rule = nullptr;
     for (rule = ruleIter.first(); rule != nullptr; rule = ruleIter.next())
     {
       if (rule->Matches(oldModIter, oldMod, m_symbolTable))

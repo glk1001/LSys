@@ -46,6 +46,8 @@ module LSys.Vector;
 
 namespace LSYS
 {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index,
+//             cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 static constexpr uint32_t X = 0U;
 static constexpr uint32_t Y = 1U;
@@ -75,6 +77,7 @@ std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox)
 
 // Initialize a matrix by either COLUMNS or ROWS as specified;
 // assumes an underlying Identity matrix.
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 Matrix::Matrix(const Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3)
 {
   for (auto i = X; i <= Z; ++i)
@@ -125,7 +128,10 @@ auto Matrix::Identity() -> Matrix&
   return *this;
 }
 
-static auto CosSin(float& cosVal, float& sinVal, float const angle) -> void
+namespace
+{
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto CosSin(float& cosVal, float& sinVal, const float angle) -> void
 {
   // Tolerance before assuming the rotation is aligned with axes
   static constexpr auto TOLERANCE = 1e-10F;
@@ -155,14 +161,15 @@ static auto CosSin(float& cosVal, float& sinVal, float const angle) -> void
     sinVal = -1;
   }
 }
+} // namespace
 
 // Post-multiply by axis rotation around specified Axis (x,y,z) of 'angle' radians
 // Note: this is in axis right-handed coordinate system, and transformations
 //  are performed by multiplying [matrix][pt].
 auto Matrix::Rotate(const Axis axis, const float angle) -> Matrix&
 {
-  float cosAngle;
-  float sinAngle;
+  auto cosAngle = 0.0F;
+  auto sinAngle = 0.0F;
   CosSin(cosAngle, sinAngle, angle);
 
   auto rotatedMatrix = Matrix{};
@@ -221,8 +228,8 @@ auto Matrix::Rotate(const Axis axis, const float angle) -> Matrix&
 // Post-multiply by a rotation around the specified axis of 'angle' radians.
 auto Matrix::Rotate(const Vector& vec, const float angle) -> Matrix&
 {
-  float cosAngle;
-  float sinAngle;
+  auto cosAngle = 0.0F;
+  auto sinAngle = 0.0F;
   CosSin(cosAngle, sinAngle, angle);
 
   auto cMatrix       = Matrix{};
@@ -317,13 +324,18 @@ std::ostream& operator<<(std::ostream& out, const Vector& vec)
 
 std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
 {
+  static constexpr auto WID = 8U;
+
   for (auto i = X; i <= Z; ++i)
   {
-    out << '\t' << "( " << std::setw(8) << matrix[i][X] << ' ' << std::setw(8) << matrix[i][Y]
-        << ' ' << std::setw(8) << matrix[i][Z] << ' ' << std::setw(8) << matrix[i][W] << " )\n";
+    out << '\t' << "( " << std::setw(WID) << matrix[i][X] << ' ' << std::setw(WID) << matrix[i][Y]
+        << ' ' << std::setw(WID) << matrix[i][Z] << ' ' << std::setw(WID) << matrix[i][W] << " )\n";
   }
 
   return out;
 }
+
+// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index,
+//           cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 } // namespace LSYS

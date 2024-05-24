@@ -62,9 +62,9 @@ public:
 private:
   SymbolTable<Value> m_symbolTable = SymbolTable<Value>{}; // Variables and bound formal parameters.
   SymbolTable<Value> m_ignoreTable = SymbolTable<Value>{}; // Symbols ignored in context.
-  List<Production> m_rules         = List<Production>{};
+  List<Production> m_rules;
 
-  std::unique_ptr<List<Module>> m_start{};
+  std::unique_ptr<List<Module>> m_start;
 };
 
 } // namespace LSYS

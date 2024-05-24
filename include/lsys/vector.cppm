@@ -51,6 +51,8 @@ export namespace LSYS
 // The usual scalar and vector operators are defined.
 // Cross product is denoted by a ^ b.
 
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
+
 class Vector
 {
 public:
@@ -182,12 +184,12 @@ auto operator<<(std::ostream& out, const Vector& vec) -> std::ostream&;
 class Matrix
 {
 public:
-  enum class Initialize
+  enum class Initialize : uint8_t
   {
     COLUMNS,
     ROWS
   };
-  enum class Axis
+  enum class Axis : uint8_t
   {
     X,
     Y,
@@ -197,8 +199,11 @@ public:
   Matrix() = default;
   Matrix(Initialize flag, const Vector& vec1, const Vector& vec2, const Vector& vec3);
 
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index,
+  //             cppcoreguidelines-pro-bounds-array-to-pointer-decay, hicpp-no-array-decay)
   auto operator[](const uint32_t i) -> float* { return m_matrix[i]; }
   auto operator[](const uint32_t i) const -> const float* { return m_matrix[i]; }
+  // NOLINTEND
   auto Zero() -> Matrix&;
   auto Identity() -> Matrix&;
   auto Rotate(Axis axis, float angle) -> Matrix&;
@@ -208,7 +213,7 @@ public:
   [[nodiscard]] auto operator*(const Matrix& otherMatrix) const -> Matrix;
 
 private:
-  float m_matrix[3][4];
+  float m_matrix[3][4]; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 };
 
 std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
@@ -229,5 +234,7 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
+
+// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
 } // namespace LSYS

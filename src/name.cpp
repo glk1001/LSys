@@ -68,18 +68,22 @@ Name::Name(const char* name)
   {
     // Allocate more space for the inverse map from IDs to strings
     //GLK int size= reverse_map_size + map_incr;
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto** const strPtr = new char*[s_reverseMapSize + MAP_INCR];
 
     for (auto i = 0U; i < s_reverseMapSize; ++i)
     {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       strPtr[i] = s_reverseMap[i];
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     delete[] s_reverseMap;
     s_reverseMap = strPtr;
     s_reverseMapSize += MAP_INCR;
   }
 
   s_map.Enter(name, s_nextIndex);
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   s_reverseMap[s_nextIndex] = ::strdup(name);
   m_index                   = s_nextIndex;
   ++s_nextIndex;
