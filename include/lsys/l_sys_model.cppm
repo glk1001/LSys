@@ -25,6 +25,7 @@
 module;
 
 #include <memory>
+#include <string>
 
 export module LSys.LSysModel;
 

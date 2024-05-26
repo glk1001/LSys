@@ -65,6 +65,7 @@ private:
 };
 // NOLINTEND(readability-identifier-naming, cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
+auto operator==(const Name& a, const Name& b) -> bool;
 std::ostream& operator<<(std::ostream& out, const Name& name);
 
 } // namespace LSYS
@@ -80,11 +81,6 @@ inline Name::Name(const int id)
 inline auto operator==(const Name& a, const Name& b) -> bool
 {
   return a.m_index == b.m_index;
-}
-
-inline auto operator!=(const Name& a, const Name& b) -> bool
-{
-  return not(a == b);
 }
 
 } // namespace LSYS
