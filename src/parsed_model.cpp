@@ -2,6 +2,8 @@ module;
 
 // NOLINTBEGIN(cert-dcl58-cpp): clang-tidy namespace std bug
 
+#include "parsed_model.h"
+
 #include "debug.h"
 #include "parser.h"
 
@@ -12,11 +14,6 @@ module;
 #include <memory>
 #include <sstream>
 #include <string>
-
-int ParseDebug = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-extern int yydebug; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables, readability-identifier-naming)
-extern int yy_flex_debug;
 
 module LSys.ParsedModel;
 

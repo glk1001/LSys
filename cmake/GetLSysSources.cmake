@@ -40,6 +40,7 @@ function(LSys_get_source_files LSys_root_dir source_files)
         ${LSys_root_dir}src/lexer.cpp
         ${LSys_root_dir}src/module.cpp
         ${LSys_root_dir}src/name.cpp
+        ${LSys_root_dir}src/parsed_model.h
         ${LSys_root_dir}src/parsed_model.cpp
         ${LSys_root_dir}src/parser.cpp
         ${LSys_root_dir}src/production.cpp
