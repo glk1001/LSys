@@ -4,7 +4,7 @@ project(LSys)
 
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -26,55 +26,55 @@ LSys_get_source_files("${LSys_SOURCE_DIR}" LSys_source_files)
 LSys_set_some_warnings_off("${LSys_SOURCE_DIR}")
 
 add_library(${TARGET_LIB}
-        STATIC
-        ${LSys_source_files}
+            STATIC
+            ${LSys_source_files}
 )
 
 target_sources(${TARGET_LIB}
-        PUBLIC
-        FILE_SET CXX_MODULES FILES
-        ${LSys_modules}
+               PUBLIC
+               FILE_SET CXX_MODULES FILES
+               ${LSys_modules}
 )
 
 add_library(LSys::lib ALIAS ${TARGET_LIB})
 
 add_executable(${TARGET_APP}
-        main/l_sys_main.cpp
-        main/command_line_options.cpp
-        main/options.cpp
+               main/l_sys_main.cpp
+               main/command_line_options.cpp
+               main/options.cpp
 )
 
 add_executable(LSys::gen ALIAS ${TARGET_APP})
 
 target_include_directories(${TARGET_LIB}
-        PRIVATE
-        include/lsys
+                           PRIVATE
+                           include/lsys
 )
 target_include_directories(${TARGET_LIB}
-        SYSTEM PRIVATE
-        /usr/include
+                           SYSTEM PRIVATE
+                           /usr/include
 )
 target_include_directories(${TARGET_APP}
-        PRIVATE
-        include/lsys
+                           PRIVATE
+                           include/lsys
 )
 target_include_directories(${TARGET_APP}
-        SYSTEM PRIVATE
-        /usr/include
+                           SYSTEM PRIVATE
+                           /usr/include
 )
 
 target_link_libraries(${TARGET_APP}
-        PRIVATE
-        ${TARGET_LIB}
-        pthread
-        m
-        stdc++
+                      PRIVATE
+                      ${TARGET_LIB}
+                      pthread
+                      m
+                      stdc++
 )
 
 set(POS_INDEP_CODE "ON")
 set_target_properties(${TARGET_LIB}
-        PROPERTIES
-        POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
+                      PROPERTIES
+                      POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
 )
 
 include(ProjectOptions.cmake)
@@ -82,28 +82,28 @@ LSys_set_project_warnings(${LSys_WARNINGS_AS_ERRORS} ${TARGET_LIB})
 LSys_set_project_warnings(${LSys_WARNINGS_AS_ERRORS} ${TARGET_APP})
 
 set(MSVC_WARNINGS_OFF
-        /wd4005
-        /wd4201
-        /wd4996
-        /w
+    /wd4005
+    /wd4201
+    /wd4996
+    /w
 )
 set(CLANG_WARNINGS_OFF
-        -Wno-extra
-        -Wno-date-time
-        -Wno-old-style-cast
-        -Wno-conversion
-        -Wno-sign-conversion
-        -Wno-implicit-fallthrough
-        -Wno-register
-        -Wno-unused-function
-        -Wno-write-strings
-        -Wno-switch-default
+    -Wno-extra
+    -Wno-date-time
+    -Wno-old-style-cast
+    -Wno-conversion
+    -Wno-sign-conversion
+    -Wno-implicit-fallthrough
+    -Wno-register
+    -Wno-unused-function
+    -Wno-write-strings
+    -Wno-switch-default
 )
 set(GCC_WARNINGS_OFF
-        ${CLANG_WARNINGS_OFF}
-        -Wno-pedantic
-        -Wno-useless-cast
-        -Wno-effc++
+    ${CLANG_WARNINGS_OFF}
+    -Wno-pedantic
+    -Wno-useless-cast
+    -Wno-effc++
 )
 
 if (MSVC)
