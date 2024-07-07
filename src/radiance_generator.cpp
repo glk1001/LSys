@@ -128,24 +128,19 @@ auto RadianceGenerator::Polygon(const LSYS::Polygon& polygon) -> void
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << " "
-           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << " "
-           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
-  m_output << "  "
-           << "polygon" << '\n';
-  m_output << "  "
-           << "vertices: " << polygon.size() << '\n';
+  m_output << "  " << "polygon" << '\n';
+  m_output << "  " << "vertices: " << polygon.size() << '\n';
   for (auto polygonIter = cbegin(polygon); polygonIter != cend(polygon); ++polygonIter)
   {
-    m_output << "  "
-             << "  ";
+    m_output << "  " << "  ";
     OutputVec(m_output, *polygonIter);
     m_output << '\n';
   }
@@ -168,39 +163,30 @@ auto RadianceGenerator::LineTo() -> void
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << " "
-           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << " "
-           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
-  m_output << "  "
-           << "cone" << '\n';
-  m_output << "  "
-           << "  ";
+  m_output << "  " << "cone" << '\n';
+  m_output << "  " << "  ";
   OutputVec(m_output, start);
   m_output << '\n';
-  m_output << "  "
-           << "  ";
+  m_output << "  " << "  ";
   OutputVec(m_output, end);
   m_output << '\n';
-  m_output << "  "
-           << "  " << MATHS::Round(startRadius, PRECISION) << " "
+  m_output << "  " << "  " << MATHS::Round(startRadius, PRECISION) << " "
            << MATHS::Round(endRadius, PRECISION) << '\n';
   m_output << '\n';
 
-  m_output << "  "
-           << "sphere" << '\n';
-  m_output << "  "
-           << "  ";
+  m_output << "  " << "sphere" << '\n';
+  m_output << "  " << "  ";
   OutputVec(m_output, end);
   m_output << '\n';
-  m_output << "  "
-           << "  " << MATHS::Round(endRadius, PRECISION) << '\n';
+  m_output << "  " << "  " << MATHS::Round(endRadius, PRECISION) << '\n';
   m_output << '\n';
 
   m_output << "End_Object_Group " << m_groupNum << '\n';
@@ -209,8 +195,9 @@ auto RadianceGenerator::LineTo() -> void
   IGenerator::LineTo();
 }
 
-auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
-    -> void
+auto RadianceGenerator::DrawObject(const Module& mod,
+                                   const int numArgs,
+                                   const ArgsArray& args) -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();
@@ -220,48 +207,36 @@ auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const A
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "FrontMaterial: " << GetTurtle().GetCurrentState().color.m_color.index << "\n";
-  m_output << " "
-           << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "FrontTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << " "
            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
            << "BackMaterial: " << GetTurtle().GetCurrentState().backgroundColor.m_color.index
            << "\n";
-  m_output << " "
-           << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
+  m_output << " " << "BackTexture: " << GetTurtle().GetCurrentState().texture << "\n";
   m_output << '\n';
 
-  m_output << " "
-           << "object" << '\n';
-  m_output << " "
-           << "  Name: " << objName << '\n';
-  m_output << " "
-           << "  LineWidth: " << MATHS::Round(GetTurtle().GetCurrentState().width, PRECISION)
+  m_output << " " << "object" << '\n';
+  m_output << " " << "  Name: " << objName << '\n';
+  m_output << " " << "  LineWidth: " << MATHS::Round(GetTurtle().GetCurrentState().width, PRECISION)
            << '\n';
-  m_output << " "
-           << "  LineDistance: "
+  m_output << " " << "  LineDistance: "
            << MATHS::Round(GetTurtle().GetCurrentState().defaultDistance, PRECISION) << '\n';
-  m_output << " "
-           << "  ContactPoint: ";
+  m_output << " " << "  ContactPoint: ";
   OutputVec(m_output, contactPoint);
   m_output << '\n';
-  m_output << " "
-           << "  Heading: ";
+  m_output << " " << "  Heading: ";
   OutputVec(m_output, GetTurtle().GetHeading());
   m_output << '\n';
-  m_output << " "
-           << "  Left: ";
+  m_output << " " << "  Left: ";
   OutputVec(m_output, GetTurtle().GetLeft());
   m_output << '\n';
-  m_output << " "
-           << "  Up:";
+  m_output << " " << "  Up:";
   OutputVec(m_output, GetTurtle().GetUp());
   m_output << '\n';
-  m_output << " "
-           << "  nargs: " << numArgs << '\n';
+  m_output << " " << "  nargs: " << numArgs << '\n';
   for (auto i = 0U; i < static_cast<uint32_t>(numArgs); ++i)
   {
-    m_output << "  "
-             << "    " << args.at(i) << '\n';
+    m_output << "  " << "    " << args.at(i) << '\n';
   }
   m_output << '\n';
 

@@ -105,8 +105,8 @@ std::ostream& operator<<(std::ostream& out, const Expression& expression);
 [[nodiscard]] auto Bind(const List<Expression>* formals,
                         const List<Expression>* values,
                         SymbolTable<Value>& symbolTable) -> bool;
-[[nodiscard]] auto Conforms(const List<Expression>* formals, const List<Expression>* values)
-    -> bool;
+[[nodiscard]] auto Conforms(const List<Expression>* formals,
+                            const List<Expression>* values) -> bool;
 //TODO(glk) Use unique_ptr.
 [[nodiscard]] auto Instantiate(const List<Expression>* before,
                                const SymbolTable<Value>& symbolTable) noexcept

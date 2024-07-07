@@ -153,8 +153,8 @@ cerr << "    m - main program loop\n"
 }
 ***/
 
-[[nodiscard]] auto GetPropertiesFromCommandLine(const int argc, const char* argv[])
-    -> CommandLineArgs
+[[nodiscard]] auto GetPropertiesFromCommandLine(const int argc,
+                                                const char* argv[]) -> CommandLineArgs
 {
   static constexpr const auto* HELP_DESCR     = "displays help for this program";
   static constexpr const auto* MAX_GEN_DESCR  = "sets the number of generations to produce";

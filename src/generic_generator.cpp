@@ -101,8 +101,7 @@ auto GenericGenerator::OutputBounds() -> void
   const auto startPoint     = Vector{0.0F, 0.0F, 0.0F};
 
   // Output start point
-  m_boundsOutput << "start"
-                 << "\n";
+  m_boundsOutput << "start" << "\n";
   m_boundsOutput << INDENT;
   OutputVec(m_boundsOutput, startPoint);
   m_boundsOutput << "\n";
@@ -110,8 +109,7 @@ auto GenericGenerator::OutputBounds() -> void
 
   // Output bounds
   static constexpr auto WID = 12U;
-  m_boundsOutput << "bounds"
-                 << "\n";
+  m_boundsOutput << "bounds" << "\n";
   m_boundsOutput << INDENT << "min: " << std::setw(WID)
                  << MATHS::Round(minBoundingBox[0], PRECISION) << " " << std::setw(WID)
                  << MATHS::Round(minBoundingBox[1], PRECISION) << " " << std::setw(WID)
@@ -187,8 +185,9 @@ auto GenericGenerator::LineTo() -> void
   IGenerator::LineTo();
 }
 
-auto GenericGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
-    -> void
+auto GenericGenerator::DrawObject(const Module& mod,
+                                  const int numArgs,
+                                  const ArgsArray& args) -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();

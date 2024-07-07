@@ -236,9 +236,8 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
   {
     if (!(rawOptions->Controls() & Options::Quiet))
     {
-      cerr << rawOptions->Name() << ": not enough positional params. "
-           << "Expecting at least " << minNumPositional << " param"
-           << ((minNumPositional == 1) ? "" : "s") << "." << endl;
+      cerr << rawOptions->Name() << ": not enough positional params. " << "Expecting at least "
+           << minNumPositional << " param" << ((minNumPositional == 1) ? "" : "s") << "." << endl;
     }
     return OptionReturnCode::NOT_ENOUGH_POSITIONAL_PARAMS;
   }
@@ -246,9 +245,8 @@ CommandLineOptions::OptionReturnCode CommandLineOptions::ProcessOptions(int argc
   {
     if (!(rawOptions->Controls() & Options::Quiet))
     {
-      cerr << rawOptions->Name() << ": too many positional params. "
-           << "Expecting no more than " << maxNumPositional << " param"
-           << ((maxNumPositional == 1) ? "" : "s") << "." << endl;
+      cerr << rawOptions->Name() << ": too many positional params. " << "Expecting no more than "
+           << maxNumPositional << " param" << ((maxNumPositional == 1) ? "" : "s") << "." << endl;
     }
     return OptionReturnCode::TOO_MANY_POSITIONAL_PARAMS;
   }
