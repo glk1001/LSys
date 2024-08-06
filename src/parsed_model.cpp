@@ -211,7 +211,7 @@ auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
 {
   auto boundingBox3d = BoundingBox3d{};
   auto inputFile     = std::make_unique<std::ifstream>(filename);
-  if (not *inputFile)
+  if (not inputFile->good())
   {
     std::cerr << "Could not open bounds file '" << filename << "'.\n";
     throw std::runtime_error("Could not open bounds file.");

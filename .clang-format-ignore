@@ -1,0 +1,4 @@
+src/*.c
+src/lexdefs.h
+src/lsys.tab.h
+
