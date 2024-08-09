@@ -145,10 +145,10 @@ auto GenericGenerator::Polygon(const LSYS::Polygon& polygon) -> void
   const auto numClosedPolygonVertices = polygon.size() + 1;
   m_output << INDENT << "polygon\n";
   m_output << INDENT << "vertices: " << numClosedPolygonVertices << "\n";
-  for (auto polygonIter = cbegin(polygon); polygonIter != cend(polygon); ++polygonIter)
+  for (auto polygonIter : polygon)
   {
     m_output << INDENT << INDENT;
-    OutputVec(m_output, *polygonIter);
+    OutputVec(m_output, polygonIter);
     m_output << "\n";
   }
   // Close the polygon.

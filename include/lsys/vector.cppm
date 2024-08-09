@@ -126,35 +126,35 @@ private:
 
 inline auto operator-(const Vector& vec) -> Vector
 {
-  return Vector(-vec(0), -vec(1), -vec(2));
+  return Vector{-vec(0), -vec(1), -vec(2)};
 }
 
 inline auto operator*(const float val, const Vector& vec) -> Vector
 {
-  return Vector(val * vec(0), val * vec(1), val * vec(2));
+  return Vector{val * vec(0), val * vec(1), val * vec(2)};
 }
 
 inline auto operator/(const Vector& vec, const float val) -> Vector
 {
   const auto recip = 1.0F / val;
-  return Vector(vec(0) * recip, vec(1) * recip, vec(2) * recip);
+  return Vector{vec(0) * recip, vec(1) * recip, vec(2) * recip};
 }
 
 inline auto operator+(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector(vec1(0) + vec2(0), vec1(1) + vec2(1), vec1(2) + vec2(2));
+  return Vector{vec1(0) + vec2(0), vec1(1) + vec2(1), vec1(2) + vec2(2)};
 }
 
 inline auto operator-(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector(vec1(0) - vec2(0), vec1(1) - vec2(1), vec1(2) - vec2(2));
+  return Vector{vec1(0) - vec2(0), vec1(1) - vec2(1), vec1(2) - vec2(2)};
 }
 
 inline auto operator^(const Vector& vec1, const Vector& vec2) -> Vector
 {
-  return Vector((vec1(1) * vec2(2)) - (vec1(2) * vec2(1)),
+  return Vector{(vec1(1) * vec2(2)) - (vec1(2) * vec2(1)),
                 (vec1(2) * vec2(0)) - (vec1(0) * vec2(2)),
-                (vec1(0) * vec2(1)) - (vec1(1) * vec2(0)));
+                (vec1(0) * vec2(1)) - (vec1(1) * vec2(0))};
 }
 
 inline auto operator*(const Vector& vec1, const Vector& vec2) -> float
@@ -213,10 +213,11 @@ public:
   [[nodiscard]] auto operator*(const Matrix& otherMatrix) const -> Matrix;
 
 private:
-  float m_matrix[3][4]; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
+  // NOLINTNEXTLINE(modernize-avoid-c-arrays,cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
+  float m_matrix[3][4];
 };
 
-std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
+auto operator<<(std::ostream& out, const Matrix& matrix) -> std::ostream&;
 
 class BoundingBox
 {
@@ -233,7 +234,7 @@ private:
   Vector m_maxVec;
 };
 
-std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
+auto operator<<(std::ostream& out, const BoundingBox& boundingBox) -> std::ostream&;
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 

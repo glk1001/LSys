@@ -66,7 +66,7 @@ private:
 // NOLINTEND(readability-identifier-naming, cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 auto operator==(const Name& a, const Name& b) -> bool;
-std::ostream& operator<<(std::ostream& out, const Name& name);
+auto operator<<(std::ostream& out, const Name& name) -> std::ostream&;
 
 } // namespace LSYS
 

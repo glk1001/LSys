@@ -298,7 +298,7 @@ inline auto GetExprStr(const Expression* expr) noexcept -> ::std::string
 
 } // namespace
 
-std::ostream& operator<<(std::ostream& out, const Expression& expression)
+auto operator<<(std::ostream& out, const Expression& expression) -> std::ostream&
 {
   switch (expression.m_operation)
   {
@@ -372,9 +372,9 @@ Expression::Expression(const int operation,
 Expression::Expression(const Name& name)
   : m_operation{LSYS_NAME},
     m_expressionValue{
-      {name.id(), nullptr},
-      {},
-      {},
+      .name={.id=name.id(), .funcArgs=nullptr},
+      .value={},
+      .args={},
 }
 {
   PDebug(PD_EXPRESSION,
@@ -384,10 +384,10 @@ Expression::Expression(const Name& name)
 Expression::Expression(const Name& name, List<Expression>* funcArgs)
   : m_operation{funcArgs == nullptr ? LSYS_NAME : LSYS_FUNCTION},
     m_expressionValue{
-        {name.id(), {funcArgs == nullptr ? nullptr :
+        .name={.id=name.id(), .funcArgs={funcArgs == nullptr ? nullptr :
              std::unique_ptr<List<Expression>>{funcArgs}}},
-        {},
-        {},
+        .value={},
+        .args={},
     }
 {
   if (m_operation == LSYS_NAME)
@@ -406,9 +406,9 @@ Expression::Expression(const Name& name, List<Expression>* funcArgs)
 // Create a function call node.
 Expression::Expression(const Name& name, std::unique_ptr<List<Expression>> funcArgs)
   : m_operation{LSYS_FUNCTION},
-    m_expressionValue{      {name.id(), std::move(funcArgs)},
-        {},
-        {},
+    m_expressionValue{      .name={.id=name.id(), .funcArgs=std::move(funcArgs)},
+        .value={},
+        .args={},
     }
 {
   PDebug(PD_EXPRESSION,
@@ -420,9 +420,9 @@ Expression::Expression(const Name& name, std::unique_ptr<List<Expression>> funcA
 Expression::Expression(const Value& value)
   : m_operation{LSYS_VALUE},
     m_expressionValue{
-        {},
-        value,
-        {},
+        .name  = {},
+        .value = value,
+        .args  = {},
     }
 {
   PDebug(PD_EXPRESSION,
@@ -431,8 +431,8 @@ Expression::Expression(const Value& value)
 
 Expression::Expression(const Expression& other) : m_operation{other.m_operation},
     m_expressionValue{
-  {other.m_expressionValue.name.id, nullptr}, other.m_expressionValue.value,
-        GetArgs(other.m_expressionValue.args)}
+  .name={.id=other.m_expressionValue.name.id, .funcArgs=nullptr}, .value=other.m_expressionValue.value,
+        .args=GetArgs(other.m_expressionValue.args)}
 {
   if (m_operation == LSYS_FUNCTION)
   {

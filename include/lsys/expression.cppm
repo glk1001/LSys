@@ -72,7 +72,7 @@ public:
   [[nodiscard]] auto LEval(const SymbolTable<Value>& symbolTable) const -> Value;
   [[nodiscard]] auto REval(const SymbolTable<Value>& symbolTable) const -> Value;
 
-  friend std::ostream& operator<<(std::ostream& out, const Expression& expression);
+  friend auto operator<<(std::ostream& out, const Expression& expression) -> std::ostream&;
 
 private:
   int m_operation;
@@ -100,7 +100,7 @@ private:
   [[nodiscard]] auto GetFuncArgs() const -> List<Expression>*;
 };
 
-std::ostream& operator<<(std::ostream& out, const Expression& expression);
+auto operator<<(std::ostream& out, const Expression& expression) -> std::ostream&;
 
 [[nodiscard]] auto Bind(const List<Expression>* formals,
                         const List<Expression>* values,
