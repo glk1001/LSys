@@ -89,7 +89,7 @@ Name::Name(const char* name)
   ++s_nextIndex;
 }
 
-std::ostream& operator<<(std::ostream& out, const Name& name)
+auto operator<<(std::ostream& out, const Name& name) -> std::ostream&
 {
   return out << name.str();
   //  return o << "[id: " << int(n) << " name: " << (const char *)n << "]";

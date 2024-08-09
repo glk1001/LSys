@@ -216,7 +216,7 @@ private:
   float m_matrix[3][4]; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 };
 
-std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
+auto operator<<(std::ostream& out, const Matrix& matrix) -> std::ostream&;
 
 class BoundingBox
 {
@@ -233,7 +233,7 @@ private:
   Vector m_maxVec;
 };
 
-std::ostream& operator<<(std::ostream& out, const BoundingBox& boundingBox);
+auto operator<<(std::ostream& out, const BoundingBox& boundingBox) -> std::ostream&;
 
 // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 

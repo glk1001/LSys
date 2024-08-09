@@ -228,7 +228,7 @@ auto GetBoundingBox3d(const std::string& filename) -> BoundingBox3d
       continue;
     }
 
-    if (0 == line.rfind("bounds", 0))
+    if (line.starts_with("bounds"))
     {
       auto nextLine = GetTrimmedLine(*inputFile);
       assert(nextLine.rfind("min: ", 0) == 0);

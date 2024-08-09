@@ -95,7 +95,7 @@ public:
              std::unique_ptr<const Expression> condition,
              std::unique_ptr<const List<Successor>> successors);
 
-  auto IsContextFree() const -> bool { return m_contextFree; }
+  [[nodiscard]] auto IsContextFree() const -> bool { return m_contextFree; }
   auto Matches(const ListIterator<Module>& modIter,
                const Module* mod,
                SymbolTable<Value>& symbolTable) const -> bool;

@@ -138,10 +138,10 @@ auto RadianceGenerator::Polygon(const LSYS::Polygon& polygon) -> void
 
   m_output << "  " << "polygon" << '\n';
   m_output << "  " << "vertices: " << polygon.size() << '\n';
-  for (auto polygonIter = cbegin(polygon); polygonIter != cend(polygon); ++polygonIter)
+  for (auto polygonIter : polygon)
   {
     m_output << "  " << "  ";
-    OutputVec(m_output, *polygonIter);
+    OutputVec(m_output, polygonIter);
     m_output << '\n';
   }
   m_output << "\n";

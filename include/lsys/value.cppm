@@ -99,7 +99,7 @@ private:
     FF,
     UNDEF
   };
-  OpType GetBinaryOpType(const Value& value) const;
+  [[nodiscard]] auto GetBinaryOpType(const Value& value) const -> OpType;
 };
 
 } // namespace LSYS

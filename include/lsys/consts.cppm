@@ -1,6 +1,7 @@
 module;
 
 #include <array>
+#include <numbers>
 
 export module LSys.Consts;
 
@@ -21,7 +22,7 @@ inline constexpr auto SMALL_FLOAT = 0.00001F;
   return val * val;
 }
 
-inline constexpr auto PI       = 3.14159265358F; // NOLINT(readability-identifier-length)
+inline constexpr auto PI       = std::numbers::pi_v<float>; // NOLINT(readability-identifier-length)
 inline constexpr auto TWO_PI   = 2.0F * PI;
 inline constexpr auto HALF_PI  = 0.5F * PI;
 inline constexpr auto THIRD_PI = PI / 3.0F;

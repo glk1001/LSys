@@ -18,7 +18,7 @@ auto SetRandFunc(const GetRandDoubleInUnitIntervalFunc& getRandDoubleFunc) -> vo
   getRandDouble = getRandDoubleFunc;
 }
 
-double GetRandDoubleInUnitInterval()
+auto GetRandDoubleInUnitInterval() -> double
 {
   assert(getRandDouble);
   return getRandDouble();
