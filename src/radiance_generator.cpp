@@ -195,9 +195,8 @@ auto RadianceGenerator::LineTo() -> void
   IGenerator::LineTo();
 }
 
-auto RadianceGenerator::DrawObject(const Module& mod,
-                                   const int numArgs,
-                                   const ArgsArray& args) -> void
+auto RadianceGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
+    -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();

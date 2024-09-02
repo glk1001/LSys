@@ -70,8 +70,8 @@ namespace
 using ExprFunc =
     std::function<Value(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)>;
 
-[[nodiscard]] auto ExprSin(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprSin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -80,8 +80,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprCos(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprCos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -90,8 +90,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprTan(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprTan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -100,8 +100,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprASin(const SymbolTable<Value>& symbolTable,
-                            List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprASin(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -110,8 +110,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprACos(const SymbolTable<Value>& symbolTable,
-                            List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprACos(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -120,8 +120,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprATan(const SymbolTable<Value>& symbolTable,
-                            List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprATan(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -143,8 +143,8 @@ using ExprFunc =
 }
 
 // Returns type of argument
-[[nodiscard]] auto ExprAbs(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprAbs(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto v = Value{}; GetValue(symbolTable, expressionList, v))
   {
@@ -154,8 +154,8 @@ using ExprFunc =
 }
 
 // Always returns int
-[[nodiscard]] auto ExprCeil(const SymbolTable<Value>& symbolTable,
-                            List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprCeil(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -175,8 +175,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprExp(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprExp(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -185,8 +185,8 @@ using ExprFunc =
   return Value{};
 }
 
-[[nodiscard]] auto ExprLog(const SymbolTable<Value>& symbolTable,
-                           List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprLog(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {
@@ -208,8 +208,8 @@ using ExprFunc =
 // Return a uniformly distributed random number;
 //  rand()  returns [0,1)
 //  rand(n) returns [0,n)   (floating point)
-[[nodiscard]] auto ExprRand(const SymbolTable<Value>& symbolTable,
-                            List<Expression>& expressionList) -> Value
+[[nodiscard]] auto ExprRand(const SymbolTable<Value>& symbolTable, List<Expression>& expressionList)
+    -> Value
 {
   if (auto x = 0.0F; GetFloat(symbolTable, expressionList, x))
   {

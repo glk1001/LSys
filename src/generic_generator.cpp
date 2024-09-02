@@ -185,9 +185,8 @@ auto GenericGenerator::LineTo() -> void
   IGenerator::LineTo();
 }
 
-auto GenericGenerator::DrawObject(const Module& mod,
-                                  const int numArgs,
-                                  const ArgsArray& args) -> void
+auto GenericGenerator::DrawObject(const Module& mod, const int numArgs, const ArgsArray& args)
+    -> void
 {
   const auto objName      = mod.GetName().str().erase(0, 1); // skip '~'
   const auto contactPoint = GetLastPosition();

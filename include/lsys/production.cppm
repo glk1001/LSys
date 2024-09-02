@@ -99,8 +99,8 @@ public:
   auto Matches(const ListIterator<Module>& modIter,
                const Module* mod,
                SymbolTable<Value>& symbolTable) const -> bool;
-  auto Produce(const Module* predecessor,
-               SymbolTable<Value>& symbolTable) const -> std::unique_ptr<List<Module>>;
+  auto Produce(const Module* predecessor, SymbolTable<Value>& symbolTable) const
+      -> std::unique_ptr<List<Module>>;
 
   friend auto operator<<(std::ostream& out, const Production& production) -> std::ostream&;
 
